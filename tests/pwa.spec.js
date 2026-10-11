@@ -32,6 +32,7 @@ test('dark appearance covers the calendar and event form surfaces', async ({ pag
   await expect(page.locator('#settingsScreen')).toHaveClass(/active/);
   await page.locator('#appearanceToggle').click();
   await expect(page.locator('.app')).toHaveClass(/settings-dark/);
+  await expect(page.locator('body')).toHaveClass(/settings-dark/);
 
   const shellBackground = await page.locator('.app').evaluate((el) => getComputedStyle(el).backgroundColor);
   expect(shellBackground).toBe('rgb(21, 27, 23)');
@@ -47,7 +48,7 @@ test('dark appearance covers the calendar and event form surfaces', async ({ pag
   expect(modalSurface).toBe('rgb(27, 36, 30)');
 
   const formControlSurface = await page.locator('#eventTitle').evaluate((el) => getComputedStyle(el).backgroundColor);
-  expect(formControlSurface).toBe('rgb(27, 36, 30)');
+  expect(formControlSurface).toBe('rgb(32, 42, 33)');
 });
 
 test('manifest is linked and service worker enables offline shell', async ({ page, context }) => {
