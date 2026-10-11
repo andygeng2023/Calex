@@ -3234,3 +3234,50 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .app.settings-dark .settings-security-note {
   color: var(--muted);
 }
+
+
+/* The modal lives beside .app in the document, so theme its detached layer via body. */
+body.settings-dark {
+  --ink: #e8eee9;
+  --muted: #a2afa5;
+  --line: #303b33;
+  --paper: #151b17;
+  --bg: #101512;
+  --green: #8fcc9a;
+  --green-dark: #b7e5be;
+  --green-pale: #24382a;
+  --surface: #1b241e;
+  --surface-raised: #202a21;
+  --surface-inset: #141c16;
+  color-scheme: dark;
+}
+body.settings-dark .modal {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+body.settings-dark .modal .field input,
+body.settings-dark .modal .field textarea,
+body.settings-dark .modal .field select {
+  background: var(--surface-raised);
+  color: var(--ink);
+  border-color: var(--line);
+}
+body.settings-dark .modal .field label,
+body.settings-dark .modal .nlp-help {
+  color: var(--muted);
+}
+body.settings-dark .modal .close-btn,
+body.settings-dark .modal .secondary {
+  background: var(--surface-raised);
+  color: var(--ink);
+  border-color: var(--line);
+}
+body.settings-dark .modal .primary {
+  background: #39774a;
+  color: #fff;
+  border-color: #39774a;
+}
+body.settings-dark .modal-backdrop {
+  background: #000a;
+}
