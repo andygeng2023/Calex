@@ -91,6 +91,33 @@
     </section>
   </section>
   
+  <section id="authScreen" class="screen auth-screen" aria-label="Sign in or create account">
+    <button class="auth-back" id="authBack" type="button" aria-label="Back to settings">‹ <span>Settings</span></button>
+    <div class="auth-screen-content">
+      <div class="auth-brand-mark" aria-hidden="true">C</div>
+      <h1 class="auth-screen-title">Your Calex account</h1>
+      <p class="auth-screen-intro">Sign in or create an account to securely sync your calendar across devices.</p>
+    <div class="auth-card" id="authCard">
+      <div class="auth-status" id="authStatus" role="status">Not signed in · using this device</div>
+      <form id="authForm">
+        <label for="authEmail">Email</label>
+        <input id="authEmail" type="email" autocomplete="email" required placeholder="you@example.com">
+        <label for="authPassword">Password</label>
+        <input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters">
+        <div class="auth-actions">
+          <button class="save-settings" type="submit" id="authSubmit">Sign in</button>
+          <button class="save-settings secondary-auth" type="button" id="authSignup">Create account</button>
+        </div>
+        <button class="save-settings google-auth" type="button" id="authGoogle">Continue with Google</button>
+        <button class="auth-link" type="button" id="authForgot">Forgot password?</button>
+      </form>
+      <button class="save-settings" type="button" id="authSignout" hidden>Sign out</button>
+    </div>
+
+      <p class="auth-privacy-note">Your calendar syncs only when you are signed in. You can keep using Calex on this device without an account.</p>
+    </div>
+  </section>
+
   <section id="settingsScreen" class="screen" aria-label="Settings">
     <h1 class="settings-title">Settings</h1>
     <button class="profile-card" id="profileEdit" type="button" aria-label="Edit profile">
@@ -152,22 +179,7 @@
         <label for="settingsLocation">Location</label>
         <input id="settingsLocation" maxlength="120" placeholder="City or region">
         <p class="settings-help">Sign in to sync your calendar and preferences across devices.</p>
-        <div class="auth-card" id="authCard">
-          <div class="auth-status" id="authStatus" role="status">Not signed in · using this device</div>
-          <form id="authForm">
-            <label for="authEmail">Email</label>
-            <input id="authEmail" type="email" autocomplete="email" required placeholder="you@example.com">
-            <label for="authPassword">Password</label>
-            <input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters">
-            <div class="auth-actions">
-              <button class="save-settings" type="submit" id="authSubmit">Sign in</button>
-              <button class="save-settings secondary-auth" type="button" id="authSignup">Create account</button>
-            </div>
-            <button class="save-settings google-auth" type="button" id="authGoogle">Continue with Google</button>
-            <button class="auth-link" type="button" id="authForgot">Forgot password?</button>
-          </form>
-          <button class="save-settings" type="button" id="authSignout" hidden>Sign out</button>
-        </div>
+        <button class="save-settings account-open-button" id="openAuthScreen" type="button">Sign in or create account</button>
         <div class="settings-inline">
           <button type="button" class="save-settings" id="saveProfile">Save profile</button>
         </div>
