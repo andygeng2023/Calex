@@ -3281,3 +3281,21 @@ body.settings-dark .modal .primary {
 body.settings-dark .modal-backdrop {
   background: #000a;
 }
+
+
+/* Event-form controls have #eventForm ID selectors, so match that specificity inside the detached modal. */
+body.settings-dark .modal #eventForm .field input,
+body.settings-dark .modal #eventForm .field select,
+body.settings-dark .modal #eventForm .field textarea {
+  background: var(--surface-raised);
+  color: var(--ink);
+  border-color: var(--line);
+}
+body.settings-dark .modal #eventForm .field label {
+  color: var(--muted);
+}
+body.settings-dark .modal #eventForm .field input::placeholder,
+body.settings-dark .modal #eventForm .field textarea::placeholder {
+  color: #9aa89d;
+  opacity: 1;
+}
