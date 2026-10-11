@@ -1064,6 +1064,11 @@
       b.addEventListener("click", () => switchScreen(b.dataset.screen)),
     );
   $("accountToggle").addEventListener("click", () => switchScreen("auth"));
+  $("settingsSignIn").addEventListener("click", (event) => {
+    event.preventDefault();
+    switchScreen("auth");
+    $("authEmail").focus({ preventScroll: true });
+  });
   $("authBack").addEventListener("click", () => switchScreen("settings"));
 
   function showToast(msg) {
