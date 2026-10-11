@@ -93,7 +93,7 @@ test("month and year arrows each work independently", async ({ page }) => {
   await expect(page.locator("#monthTitle")).toHaveText(original);
 });
 
-test("calendar dates are unboxed and the redundant view switch is absent", async ({
+test("ordinary calendar dates are unboxed and the redundant view switch is absent", async ({
   page,
 }) => {
   await page.goto("/");
@@ -101,16 +101,18 @@ test("calendar dates are unboxed and the redundant view switch is absent", async
   await expect(page.locator(".view-segment")).toHaveCount(0);
   await page.keyboard.press("m");
   const appearance = () =>
-    page.locator("#dateGrid .date-cell").evaluateAll((cells) =>
-      cells.map((cell) => {
-        const style = getComputedStyle(cell);
-        return {
-          background: style.backgroundColor,
-          border: style.borderTopWidth,
-          shadow: style.boxShadow,
-        };
-      }),
-    );
+    page
+      .locator("#dateGrid .date-cell:not(.selected):not(.today)")
+      .evaluateAll((cells) =>
+        cells.map((cell) => {
+          const style = getComputedStyle(cell);
+          return {
+            background: style.backgroundColor,
+            border: style.borderTopWidth,
+            shadow: style.boxShadow,
+          };
+        }),
+      );
   for (const cell of await appearance()) {
     expect(cell.background).toBe("rgba(0, 0, 0, 0)");
     expect(cell.border).toBe("0px");

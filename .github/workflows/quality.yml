@@ -36,7 +36,7 @@ jobs:
           node --check tests/pwa.spec.js
       - name: Run unit tests
         run: node --test tests/ics.unit.js tests/sync.unit.js
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Playwright Chromium and WebKit
+        run: npx playwright install --with-deps chromium webkit
       - name: Run browser smoke tests
         run: npm test

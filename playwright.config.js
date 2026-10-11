@@ -7,12 +7,17 @@ module.exports = defineConfig({
   use: {
     baseURL: "http://127.0.0.1:4173",
     trace: "retain-on-failure",
-    channel: "chromium",
   },
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: { ...devices["Desktop Chrome"], channel: "chromium" },
+    },
+    {
+      name: "webkit-mobile",
+      testMatch: "**/polish.spec.js",
+      grep: /375px/,
+      use: { ...devices["iPhone 13"] },
     },
   ],
   webServer: {
