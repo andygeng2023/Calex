@@ -3299,3 +3299,53 @@ body.settings-dark .modal #eventForm .field textarea::placeholder {
   color: #9aa89d;
   opacity: 1;
 }
+
+/* Today button, upcoming list, toast action, sync controls */
+.today-btn {
+	width: auto !important;
+	padding: 0 12px;
+	font-size: 13px !important;
+	font-weight: 700;
+	color: var(--green-dark) !important;
+	background: var(--green-pale) !important;
+	margin-right: 6px;
+}
+.upcoming-day { margin-bottom: 14px; }
+.upcoming-label {
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--green-dark);
+	margin: 0 2px 8px;
+}
+.toast { display: block; opacity: 0; visibility: hidden; transition: opacity .18s, visibility .18s; }
+.toast.show { opacity: 1; visibility: visible; }
+.toast-action {
+	margin-left: 14px;
+	border: 0;
+	background: none;
+	color: #9fe0ad;
+	font-weight: 750;
+	font-size: 13px;
+	padding: 4px 2px;
+	min-height: 32px;
+}
+.sync-now-btn {
+	margin-top: 10px;
+	border: 1px solid var(--line);
+	background: white;
+	color: var(--green-dark);
+	font-weight: 700;
+	font-size: 14px;
+	border-radius: 12px;
+	min-height: 44px;
+	padding: 0 18px;
+}
+.sync-now-btn:disabled { opacity: .55; }
+.app.settings-dark .today-btn { background: #223a29 !important; color: #a8dcb4 !important; }
+.app.settings-dark .upcoming-label { color: #a8dcb4; }
+.app.settings-dark .sync-now-btn { background: var(--settings-surface); border-color: var(--settings-border); color: #a8dcb4; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+.month-title { white-space: nowrap; font-size: clamp(19px, 5.6vw, 26px); min-width: 0; }
+.month-controls { gap: 1px; flex: 0 0 auto; }
+.today-btn { padding: 0 10px; margin-right: 4px; }

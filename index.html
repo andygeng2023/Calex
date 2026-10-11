@@ -11,7 +11,7 @@
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="./icon.svg"><meta name="description" content="A calm, simple calendar for your days.">
   <title>Calex</title>
-  <link rel="stylesheet" href="styles.css?v=25">
+  <link rel="stylesheet" href="styles.css?v=26">
 </head>
 
 <body>
@@ -40,6 +40,7 @@
     <div class="calendar-toolbar">
       <div class="month-title" id="monthTitle">October 2026</div>
       <div class="month-controls">
+        <button id="goToday" class="today-btn" type="button" aria-label="Go to today">Today</button>
         <button id="prevYear" aria-label="Previous year" title="Previous year">
           <svg viewBox="0 0 24 24">
             <path d="m11 5-7 7 7 7M20 5l-7 7 7 7"/>
@@ -160,6 +161,7 @@
         <span class="auth-cta-arrow" aria-hidden="true">›</span>
       </button>
       <p class="settings-security-note"><span class="settings-status-dot" aria-hidden="true"></span><span id="settingsSyncNote">Your events stay on this device until you sign in.</span></p>
+      <button class="sync-now-btn" id="syncNow" type="button" hidden>Sync now</button>
     </section>
 
     <section class="settings-section" aria-labelledby="preferencesSectionTitle">
@@ -215,6 +217,17 @@
           </span>
           <span class="settings-chevron" aria-hidden="true">›</span>
         </button>
+        <button class="settings-row" id="importCalendar" type="button">
+          <span class="settings-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 15V3m-5 5 5-5 5 5M4 17v4h16v-4"/></svg>
+          </span>
+          <span class="settings-row-copy">
+            <span class="settings-row-title">Import calendar</span>
+            <span class="settings-row-sub">Add events from an .ics file (Google, Outlook, Apple)</span>
+          </span>
+          <span class="settings-chevron" aria-hidden="true">›</span>
+        </button>
+        <input type="file" id="importFile" accept=".ics,text/calendar" hidden>
       </div>
       <p class="settings-footnote">When signed out, your calendar is stored on this device. Signing in enables account-based sync. You can export a copy of your events at any time.</p>
     </section>
@@ -419,7 +432,9 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3" defer></script>
-<script src="app.js?v=25" defer></script>
+<script src="sync.js?v=26" defer></script>
+<script src="ics.js?v=26" defer></script>
+<script src="app.js?v=26" defer></script>
 
 </body>
 

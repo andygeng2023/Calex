@@ -28,9 +28,13 @@ jobs:
       - name: Validate JavaScript syntax
         run: |
           node --check app.js
+          node --check sync.js
+          node --check ics.js
           node --check sw.js
           node --check playwright.config.js
           node --check tests/pwa.spec.js
+      - name: Run unit tests
+        run: node --test tests/ics.unit.js tests/sync.unit.js
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
       - name: Run browser smoke tests
