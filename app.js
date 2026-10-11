@@ -2114,7 +2114,7 @@
     });
     if (which === "timezone" && !$("timezoneDetail").hidden) {
       renderTimezone();
-      $("timezoneMode").focus();
+      $("timezoneAuto").focus({ preventScroll: true });
     }
   }
   $("profileEdit").addEventListener("click", () => {
