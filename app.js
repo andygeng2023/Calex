@@ -22,7 +22,7 @@
       12,
     ),
     cursor = new Date(selected),
-    view = "all",
+    view = "month",
     modalMode = "normal",
     toastTimer;
   const SUPABASE_URL = "https://fwcijtjahtwpyaqedyhq.supabase.co";
@@ -63,9 +63,17 @@
   } catch (_) {}
   function initSupabase() {
     if (!window.supabase || !window.supabase.createClient) {
-      const unavailable = () => showToast("Authentication could not load. Check your connection, then refresh Calex.");
-      $("authForm").addEventListener("submit", (e) => { e.preventDefault(); unavailable(); });
-      ["authSignup", "authGoogle", "authForgot"].forEach((id) => $(id).addEventListener("click", unavailable));
+      const unavailable = () =>
+        showToast(
+          "Authentication could not load. Check your connection, then refresh Calex.",
+        );
+      $("authForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        unavailable();
+      });
+      ["authSignup", "authGoogle", "authForgot"].forEach((id) =>
+        $(id).addEventListener("click", unavailable),
+      );
       return;
     }
     supabaseClient = window.supabase.createClient(
@@ -171,10 +179,16 @@
       if (result.error) return showToast(result.error.message);
       if (mode === "signup" && result.data.user && !result.data.session)
         showToast("Check your email to confirm your account, then sign in.");
-      else showToast(mode === "signup" ? "Account created" : "Sign-in request completed");
+      else
+        showToast(
+          mode === "signup" ? "Account created" : "Sign-in request completed",
+        );
     } catch (err) {
       console.error("Calex authentication action failed", err);
-      showToast(err?.message || "Could not contact authentication. Check your connection and try again.");
+      showToast(
+        err?.message ||
+          "Could not contact authentication. Check your connection and try again.",
+      );
     } finally {
       $("authSubmit").disabled = false;
       $("authSignup").disabled = false;
@@ -188,8 +202,12 @@
     $("authForm").hidden = signedIn;
     $("authSignout").hidden = !signedIn;
     if ($("settingsSignInTitle")) {
-      $("settingsSignInTitle").textContent = signedIn ? "Account connected" : "Sign in or create account";
-      $("settingsSignInSubtitle").textContent = signedIn ? "Manage your account and sign-out options" : "Securely sync your calendar across devices";
+      $("settingsSignInTitle").textContent = signedIn
+        ? "Account connected"
+        : "Sign in or create account";
+      $("settingsSignInSubtitle").textContent = signedIn
+        ? "Manage your account and sign-out options"
+        : "Securely sync your calendar across devices";
       $("settingsSyncNote").textContent = syncText();
       $("syncNow").hidden = !signedIn;
       $("syncNow").disabled = syncState === "syncing";
@@ -223,6 +241,7 @@
   function setSyncState(state) {
     syncState = state;
     renderAuth();
+    window.dispatchEvent(new CustomEvent("calex:render"));
   }
   function syncText() {
     if (!authUser) return "Your events stay on this device until you sign in.";
@@ -254,14 +273,11 @@
     authUser = user;
     if (authUser) {
       const migrationKey = "calex-guest-migrated-" + authUser.id;
-      const shouldMigrateGuest = localStorage.getItem(migrationKey) !== "1";
+      const shouldMigrateGuest = lsGet(migrationKey, 0) !== 1;
       const local = lsGet(activeEventsKey(), []);
       if (shouldMigrateGuest) {
         const have = new Set(local.map((x) => x.id));
-        (
-          guestEventsSnapshot ||
-          lsGet(guestEventsKey, [])
-        ).forEach((item) => {
+        (guestEventsSnapshot || lsGet(guestEventsKey, [])).forEach((item) => {
           if (!have.has(item.id)) local.push(item);
         });
       }
@@ -275,15 +291,12 @@
       };
       lsSet(activeEventsKey(), events);
       const synced = await saveCloudNow();
-      if (synced && shouldMigrateGuest) localStorage.setItem(migrationKey, "1");
+      if (synced && shouldMigrateGuest) lsSet(migrationKey, 1);
     } else {
-      events =
-        guestEventsSnapshot ||
-        JSON.parse(localStorage.getItem(guestEventsKey) || "[]");
+      events = guestEventsSnapshot || lsGet(guestEventsKey, []);
       appSettings = {
         ...defaultSettings,
-        ...(guestSettingsSnapshot ||
-          JSON.parse(localStorage.getItem(guestSettingsKey) || "{}")),
+        ...(guestSettingsSnapshot || lsGet(guestSettingsKey, {})),
       };
       persist();
       saveAppSettings();
@@ -381,7 +394,9 @@
       }
     } finally {
       cloudSyncBusy = false;
-      setSyncState(success ? "idle" : navigator.onLine === false ? "offline" : "error");
+      setSyncState(
+        success ? "idle" : navigator.onLine === false ? "offline" : "error",
+      );
       if (cloudSyncPending) {
         cloudSyncPending = false;
         scheduleCloudSync();
@@ -450,40 +465,8 @@
     events = [];
   }
   if (!hasStoredEvents && storageAvailable) {
-    const ds = dateKey(today);
-    events = [
-      {
-        id: crypto.randomUUID(),
-        title: "Plan your week",
-        date: ds,
-        start: "09:00",
-        end: "09:30",
-        repeat: "none",
-        done: false,
-        tag: "Planning",
-        description: "A little time to get organised.",
-      },
-      {
-        id: crypto.randomUUID(),
-        title: "Take a proper lunch break",
-        date: ds,
-        start: "12:30",
-        end: "13:15",
-        repeat: "none",
-        done: false,
-        tag: "Personal",
-      },
-      {
-        id: crypto.randomUUID(),
-        title: "Check in with the team",
-        date: ds,
-        start: "15:00",
-        end: "15:30",
-        repeat: "weekly",
-        done: true,
-        tag: "Work",
-      },
-    ];
+    // Real calendars start empty; do not migrate demo events into accounts.
+    events = [];
     persist();
   }
 
@@ -530,12 +513,16 @@
     const start = parseDate(e.date),
       delta = Math.round((parseDate(dateKey(d)) - start) / 86400000);
     if (delta < 0) return false;
-    const interval = Math.max(1, Number(e.repeatInterval) || 1),
+    const interval = Math.max(
+        1,
+        Number(e.repeatInterval) || (e.repeat === "fortnightly" ? 2 : 1),
+      ),
       unit =
         e.repeatUnit ||
         {
           daily: "day",
           weekly: "week",
+          fortnightly: "week",
           monthly: "month",
           yearly: "year",
         }[e.repeat] ||
@@ -570,6 +557,10 @@
   function onDay(d) {
     return events
       .filter((e) => eventOccurs(e, d))
+      .filter(
+        (e) =>
+          !window.CalexCategories || window.CalexCategories.has(categoryOf(e)),
+      )
       .sort((a, b) => (a.start || "99:99").localeCompare(b.start || "99:99"));
   }
 
@@ -587,11 +578,15 @@
         {
           daily: "day",
           weekly: "week",
+          fortnightly: "week",
           monthly: "month",
           yearly: "year",
         }[e.repeat] ||
         "day",
-      n = Math.max(1, Number(e.repeatInterval) || 1);
+      n = Math.max(
+        1,
+        Number(e.repeatInterval) || (e.repeat === "fortnightly" ? 2 : 1),
+      );
     if (
       n === 1 &&
       {
@@ -615,7 +610,9 @@
 
   function eventMarkup(e) {
     return (
-      '<article class="event ' +
+      '<article class="event category-' +
+      categoryOf(e) +
+      " " +
       (e.done ? "done" : "") +
       '"><input class="check" type="checkbox" aria-label="Mark ' +
       esc(e.title) +
@@ -652,6 +649,39 @@
           '"': "&quot;",
           "'": "&#39;",
         })[c],
+    );
+  }
+
+  function categoryOf(e) {
+    if (["personal", "work", "wellbeing"].includes(e.category))
+      return e.category;
+    if (/work|study|meeting|team/i.test(e.tag || "")) return "work";
+    if (/gym|wellbeing|health/i.test(e.tag || "")) return "wellbeing";
+    return "personal";
+  }
+
+  function cellEvents(items) {
+    return (
+      '<span class="cell-events">' +
+      items
+        .slice(0, 3)
+        .map(
+          (e) =>
+            '<span class="cell-event category-' +
+            categoryOf(e) +
+            '">' +
+            (e.start
+              ? '<span class="cell-time">' + esc(e.start) + "</span>"
+              : "") +
+            "<span>" +
+            esc(e.title) +
+            "</span></span>",
+        )
+        .join("") +
+      (items.length > 3
+        ? '<span class="cell-more">+' + (items.length - 3) + " more</span>"
+        : "") +
+      "</span>"
     );
   }
 
@@ -701,9 +731,7 @@
         list.map(eventMarkup).join("") +
         "</div></div>";
     }
-    return out
-      ? '<div class="eyebrow">Coming up</div>' + out
-      : "";
+    return out ? '<div class="eyebrow">Coming up</div>' + out : "";
   }
 
   function renderHome() {
@@ -787,7 +815,9 @@
           .slice(0, 3)
           .map(() => "<i></i>")
           .join("") +
-        "</span></button>";
+        "</span>" +
+        cellEvents(items) +
+        "</button>";
     }
     return out + "</div></section>";
   }
@@ -798,7 +828,7 @@
       b.addEventListener("click", () => {
         selected = parseDate(b.dataset.date);
         cursor = new Date(selected);
-        view = "month";
+        if (view === "all") view = "month";
         renderCalendar();
         renderPanel();
         renderHome();
@@ -807,6 +837,13 @@
   }
 
   function renderCalendar(settleTransition = false) {
+    // Explicit view controls supersede the old gesture-driven FLIP renderer.
+    // Rebuilding a 42-cell grid is inexpensive and avoids animating an entire
+    // workspace of event cards during keyboard or month navigation.
+    if (window.Calex) {
+      renderCalendarContent();
+      return;
+    }
     const screen = $("calendarScreen"),
       sc = $("calendarScroller"),
       grid = $("dateGrid");
@@ -1075,6 +1112,11 @@
     const screen = $("calendarScreen");
     if (!settleTransition) screen.classList.remove("is-view-settling");
     screen.classList.toggle("panel-open", view !== "all");
+    document
+      .querySelectorAll("[data-view]")
+      .forEach((b) =>
+        b.setAttribute("aria-pressed", String(b.dataset.view === view)),
+      );
     $("monthTitle").textContent = fmtDate(cursor, {
       month: "long",
       year: "numeric",
@@ -1147,12 +1189,15 @@
             .slice(0, 3)
             .map(() => "<i></i>")
             .join("") +
-          "</span></button>";
+          "</span>" +
+          cellEvents(items) +
+          "</button>";
       }
       grid.innerHTML = out;
       bindDateCells(grid);
     }
     renderPanel();
+    window.dispatchEvent(new CustomEvent("calex:render"));
   }
 
   function renderPanel() {
@@ -1182,6 +1227,23 @@
       .querySelectorAll(".nav-btn")
       .forEach((b) => b.classList.toggle("active", b.dataset.screen === name));
     if (name === "calendar") renderCalendar();
+    const titles = {
+      home: "Your day, at a glance",
+      calendar: "A little space for everything",
+      agenda: "What's on the horizon",
+      settings: "Make yourself at home",
+      auth: "Your Calex account",
+      about: "About Calex",
+      privacy: "Your privacy matters",
+      terms: "Terms of service",
+    };
+    if ($("workspaceTitle"))
+      $("workspaceTitle").textContent = titles[name] || "Calex";
+    document.querySelectorAll(".nav-btn").forEach((b) => {
+      if (b.dataset.screen === name) b.setAttribute("aria-current", "page");
+      else b.removeAttribute("aria-current");
+    });
+    window.dispatchEvent(new CustomEvent("calex:screen", { detail: name }));
   }
   document
     .querySelectorAll(".nav-btn")
@@ -1195,7 +1257,9 @@
   });
   $("authBack").addEventListener("click", () => switchScreen("settings"));
   document.querySelectorAll("[data-legal-screen]").forEach((button) => {
-    button.addEventListener("click", () => switchScreen(button.dataset.legalScreen));
+    button.addEventListener("click", () =>
+      switchScreen(button.dataset.legalScreen),
+    );
   });
   document.querySelectorAll("[data-legal-back]").forEach((button) => {
     button.addEventListener("click", () => switchScreen("settings"));
@@ -1203,6 +1267,8 @@
 
   function showToast(msg, action) {
     const t = $("toast");
+    if (!storageAvailable && /^Event (added|updated|restored)/.test(msg))
+      msg += " · session only; export a backup";
     t.textContent = msg;
     if (action) {
       const b = document.createElement("button");
@@ -1217,7 +1283,10 @@
     }
     t.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove("show"), action ? 6000 : 2600);
+    toastTimer = setTimeout(
+      () => t.classList.remove("show"),
+      action ? 6000 : 2600,
+    );
   }
 
   function openModal(mode) {
@@ -1227,6 +1296,8 @@
     $("quickForm").hidden = mode !== "quick";
     $("eventForm").hidden = mode === "quick";
     $("modalBackdrop").classList.add("open");
+    $("modalBackdrop").setAttribute("aria-hidden", "false");
+    if ($("eventFeedback")) $("eventFeedback").textContent = "";
     if (mode === "quick") {
       $("quickText").value = "";
       $("quickPreview").textContent = "";
@@ -1236,6 +1307,7 @@
 
   function closeModal() {
     $("modalBackdrop").classList.remove("open");
+    $("modalBackdrop").setAttribute("aria-hidden", "true");
   }
 
   function setNormalDefaults(e) {
@@ -1248,6 +1320,7 @@
     $("eventRepeat").value = e?.repeat || "none";
     $("eventPeople").value = e?.people || "";
     $("eventNotes").value = e?.notes || "";
+    $("eventCategory").value = e ? categoryOf(e) : "personal";
     $("eventForm").dataset.editId = e?.id || "";
   }
 
@@ -1255,6 +1328,7 @@
     switchScreen("calendar");
     openModal("normal");
     setNormalDefaults(e);
+    setTimeout(() => $("eventTitle").focus(), 0);
     $("modalTitle").textContent = e ? "Edit event" : "New event";
     if (e) {
       const old = $("eventForm").querySelector(".delete-event");
@@ -1570,6 +1644,7 @@
       location: $("eventLocation").value.trim(),
       people: $("eventPeople").value.trim(),
       notes: $("eventNotes").value.trim(),
+      category: $("eventCategory").value,
       done: old?.done || false,
       tag:
         $("eventRepeat").value !== "none"
@@ -1590,6 +1665,8 @@
     }
     if (!validEventTimes(item.start, item.end)) {
       showToast("End time must be later than start time.");
+      $("eventFeedback").textContent =
+        "End time must be later than start time.";
       $("eventEnd").focus();
       return;
     }
@@ -1615,6 +1692,12 @@
             : id === "prevMonth"
               ? -1
               : 1;
+      if (view === "week" && (id === "prevMonth" || id === "nextMonth")) {
+        selected = addDays(selected, amount * 7);
+        cursor = new Date(selected);
+        renderCalendar();
+        return;
+      }
       cursor = new Date(
         cursor.getFullYear(),
         cursor.getMonth() + amount,
@@ -2092,6 +2175,18 @@
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeModal();
   });
+  // Keep long-running installed sessions correct across midnight.
+  function refreshToday() {
+    const now = new Date();
+    if (dateKey(now) !== dateKey(today)) {
+      today.setTime(now.getTime());
+      renderAll();
+    }
+  }
+  setInterval(refreshToday, 60000);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") refreshToday();
+  });
   /* Local profile, time-zone preference, appearance, and calendar export */
   const settingsKey = "daymark-settings-v1";
   const deviceTimezone = () => {
@@ -2106,7 +2201,10 @@
     location: "",
     timezoneMode: "auto",
     timezone: deviceTimezone(),
-    dark: !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches),
+    dark: !!(
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    ),
   };
   let appSettings = {
     ...defaultSettings,
@@ -2191,15 +2289,20 @@
   }
 
   function timezoneDescription(tz) {
-    const city = tz === "UTC" ? "UTC" : (tz.split("/").pop() || tz).replace(/_/g, " ");
-    let longName = tz, offset = "";
+    const city =
+      tz === "UTC" ? "UTC" : (tz.split("/").pop() || tz).replace(/_/g, " ");
+    let longName = tz,
+      offset = "";
     try {
       const parts = new Intl.DateTimeFormat(undefined, {
-        timeZone: tz, timeZoneName: "long"
+        timeZone: tz,
+        timeZoneName: "long",
       }).formatToParts(new Date());
       longName = parts.find((p) => p.type === "timeZoneName")?.value || tz;
       const offsetParts = new Intl.DateTimeFormat("en", {
-        timeZone: tz, timeZoneName: "longOffset", hour: "2-digit"
+        timeZone: tz,
+        timeZoneName: "longOffset",
+        hour: "2-digit",
       }).formatToParts(new Date());
       offset = offsetParts.find((p) => p.type === "timeZoneName")?.value || "";
       if (offset === "GMT") offset = "UTC+00:00";
@@ -2213,7 +2316,9 @@
     const zoneInfo = timezoneDescription(tz);
     $("timezoneSummary").textContent =
       (appSettings.timezoneMode === "auto" ? "Automatic · " : "Manual · ") +
-      zoneInfo.city + " · " + (zoneInfo.offset || zoneInfo.longName);
+      zoneInfo.city +
+      " · " +
+      (zoneInfo.offset || zoneInfo.longName);
     $("timezoneAuto").setAttribute(
       "aria-pressed",
       String(appSettings.timezoneMode === "auto"),
@@ -2225,8 +2330,18 @@
     $("timezoneSearchWrap").hidden = appSettings.timezoneMode !== "manual";
     $("timezoneHelp").textContent =
       appSettings.timezoneMode === "auto"
-        ? "Using " + tz + " (" + zoneInfo.longName + (zoneInfo.offset ? ", " + zoneInfo.offset : "") + "). This follows your device setting automatically."
-        : "Selected: " + tz + " (" + zoneInfo.longName + (zoneInfo.offset ? ", " + zoneInfo.offset : "") + "). Save to apply. Existing event dates and times are not converted.";
+        ? "Using " +
+          tz +
+          " (" +
+          zoneInfo.longName +
+          (zoneInfo.offset ? ", " + zoneInfo.offset : "") +
+          "). This follows your device setting automatically."
+        : "Selected: " +
+          tz +
+          " (" +
+          zoneInfo.longName +
+          (zoneInfo.offset ? ", " + zoneInfo.offset : "") +
+          "). Save to apply. Existing event dates and times are not converted.";
     populateTimezoneOptions($("timezoneSearch").value || "");
   }
 
@@ -2269,7 +2384,12 @@
         populateTimezoneOptions($("timezoneSearch").value);
         const info = timezoneDescription(z);
         $("timezoneHelp").textContent =
-          "Selected: " + z + " (" + info.longName + (info.offset ? ", " + info.offset : "") + "). Save to apply.";
+          "Selected: " +
+          z +
+          " (" +
+          info.longName +
+          (info.offset ? ", " + info.offset : "") +
+          "). Save to apply.";
       });
       root.appendChild(b);
     });
@@ -2340,17 +2460,24 @@
     document.body.classList.toggle("settings-dark", enabled);
     $("appearanceToggle").setAttribute("aria-checked", String(enabled));
     $("appearanceSwitch").setAttribute("data-enabled", String(enabled));
-    $("appearanceToggle").setAttribute("aria-label", "Dark appearance " + (enabled ? "on" : "off"));
+    $("appearanceToggle").setAttribute(
+      "aria-label",
+      "Dark appearance " + (enabled ? "on" : "off"),
+    );
     document.documentElement.style.colorScheme = enabled ? "dark" : "light";
     document.documentElement.style.backgroundColor = enabled ? "#101512" : "";
     document.body.style.background = enabled ? "#101512" : "";
     const themeColor = document.querySelector('meta[name="theme-color"]');
-    if (themeColor) themeColor.setAttribute("content", enabled ? "#101512" : "#ffffff");
+    if (themeColor)
+      themeColor.setAttribute("content", enabled ? "#101512" : "#ffffff");
+    document.documentElement.dataset.theme = enabled ? "dark" : "light";
+    window.dispatchEvent(new CustomEvent("calex:theme", { detail: enabled }));
   }
   $("appearanceToggle").addEventListener("click", () => {
     appSettings.dark = !appSettings.dark;
     applyAppearance();
-    if (!saveAppSettings()) showToast("Appearance changed for this session, but could not be saved.");
+    if (!saveAppSettings())
+      showToast("Appearance changed for this session, but could not be saved.");
   });
   $("goToday").addEventListener("click", () => {
     const n = new Date();
@@ -2420,7 +2547,10 @@
       const dup = res.events.length - added;
       showToast(
         added
-          ? "Imported " + added + " event" + (added === 1 ? "" : "s") +
+          ? "Imported " +
+              added +
+              " event" +
+              (added === 1 ? "" : "s") +
               (dup ? " · " + dup + " duplicates skipped" : "") +
               (res.truncated ? " · limit reached" : "")
           : "Nothing new to import.",
@@ -2449,6 +2579,69 @@
     );
   }
 
+  window.Calex = {
+    onDay,
+    eventMarkup,
+    bindEventActions,
+    esc,
+    dateKey,
+    parseDate,
+    addDays,
+    categoryOf,
+    occurs: eventOccurs,
+    editEvent: openNormal,
+    selected: () => new Date(selected),
+    cursor: () => new Date(cursor),
+    events: () => events.map((e) => ({ ...e })),
+    getView: () => view,
+    storageAvailable: () => storageAvailable,
+    syncStatus: () => ({ signedIn: !!authUser, state: syncState }),
+    selectDate: (value) => {
+      if (!validEventDate(value)) return;
+      selected = parseDate(value);
+      cursor = new Date(selected);
+      if (view === "all") view = "month";
+      switchScreen("calendar");
+      renderAll();
+    },
+    setView: (value) => {
+      if (!["month", "week", "all"].includes(value)) return;
+      view = value;
+      switchScreen("calendar");
+      renderCalendar();
+    },
+    refresh: renderAll,
+    switchScreen,
+    newEvent: () => openNormal(),
+    quickAdd: () => openModal("quick"),
+    draftEvent: (draft) => {
+      openNormal();
+      $("eventTitle").value = draft.title;
+      $("eventDate").value = draft.date;
+      $("eventStart").value = draft.start || "";
+      $("eventEnd").value = draft.end || "";
+      $("eventLocation").value = draft.location || "";
+      $("eventCategory").value = ["personal", "work", "wellbeing"].includes(
+        draft.category,
+      )
+        ? draft.category
+        : "personal";
+      $("eventRepeat").value = [
+        "none",
+        "daily",
+        "weekly",
+        "fortnightly",
+        "monthly",
+        "yearly",
+      ].includes(draft.repeat)
+        ? draft.repeat
+        : "none";
+    },
+    showToast,
+    validEventDate,
+    validEventTimes,
+    parseNatural,
+  };
   initSupabase();
   renderAuth();
   renderProfile();

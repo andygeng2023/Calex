@@ -2,7 +2,7 @@ name: Quality checks
 
 on:
   push:
-    branches: [main, 'chore/**', 'refactor/**']
+    branches: [main, "chore/**", "refactor/**", "feat/**"]
   pull_request:
   workflow_dispatch:
 
@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 22
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Format source files
         run: npm run format
       - name: Verify formatting
@@ -28,6 +28,7 @@ jobs:
       - name: Validate JavaScript syntax
         run: |
           node --check app.js
+          node --check workspace.js
           node --check sync.js
           node --check ics.js
           node --check sw.js

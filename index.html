@@ -1,441 +1,1249 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#ffffff">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="./icon.svg"><meta name="description" content="A calm, simple calendar for your days.">
-  <title>Calex</title>
-  <link rel="stylesheet" href="styles.css?v=26">
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icon-192.png" />
+    <meta
+      name="description"
+      content="Calex: a calm, offline-ready calendar with month and week views, an agenda, and an optional planning assistant."
+    />
+    <title>Calex</title>
+    <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+    <link
+      href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=27" />
+    <link rel="stylesheet" href="workspace.css?v=27" />
+  </head>
 
-<body>
-<div class="app">
-  <header class="topbar">
-    <div class="brand">Calex</div>
-    <div class="top-actions" aria-hidden="true"></div>
-  </header>
-  
-  <main>
-  <section id="homeScreen" class="screen active">
-    <div class="day-hero">
-      <div class="weekday" id="heroWeekday">Monday</div>
-      <div class="long-date" id="heroDate"></div></div><h2 class="section-heading">Today</h2>
-    <div id="todayEvents"></div></section>
-  
-  <section id="calendarScreen" class="screen">
-    <div class="search-wrap">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="7"/>
-        <path d="m16 16 4 4"/>
-      </svg>
-      <input id="searchInput" class="search" placeholder="Search dates or events…" autocomplete="off" aria-label="Search dates or events">
-    </div>
-    <div id="searchResults" class="search-results"></div>
-    <div class="calendar-toolbar">
-      <div class="month-title" id="monthTitle">October 2026</div>
-      <div class="month-controls">
-        <button id="goToday" class="today-btn" type="button" aria-label="Go to today">Today</button>
-        <button id="prevYear" aria-label="Previous year" title="Previous year">
-          <svg viewBox="0 0 24 24">
-            <path d="m11 5-7 7 7 7M20 5l-7 7 7 7"/>
-          </svg>
-        </button>
-        <button id="prevMonth" aria-label="Previous month" title="Previous month">
-          <svg viewBox="0 0 24 24">
-            <path d="m15 18-6-6 6-6"/>
-          </svg>
-        </button>
-        <button id="nextMonth" aria-label="Next month" title="Next month">
-          <svg viewBox="0 0 24 24">
-            <path d="m9 18 6-6-6-6"/>
-          </svg>
-        </button>
-        <button id="nextYear" aria-label="Next year" title="Next year">
-          <svg viewBox="0 0 24 24">
-            <path d="m13 5 7 7-7 7M4 5l7 7-7 7"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-    <div id="calendarScroller" class="calendar-scroller">
-      <div class="weekdays">
-        <span>Mon</span>
-        <span>Tue</span>
-        <span>Wed</span>
-        <span>Thu</span>
-        <span>Fri</span>
-        <span>Sat</span>
-        <span>Sun</span>
-      </div>
-      <div id="dateGrid" class="date-grid"></div>
-    </div>
-    
-    <section id="selectedPanel" class="selected-panel">
-      <div class="panel-handle">
-        <span class="handle-grip" aria-hidden="true"></span>
-      </div>
-      <div class="panel-head">
-        <h2 id="panelDate">Selected day</h2>
-        <div class="panel-actions">
-          <button class="panel-text-btn" id="panelQuick" aria-label="Quick event">Quick event</button>
-          <button class="panel-text-btn primary-action" id="panelAdd" aria-label="Add event">Add event</button>
+  <body>
+    <a class="skip-link" href="#mainContent">Skip to calendar</a>
+    <div class="app">
+      <header class="topbar">
+        <div class="header-copy">
+          <span class="header-eyebrow">YOUR TIME, WELL SPENT</span>
+          <h1 id="workspaceTitle">Your day, at a glance</h1>
         </div>
-      </div>
-      <div id="panelEvents">
-      </div>
-    </section>
-  </section>
-  
-  <section id="authScreen" class="screen auth-screen" aria-label="Sign in or create account">
-    <button class="auth-back" id="authBack" type="button" aria-label="Back to settings">‹ <span>Settings</span></button>
-    <div class="auth-screen-content">
-      <div class="auth-brand-mark" aria-hidden="true">C</div>
-      <h1 class="auth-screen-title">Your Calex account</h1>
-      <p class="auth-screen-intro">Sign in or create an account to securely sync your calendar across devices.</p>
-    <div class="auth-card" id="authCard">
-      <div class="auth-status" id="authStatus" role="status">Not signed in · using this device</div>
-      <form id="authForm">
-        <label for="authEmail">Email</label>
-        <input id="authEmail" type="email" autocomplete="email" required placeholder="you@example.com">
-        <label for="authPassword">Password</label>
-        <input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters">
-        <div class="auth-actions">
-          <button class="save-settings" type="submit" id="authSubmit">Sign in</button>
-          <button class="save-settings secondary-auth" type="button" id="authSignup">Create account</button>
+        <div class="top-actions">
+          <span id="connectionStatus" class="connection-status" role="status"
+            >On this device</span
+          >
+          <button
+            id="themeToggle"
+            class="icon-btn"
+            aria-label="Toggle appearance"
+            title="Toggle appearance"
+          >
+            <i data-lucide="moon"></i>
+          </button>
+          <button id="openAssistant" class="secondary assistant-trigger">
+            <i data-lucide="sparkles"></i><span>Ask assistant</span>
+          </button>
+          <button id="globalAdd" class="primary">
+            <i data-lucide="plus"></i><span>New event</span><kbd>N</kbd>
+          </button>
         </div>
-        <button class="save-settings google-auth" type="button" id="authGoogle">Continue with Google</button>
-        <button class="auth-link" type="button" id="authForgot">Forgot password?</button>
+      </header>
+
+      <main id="mainContent" tabindex="-1">
+        <div
+          id="runtimeNotice"
+          class="runtime-notice"
+          role="status"
+          hidden
+        ></div>
+        <section id="homeScreen" class="screen active">
+          <div class="day-hero">
+            <div>
+              <span class="header-eyebrow">MAKE ROOM FOR WHAT MATTERS</span>
+              <div class="weekday" id="heroWeekday">Monday</div>
+              <div class="long-date" id="heroDate"></div>
+            </div>
+            <button id="homeQuickAdd" class="secondary">
+              <i data-lucide="zap"></i>Quick add
+            </button>
+          </div>
+          <div id="daySummary" class="day-summary"></div>
+          <h2 class="section-heading">Today</h2>
+          <div id="todayEvents"></div>
+        </section>
+
+        <section id="calendarScreen" class="screen">
+          <div class="search-wrap">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="m16 16 4 4" />
+            </svg>
+            <input
+              id="searchInput"
+              class="search"
+              placeholder="Search dates or events…"
+              autocomplete="off"
+              aria-label="Search dates or events"
+            />
+          </div>
+          <div id="searchResults" class="search-results"></div>
+          <div class="calendar-toolbar">
+            <div class="month-title" id="monthTitle">October 2026</div>
+            <div class="view-segment" role="group" aria-label="Calendar view">
+              <button type="button" data-view="month" aria-pressed="true">
+                Month
+              </button>
+              <button type="button" data-view="week" aria-pressed="false">
+                Week
+              </button>
+              <button type="button" data-view="all" aria-pressed="false">
+                Year
+              </button>
+            </div>
+            <button
+              id="filterCalendars"
+              class="icon-btn"
+              aria-label="Filter calendars"
+            >
+              <i data-lucide="sliders-horizontal"></i>
+            </button>
+            <div class="month-controls">
+              <button
+                id="goToday"
+                class="today-btn"
+                type="button"
+                aria-label="Go to today"
+              >
+                Today
+              </button>
+              <button
+                id="prevYear"
+                aria-label="Previous year"
+                title="Previous year"
+              >
+                <svg viewBox="0 0 24 24">
+                  <path d="m11 5-7 7 7 7M20 5l-7 7 7 7" />
+                </svg>
+              </button>
+              <button
+                id="prevMonth"
+                aria-label="Previous month"
+                title="Previous month"
+              >
+                <svg viewBox="0 0 24 24">
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+              </button>
+              <button id="nextMonth" aria-label="Next month" title="Next month">
+                <svg viewBox="0 0 24 24">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </button>
+              <button id="nextYear" aria-label="Next year" title="Next year">
+                <svg viewBox="0 0 24 24">
+                  <path d="m13 5 7 7-7 7M4 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="calendarScroller" class="calendar-scroller">
+            <div class="weekdays">
+              <span>Mon</span>
+              <span>Tue</span>
+              <span>Wed</span>
+              <span>Thu</span>
+              <span>Fri</span>
+              <span>Sat</span>
+              <span>Sun</span>
+            </div>
+            <div id="dateGrid" class="date-grid"></div>
+            <div id="weekTimeline" class="week-timeline" hidden></div>
+          </div>
+
+          <section id="selectedPanel" class="selected-panel">
+            <div class="panel-handle">
+              <span class="handle-grip" aria-hidden="true"></span>
+            </div>
+            <div class="panel-head">
+              <h2 id="panelDate">Selected day</h2>
+              <div class="panel-actions">
+                <button
+                  class="panel-text-btn"
+                  id="panelQuick"
+                  aria-label="Quick event"
+                >
+                  Quick event
+                </button>
+                <button
+                  class="panel-text-btn primary-action"
+                  id="panelAdd"
+                  aria-label="Add event"
+                >
+                  Add event
+                </button>
+              </div>
+            </div>
+            <div id="panelEvents"></div>
+          </section>
+        </section>
+        <section
+          id="agendaScreen"
+          class="screen agenda-screen"
+          aria-label="Upcoming agenda"
+        >
+          <div class="agenda-heading">
+            <div>
+              <span class="header-eyebrow">LOOKING AHEAD</span>
+              <h2>Your next 30 days</h2>
+              <p>A little perspective for everything on your calendar.</p>
+            </div>
+            <button id="agendaToday" class="secondary">Back to today</button>
+          </div>
+          <div id="agendaList"></div>
+        </section>
+
+        <section
+          id="authScreen"
+          class="screen auth-screen"
+          aria-label="Sign in or create account"
+        >
+          <button
+            class="auth-back"
+            id="authBack"
+            type="button"
+            aria-label="Back to settings"
+          >
+            ‹ <span>Settings</span>
+          </button>
+          <div class="auth-screen-content">
+            <div class="auth-brand-mark" aria-hidden="true">C</div>
+            <h1 class="auth-screen-title">Your Calex account</h1>
+            <p class="auth-screen-intro">
+              Sign in or create an account to securely sync your calendar across
+              devices.
+            </p>
+            <div class="auth-card" id="authCard">
+              <div class="auth-status" id="authStatus" role="status">
+                Not signed in · using this device
+              </div>
+              <form id="authForm">
+                <label for="authEmail">Email</label>
+                <input
+                  id="authEmail"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  placeholder="you@example.com"
+                />
+                <label for="authPassword">Password</label>
+                <input
+                  id="authPassword"
+                  type="password"
+                  autocomplete="current-password"
+                  minlength="6"
+                  required
+                  placeholder="At least 6 characters"
+                />
+                <div class="auth-actions">
+                  <button class="save-settings" type="submit" id="authSubmit">
+                    Sign in
+                  </button>
+                  <button
+                    class="save-settings secondary-auth"
+                    type="button"
+                    id="authSignup"
+                  >
+                    Create account
+                  </button>
+                </div>
+                <button
+                  class="save-settings google-auth"
+                  type="button"
+                  id="authGoogle"
+                >
+                  Continue with Google
+                </button>
+                <button class="auth-link" type="button" id="authForgot">
+                  Forgot password?
+                </button>
+              </form>
+              <button
+                class="save-settings"
+                type="button"
+                id="authSignout"
+                hidden
+              >
+                Sign out
+              </button>
+            </div>
+
+            <p class="auth-privacy-note">
+              Your calendar syncs only when you are signed in. You can keep
+              using Calex on this device without an account.
+            </p>
+          </div>
+        </section>
+
+        <section
+          id="settingsScreen"
+          class="screen settings-page"
+          aria-label="Settings"
+        >
+          <header class="settings-header">
+            <div class="settings-eyebrow">CALEX PREFERENCES</div>
+            <h1 class="settings-title">Settings</h1>
+            <p class="settings-intro">Make Calex work the way you do.</p>
+          </header>
+
+          <section
+            class="settings-section profile-section"
+            aria-labelledby="profileSectionTitle"
+          >
+            <h2 class="settings-section-heading" id="profileSectionTitle">
+              Your profile
+            </h2>
+            <button
+              class="profile-card"
+              id="profileEdit"
+              type="button"
+              aria-label="Edit profile"
+              aria-expanded="false"
+              aria-controls="accountDetail"
+            >
+              <span class="profile-avatar" id="profileAvatar" aria-hidden="true"
+                >A</span
+              >
+              <span class="profile-copy">
+                <span class="profile-name" id="profileName">Your name</span>
+                <span class="profile-location" id="profileLocation"
+                  >Add your location</span
+                >
+                <span class="profile-edit-hint">Edit profile details</span>
+              </span>
+              <span class="settings-chevron" aria-hidden="true">›</span>
+            </button>
+            <div
+              class="settings-detail profile-editor"
+              id="accountDetail"
+              hidden
+            >
+              <label for="settingsName">Display name</label>
+              <input
+                id="settingsName"
+                maxlength="80"
+                placeholder="Your name"
+                autocomplete="name"
+              />
+              <label for="settingsLocation">Location</label>
+              <input
+                id="settingsLocation"
+                maxlength="120"
+                placeholder="City or region"
+                autocomplete="address-level2"
+              />
+              <p class="settings-help">
+                These details personalize your calendar on this device.
+              </p>
+              <div class="settings-inline">
+                <button type="button" class="save-settings" id="saveProfile">
+                  Save profile
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section
+            class="settings-section"
+            aria-labelledby="accountSectionTitle"
+          >
+            <h2 class="settings-section-heading" id="accountSectionTitle">
+              Account & sync
+            </h2>
+            <p class="settings-section-description">
+              Keep your calendar and preferences available across devices.
+            </p>
+            <button class="auth-cta-button" id="settingsSignIn" type="button">
+              <span class="auth-cta-icon" aria-hidden="true">↗</span>
+              <span class="auth-cta-copy">
+                <span class="auth-cta-title" id="settingsSignInTitle"
+                  >Sign in or create account</span
+                >
+                <span class="auth-cta-subtitle" id="settingsSignInSubtitle"
+                  >Securely sync your calendar across devices</span
+                >
+              </span>
+              <span class="auth-cta-arrow" aria-hidden="true">›</span>
+            </button>
+            <p class="settings-security-note">
+              <span class="settings-status-dot" aria-hidden="true"></span
+              ><span id="settingsSyncNote"
+                >Your events stay on this device until you sign in.</span
+              >
+            </p>
+            <button class="sync-now-btn" id="syncNow" type="button" hidden>
+              Sync now
+            </button>
+          </section>
+
+          <section
+            class="settings-section"
+            aria-labelledby="preferencesSectionTitle"
+          >
+            <h2 class="settings-section-heading" id="preferencesSectionTitle">
+              Preferences
+            </h2>
+            <div class="settings-group">
+              <button
+                class="settings-row"
+                id="timezoneToggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="timezoneDetail"
+              >
+                <span class="settings-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="9" />
+                    <path
+                      d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"
+                    />
+                  </svg>
+                </span>
+                <span class="settings-row-copy">
+                  <span class="settings-row-title">Time zone</span>
+                  <span class="settings-row-sub" id="timezoneSummary"
+                    >Automatic · device time zone</span
+                  >
+                </span>
+                <span class="settings-chevron" aria-hidden="true">›</span>
+              </button>
+              <div class="settings-detail" id="timezoneDetail" hidden>
+                <div class="settings-label">Time zone</div>
+                <div
+                  class="timezone-mode"
+                  role="group"
+                  aria-label="Time zone mode"
+                >
+                  <button
+                    type="button"
+                    id="timezoneAuto"
+                    class="timezone-mode-button"
+                    aria-pressed="true"
+                  >
+                    Automatic
+                  </button>
+                  <button
+                    type="button"
+                    id="timezoneManual"
+                    class="timezone-mode-button"
+                    aria-pressed="false"
+                  >
+                    Choose time zone
+                  </button>
+                </div>
+                <div id="timezoneSearchWrap" hidden>
+                  <label for="timezoneSearch">Search by city or region</label>
+                  <input
+                    id="timezoneSearch"
+                    type="search"
+                    placeholder="Try London, Tokyo, or UTC…"
+                    autocomplete="off"
+                  />
+                  <div
+                    id="timezoneResults"
+                    class="timezone-results"
+                    role="listbox"
+                    aria-label="Matching time zones"
+                  ></div>
+                </div>
+                <p class="settings-help" id="timezoneHelp">
+                  Automatic mode follows the time zone configured on this
+                  device.
+                </p>
+                <div class="settings-inline">
+                  <button type="button" class="save-settings" id="saveTimezone">
+                    Save time zone
+                  </button>
+                </div>
+              </div>
+              <button
+                class="settings-row"
+                id="appearanceToggle"
+                type="button"
+                role="switch"
+                aria-checked="false"
+              >
+                <span class="settings-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path
+                      d="M20.5 14A8.5 8.5 0 0 1 10 3.5 8.5 8.5 0 1 0 20.5 14Z"
+                    />
+                  </svg>
+                </span>
+                <span class="settings-row-copy">
+                  <span class="settings-row-title">Dark appearance</span>
+                  <span class="settings-row-sub"
+                    >Adjust the interface for low-light environments</span
+                  >
+                </span>
+                <span
+                  class="settings-switch"
+                  id="appearanceSwitch"
+                  aria-hidden="true"
+                  ><span></span
+                ></span>
+              </button>
+            </div>
+          </section>
+
+          <section class="settings-section" aria-labelledby="dataSectionTitle">
+            <h2 class="settings-section-heading" id="dataSectionTitle">
+              Your data
+            </h2>
+            <div class="settings-group">
+              <button class="settings-row" id="exportCalendar" type="button">
+                <span class="settings-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4" />
+                  </svg>
+                </span>
+                <span class="settings-row-copy">
+                  <span class="settings-row-title">Export calendar</span>
+                  <span class="settings-row-sub"
+                    >Download a portable .ics calendar file</span
+                  >
+                </span>
+                <span class="settings-chevron" aria-hidden="true">›</span>
+              </button>
+              <button class="settings-row" id="importCalendar" type="button">
+                <span class="settings-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 15V3m-5 5 5-5 5 5M4 17v4h16v-4" />
+                  </svg>
+                </span>
+                <span class="settings-row-copy">
+                  <span class="settings-row-title">Import calendar</span>
+                  <span class="settings-row-sub"
+                    >Add events from an .ics file (Google, Outlook, Apple)</span
+                  >
+                </span>
+                <span class="settings-chevron" aria-hidden="true">›</span>
+              </button>
+              <input
+                type="file"
+                id="importFile"
+                accept=".ics,text/calendar"
+                hidden
+              />
+            </div>
+            <p class="settings-footnote">
+              When signed out, your calendar is stored on this device. Signing
+              in enables account-based sync. You can export a copy of your
+              events at any time.
+            </p>
+          </section>
+
+          <section class="settings-section" aria-labelledby="aboutSectionTitle">
+            <h2 class="settings-section-heading" id="aboutSectionTitle">
+              About &amp; legal
+            </h2>
+            <div class="settings-group">
+              <button
+                class="settings-row"
+                type="button"
+                data-legal-screen="about"
+              >
+                <span class="settings-icon" aria-hidden="true">ⓘ</span>
+                <span class="settings-row-copy"
+                  ><span class="settings-row-title">About Calex</span
+                  ><span class="settings-row-sub"
+                    >What Calex does and how to get help</span
+                  ></span
+                >
+                <span class="settings-chevron" aria-hidden="true">›</span>
+              </button>
+              <button
+                class="settings-row"
+                type="button"
+                data-legal-screen="terms"
+              >
+                <span class="settings-icon" aria-hidden="true">§</span>
+                <span class="settings-row-copy"
+                  ><span class="settings-row-title">Terms of service</span
+                  ><span class="settings-row-sub"
+                    >Rules and limitations for using Calex</span
+                  ></span
+                >
+                <span class="settings-chevron" aria-hidden="true">›</span>
+              </button>
+              <button
+                class="settings-row"
+                type="button"
+                data-legal-screen="privacy"
+              >
+                <span class="settings-icon" aria-hidden="true">⌑</span>
+                <span class="settings-row-copy"
+                  ><span class="settings-row-title">Privacy policy</span
+                  ><span class="settings-row-sub"
+                    >How calendar and account data are handled</span
+                  ></span
+                >
+                <span class="settings-chevron" aria-hidden="true">›</span>
+              </button>
+            </div>
+          </section>
+        </section>
+
+        <section
+          id="aboutScreen"
+          class="screen legal-screen"
+          aria-label="About Calex"
+        >
+          <button class="legal-back" type="button" data-legal-back>
+            ‹ <span>Settings</span>
+          </button>
+          <div class="legal-content">
+            <p class="settings-eyebrow">ABOUT</p>
+            <h1>Calex</h1>
+            <p class="legal-lead">
+              A calm, straightforward calendar for keeping track of your days.
+            </p>
+            <h2>What you can do</h2>
+            <p>
+              Create and manage events, browse dates, search your calendar, set
+              a preferred time zone, and export events as an iCalendar (.ics)
+              file.
+            </p>
+            <h2>Your calendar, your choice</h2>
+            <p>
+              You can use Calex on one device without signing in. Signing in
+              enables account-based synchronisation where configured. You can
+              export a copy of your events from Settings.
+            </p>
+            <h2>Help and feedback</h2>
+            <p>
+              Report a bug or request an improvement through the
+              <a
+                href="https://github.com/andygeng2023/Calex/issues"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Calex GitHub issue tracker</a
+              >. Do not include passwords, private event details, or other
+              sensitive information in a public issue.
+            </p>
+            <p class="legal-updated">Last updated: 11 October 2026</p>
+          </div>
+        </section>
+
+        <section
+          id="termsScreen"
+          class="screen legal-screen"
+          aria-label="Terms of service"
+        >
+          <button class="legal-back" type="button" data-legal-back>
+            ‹ <span>Settings</span>
+          </button>
+          <article class="legal-content">
+            <p class="settings-eyebrow">LEGAL</p>
+            <h1>Terms of service</h1>
+            <p class="legal-updated">Effective date: 11 October 2026</p>
+            <p>
+              These terms explain the basic conditions for using Calex. By using
+              the app, you agree to these terms. If you do not agree, stop using
+              the app.
+            </p>
+            <h2>1. The service</h2>
+            <p>
+              Calex provides calendar and event-management features, including
+              local storage, optional account sign-in and synchronisation,
+              time-zone preferences, and calendar export. Features may change,
+              be unavailable, or be discontinued.
+            </p>
+            <h2>2. Your information and responsibilities</h2>
+            <p>
+              You are responsible for the accuracy of the events you enter and
+              for keeping your account credentials secure. Do not use Calex as
+              the only copy of important information. Export or otherwise back
+              up events you cannot afford to lose.
+            </p>
+            <h2>3. Acceptable use</h2>
+            <p>
+              Do not misuse the service, attempt to gain unauthorised access,
+              interfere with its operation, or use it in a way that violates
+              applicable law or another person's rights.
+            </p>
+            <h2>4. Availability and data loss</h2>
+            <p>
+              Calex is provided on an “as available” basis. We do not guarantee
+              uninterrupted service, error-free operation, successful
+              synchronisation, or permanent preservation of data. Device
+              failure, browser settings, clearing site data, account issues, or
+              service outages may affect access to events.
+            </p>
+            <h2>5. No professional advice or emergency service</h2>
+            <p>
+              Calex is a general-purpose organisational tool. It is not a
+              medical, legal, financial, or emergency service. You are
+              responsible for checking event details, reminders, dates, and
+              times that matter to you.
+            </p>
+            <h2>6. Limitation of liability</h2>
+            <p>
+              To the extent permitted by applicable law, Calex is not liable for
+              indirect or consequential loss, missed appointments, or loss of
+              calendar data arising from use of the service. Nothing in these
+              terms excludes rights or liability that cannot lawfully be
+              excluded.
+            </p>
+            <h2>7. Changes to these terms</h2>
+            <p>
+              These terms may be updated as the app changes. The effective date
+              above indicates the latest published version. Continued use after
+              an update means you accept the revised terms where the law
+              permits.
+            </p>
+            <h2>8. Contact</h2>
+            <p>
+              For support or questions about these terms, use the
+              <a
+                href="https://github.com/andygeng2023/Calex/issues"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Calex GitHub issue tracker</a
+              >. Do not post confidential information publicly.
+            </p>
+          </article>
+        </section>
+
+        <section
+          id="privacyScreen"
+          class="screen legal-screen"
+          aria-label="Privacy policy"
+        >
+          <button class="legal-back" type="button" data-legal-back>
+            ‹ <span>Settings</span>
+          </button>
+          <article class="legal-content">
+            <p class="settings-eyebrow">LEGAL</p>
+            <h1>Privacy policy</h1>
+            <p class="legal-updated">Effective date: 11 October 2026</p>
+            <p>
+              This policy describes how the current Calex app handles
+              information. The precise handling of account data can depend on
+              your sign-in and synchronisation configuration.
+            </p>
+            <h2>1. Information you enter</h2>
+            <p>
+              Calendar events may include titles, descriptions, dates, times,
+              locations, attendees or people, repeat settings, and notes.
+              Profile preferences may include a display name, location,
+              time-zone choice, and appearance preference. Avoid entering
+              information you do not want stored in your calendar.
+            </p>
+            <h2>2. Local storage</h2>
+            <p>
+              When you use Calex while signed out, events and preferences are
+              saved in your browser's local storage on that device. They are not
+              automatically available on another device. Clearing browser/site
+              data, using private browsing, or losing access to the device may
+              remove locally stored information. Use the export feature to keep
+              a separate copy.
+            </p>
+            <h2>3. Account and synchronisation</h2>
+            <p>
+              If you sign in and synchronisation is enabled, Calex uses Supabase
+              authentication and its configured database service to authenticate
+              your account and synchronise calendar events and preferences. This
+              means relevant data may be transmitted to and stored by that
+              service. Account-based data is associated with your account,
+              subject to the app's database access policies and service
+              configuration.
+            </p>
+            <h2>4. Time zone and device information</h2>
+            <p>
+              Automatic time-zone mode reads the time-zone identifier provided
+              by your browser or device. Calex uses it to display your
+              preference; the app does not need your precise GPS location for
+              this feature. If you enter a location in your profile or an event,
+              that text is stored as part of the relevant data.
+            </p>
+            <h2>5. Cookies, analytics, and third parties</h2>
+            <p>
+              Calex uses browser storage for app data and may load the Supabase
+              client library from a content delivery network. The app's
+              authentication and synchronisation features rely on Supabase when
+              configured. Third-party infrastructure may process technical
+              information under its own terms and policies; consult those
+              policies for details.
+            </p>
+            <h2>Optional AI assistant</h2>
+            <p>
+              The assistant loads Puter.js only when you enable it. Messages you
+              submit are sent to Puter and its AI provider. Calendar context is
+              off by default; turning it on shares upcoming event titles, dates,
+              times, and locations for the next 14 days. Descriptions, notes,
+              and people are not included. Chat history is kept only for this
+              session. Puter authentication, usage allowances, and charges are
+              separate from Calex. Review
+              <a
+                href="https://puter.com/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Puter's privacy policy</a
+              >
+              before sharing sensitive information. AI suggestions are not saved
+              until you review and confirm them in the event editor.
+            </p>
+            <h2>6. Sharing and disclosure</h2>
+            <p>
+              Calex does not provide a public calendar-sharing feature in the
+              current interface. Data may be processed by the infrastructure
+              providers required to operate sign-in and synchronisation, or
+              disclosed where required by law. Anyone with access to your
+              unlocked device or account may be able to access your calendar.
+            </p>
+            <h2>7. Retention and deletion</h2>
+            <p>
+              Local data remains in your browser until you remove it or the
+              browser clears it. Signed-in data may remain in the configured
+              cloud database until deleted through supported app or
+              account-management processes or by the service operator. Export
+              your events before clearing local data or changing accounts. If
+              you need account data deleted, contact the app maintainer through
+              the link below; do not include private event details in a public
+              request.
+            </p>
+            <h2>8. Your choices and security</h2>
+            <p>
+              You can use Calex without signing in, choose whether to enable
+              account synchronisation, export your calendar, and avoid entering
+              unnecessary personal information. No online service can guarantee
+              absolute security, so use a strong unique password and protect
+              access to your device.
+            </p>
+            <h2>9. Children and sensitive information</h2>
+            <p>
+              Do not use Calex to store highly sensitive information unless you
+              have assessed that it is appropriate for your circumstances and
+              the service configuration. If you are using Calex under a parent's
+              or organisation's guidance, follow their applicable rules.
+            </p>
+            <h2>10. Policy changes and contact</h2>
+            <p>
+              This policy may change as Calex evolves. For privacy questions or
+              deletion requests, contact the maintainer through the
+              <a
+                href="https://github.com/andygeng2023/Calex/issues"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Calex GitHub issue tracker</a
+              >. Public issues are visible to others, so request a private
+              contact route before sharing personal data.
+            </p>
+          </article>
+        </section>
+      </main>
+
+      <nav class="bottom-nav" aria-label="Main navigation">
+        <div class="sidebar-brand">
+          <svg viewBox="0 0 32 32" aria-label="Calex logo" role="img">
+            <rect
+              x="3"
+              y="5"
+              width="26"
+              height="25"
+              rx="8"
+              fill="currentColor"
+            />
+            <path
+              d="M10 3v6M22 3v6M10 17l4 4 8-9"
+              fill="none"
+              stroke="var(--paper)"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            /></svg
+          ><span>calex<span class="brand-dot">.</span></span>
+        </div>
+        <div class="sidebar-caption">WORKSPACE</div>
+        <button class="nav-btn active" data-screen="home" aria-label="Home">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3.5 10.5 12 3.7l8.5 6.8" />
+            <path d="M5.5 9.5V20h5v-6h3v6h5V9.5" />
+          </svg>
+          <span>Overview</span>
+        </button>
+        <button class="nav-btn" data-screen="calendar" aria-label="Calendar">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3.5" y="5.5" width="17" height="16" rx="2.2" />
+            <path d="M7.5 3.5v4M16.5 3.5v4M3.5 10h17" />
+            <path
+              d="M7.5 13.5h.01M12 13.5h.01M16.5 13.5h.01M7.5 17h.01M12 17h.01"
+            />
+          </svg>
+          <span>Calendar</span>
+        </button>
+        <button class="nav-btn" data-screen="settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="3.2" />
+            <path
+              d="M19.2 13.8a7.5 7.5 0 0 0 0-3.6l1.3-1-1.8-3.1-1.6.6a7.4 7.4 0 0 0-3.1-1.8L13.7 3h-3.4l-.3 1.9a7.4 7.4 0 0 0-3.1 1.8l-1.6-.6-1.8 3.1 1.3 1a7.5 7.5 0 0 0 0 3.6l-1.3 1 1.8 3.1 1.6-.6a7.4 7.4 0 0 0 3.1 1.8l.3 1.9h3.4l.3-1.9a7.4 7.4 0 0 0 3.1-1.8l1.6.6 1.8-3.1z"
+            />
+          </svg>
+          <span>Settings</span>
+        </button>
+        <button class="nav-btn" data-screen="agenda" aria-label="Agenda">
+          <i data-lucide="list"></i><span>Agenda</span>
+        </button>
+        <div class="sidebar-tools">
+          <div class="mini-head">
+            <span id="miniMonth"></span>
+            <div>
+              <button id="miniPrev" aria-label="Previous mini-calendar month">
+                <i data-lucide="chevron-left"></i></button
+              ><button id="miniNext" aria-label="Next mini-calendar month">
+                <i data-lucide="chevron-right"></i>
+              </button>
+            </div>
+          </div>
+          <div class="mini-weekdays">
+            <span>M</span><span>T</span><span>W</span><span>T</span
+            ><span>F</span><span>S</span><span>S</span>
+          </div>
+          <div id="miniGrid" class="mini-grid"></div>
+          <div class="sidebar-caption">MY CALENDARS</div>
+          <div class="category-filters">
+            <label
+              ><input type="checkbox" data-category="personal" checked /><span
+                class="category-dot personal"
+              ></span
+              >Personal</label
+            >
+            <label
+              ><input type="checkbox" data-category="work" checked /><span
+                class="category-dot work"
+              ></span
+              >Work & study</label
+            >
+            <label
+              ><input type="checkbox" data-category="wellbeing" checked /><span
+                class="category-dot wellbeing"
+              ></span
+              >Wellbeing</label
+            >
+          </div>
+          <button
+            id="sidebarAssistant"
+            class="assistant-trigger sidebar-assistant"
+          >
+            <i data-lucide="sparkles"></i
+            ><span
+              >A little help planning<span
+                >Meet your Calex assistant</span
+              ></span
+            ><i data-lucide="arrow-up-right"></i>
+          </button>
+          <button id="installApp" class="secondary" hidden>
+            <i data-lucide="download"></i>Install Calex
+          </button>
+        </div>
+        <div class="sidebar-footer">
+          <span class="device-dot"></span
+          ><span
+            >Made for your everyday<span id="storageStatus"
+              >Saved on this device</span
+            ></span
+          ><button
+            id="shortcutHelp"
+            aria-label="Keyboard shortcuts"
+            title="Keyboard shortcuts"
+          >
+            <i data-lucide="keyboard"></i>
+          </button>
+        </div>
+      </nav>
+    </div>
+    <div
+      class="modal-backdrop"
+      id="modalBackdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle"
+      aria-hidden="true"
+    >
+      <div class="modal">
+        <div class="modal-top">
+          <h2 id="modalTitle">New event</h2>
+          <button class="close-btn" id="closeModal" aria-label="Close">
+            <svg viewBox="0 0 24 24">
+              <path d="m6 6 12 12M18 6 6 18" />
+            </svg>
+          </button>
+        </div>
+        <div id="quickForm">
+          <div class="field">
+            <label for="quickText">Describe your event</label>
+            <textarea
+              id="quickText"
+              placeholder="e.g. Dentist tomorrow at 10:07 to 11am, repeat weekly"
+            ></textarea>
+          </div>
+          <p class="nlp-help">
+            Try “Team meeting tomorrow 10:07 to 20:00”, “Gym every Monday at
+            6pm”, or “Lunch on 14 June at noon”. We’ll interpret common dates,
+            times and repeats.
+          </p>
+          <div id="quickPreview" class="nlp-help"></div>
+          <button
+            class="primary icon-only"
+            id="quickSave"
+            aria-label="Create event"
+            title="Create event"
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="m5 12 4 4L19 6" />
+            </svg>
+          </button>
+        </div>
+
+        <form id="eventForm" hidden>
+          <div class="form-grid">
+            <div class="field full title-field">
+              <input
+                id="eventTitle"
+                required
+                placeholder="Event name"
+                aria-label="Event title"
+              />
+            </div>
+            <div class="field full description-field">
+              <textarea
+                id="eventDescription"
+                placeholder="A short description..."
+                aria-label="Event description"
+              ></textarea>
+            </div>
+            <div class="field">
+              <label for="eventDate">Date *</label>
+              <input id="eventDate" type="date" required />
+            </div>
+            <div class="field">
+              <label for="eventLocation">Location</label>
+              <input id="eventLocation" placeholder="Add a place" />
+            </div>
+            <div class="field">
+              <label for="eventStart">Start time</label>
+              <input id="eventStart" type="time" />
+            </div>
+            <div class="field">
+              <label for="eventEnd">End time</label>
+              <input id="eventEnd" type="time" />
+            </div>
+            <div class="field">
+              <label for="eventRepeat">Repeat</label>
+              <select id="eventRepeat">
+                <option value="none">Never</option>
+                <option value="daily">Every day</option>
+                <option value="weekly">Every week</option>
+                <option value="fortnightly">Every fortnight</option>
+                <option value="monthly">Every month</option>
+                <option value="yearly">Every year</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="eventPeople">People</label>
+              <input
+                id="eventPeople"
+                placeholder="Names, separated by commas"
+              />
+            </div>
+            <div class="field full">
+              <label for="eventCategory">Calendar</label
+              ><select id="eventCategory">
+                <option value="personal">Personal</option>
+                <option value="work">Work & study</option>
+                <option value="wellbeing">Wellbeing</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label for="eventNotes">Notes</label>
+              <textarea
+                id="eventNotes"
+                placeholder="Anything else to remember"
+              ></textarea>
+            </div>
+          </div>
+          <p id="eventFeedback" class="form-feedback" role="status"></p>
+          <button
+            class="primary"
+            type="submit"
+            aria-label="Save event"
+            title="Save event"
+          >
+            Save event
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+    <dialog
+      id="assistantDialog"
+      class="assistant-dialog"
+      aria-labelledby="assistantTitle"
+    >
+      <header class="assistant-head">
+        <div>
+          <span class="header-eyebrow">A LITTLE CLARITY</span>
+          <h2 id="assistantTitle">
+            <i data-lucide="sparkles"></i>Calex assistant
+          </h2>
+        </div>
+        <button
+          id="closeAssistant"
+          class="icon-btn"
+          aria-label="Close assistant"
+        >
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div class="assistant-intro">
+        <h3>Less juggling.<br />More breathing room.</h3>
+        <p>
+          Plan your day, find a focus window, or turn an idea into an event.
+        </p>
+      </div>
+      <div id="puterConnection" class="puter-connection">
+        <p>
+          Powered by Puter. Your own account handles AI access and any usage
+          costs. Only messages you send are shared unless you enable calendar
+          context.
+        </p>
+        <button id="connectPuter" class="primary">
+          Enable Puter assistant
+        </button>
+        <p id="puterStatus" role="status"></p>
+      </div>
+      <div
+        id="assistantMessages"
+        class="assistant-messages"
+        role="log"
+        aria-label="Assistant conversation"
+        aria-live="polite"
+      ></div>
+      <div id="assistantSuggestions" class="assistant-suggestions">
+        <button data-prompt="Help me plan a balanced day.">
+          Plan my day<i data-lucide="arrow-up-right"></i></button
+        ><button
+          data-prompt="Find a 60-minute focus window in my upcoming calendar."
+        >
+          Find focus time<i data-lucide="arrow-up-right"></i></button
+        ><button
+          data-prompt="Schedule a 30-minute weekly planning session tomorrow at 9am."
+        >
+          Create an event<i data-lucide="arrow-up-right"></i>
+        </button>
+      </div>
+      <form id="assistantForm" class="assistant-compose">
+        <label class="context-choice"
+          ><input type="checkbox" id="shareCalendar" />Share next 14 days
+          (titles, times, locations)</label
+        >
+        <div>
+          <label for="assistantInput" class="sr-only"
+            >Message the assistant</label
+          ><textarea
+            id="assistantInput"
+            placeholder="What would you like to make time for?"
+            rows="2"
+            maxlength="4000"
+            required
+          ></textarea
+          ><button
+            id="sendAssistant"
+            class="primary"
+            aria-label="Send message"
+            disabled
+          >
+            <i data-lucide="arrow-up"></i>
+          </button>
+        </div>
+        <p id="assistantError" class="form-feedback" role="status"></p>
+        <span>AI can make mistakes. Review dates and times before saving.</span>
       </form>
-      <button class="save-settings" type="button" id="authSignout" hidden>Sign out</button>
-    </div>
-
-      <p class="auth-privacy-note">Your calendar syncs only when you are signed in. You can keep using Calex on this device without an account.</p>
-    </div>
-  </section>
-
-  <section id="settingsScreen" class="screen settings-page" aria-label="Settings">
-    <header class="settings-header">
-      <div class="settings-eyebrow">CALEX PREFERENCES</div>
-      <h1 class="settings-title">Settings</h1>
-      <p class="settings-intro">Make Calex work the way you do.</p>
-    </header>
-
-    <section class="settings-section profile-section" aria-labelledby="profileSectionTitle">
-      <h2 class="settings-section-heading" id="profileSectionTitle">Your profile</h2>
-      <button class="profile-card" id="profileEdit" type="button" aria-label="Edit profile" aria-expanded="false" aria-controls="accountDetail">
-        <span class="profile-avatar" id="profileAvatar" aria-hidden="true">A</span>
-        <span class="profile-copy">
-          <span class="profile-name" id="profileName">Your name</span>
-          <span class="profile-location" id="profileLocation">Add your location</span>
-          <span class="profile-edit-hint">Edit profile details</span>
-        </span>
-        <span class="settings-chevron" aria-hidden="true">›</span>
-      </button>
-      <div class="settings-detail profile-editor" id="accountDetail" hidden>
-        <label for="settingsName">Display name</label>
-        <input id="settingsName" maxlength="80" placeholder="Your name" autocomplete="name">
-        <label for="settingsLocation">Location</label>
-        <input id="settingsLocation" maxlength="120" placeholder="City or region" autocomplete="address-level2">
-        <p class="settings-help">These details personalize your calendar on this device.</p>
-        <div class="settings-inline">
-          <button type="button" class="save-settings" id="saveProfile">Save profile</button>
-        </div>
+    </dialog>
+    <dialog id="shortcutsDialog" class="shortcuts-dialog">
+      <header>
+        <h2>Make time for shortcuts</h2>
+        <button
+          id="closeShortcuts"
+          class="icon-btn"
+          aria-label="Close shortcuts"
+        >
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <dl>
+        <dt>New event</dt>
+        <dd><kbd>N</kbd></dd>
+        <dt>Quick add</dt>
+        <dd><kbd>Q</kbd></dd>
+        <dt>Search calendar</dt>
+        <dd><kbd>/</kbd></dd>
+        <dt>Go to today</dt>
+        <dd><kbd>T</kbd></dd>
+        <dt>Month / week / year</dt>
+        <dd><kbd>M</kbd> <kbd>W</kbd> <kbd>Y</kbd></dd>
+        <dt>Close dialog</dt>
+        <dd><kbd>Esc</kbd></dd>
+      </dl>
+    </dialog>
+    <dialog id="filtersDialog" class="shortcuts-dialog">
+      <header>
+        <h2>My calendars</h2>
+        <button id="closeFilters" class="icon-btn" aria-label="Close filters">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div class="category-filters">
+        <label
+          ><input type="checkbox" data-category="personal" checked /><span
+            class="category-dot personal"
+          ></span
+          >Personal</label
+        ><label
+          ><input type="checkbox" data-category="work" checked /><span
+            class="category-dot work"
+          ></span
+          >Work & study</label
+        ><label
+          ><input type="checkbox" data-category="wellbeing" checked /><span
+            class="category-dot wellbeing"
+          ></span
+          >Wellbeing</label
+        >
       </div>
-    </section>
+    </dialog>
 
-    <section class="settings-section" aria-labelledby="accountSectionTitle">
-      <h2 class="settings-section-heading" id="accountSectionTitle">Account & sync</h2>
-      <p class="settings-section-description">Keep your calendar and preferences available across devices.</p>
-      <button class="auth-cta-button" id="settingsSignIn" type="button">
-        <span class="auth-cta-icon" aria-hidden="true">↗</span>
-        <span class="auth-cta-copy">
-          <span class="auth-cta-title" id="settingsSignInTitle">Sign in or create account</span>
-          <span class="auth-cta-subtitle" id="settingsSignInSubtitle">Securely sync your calendar across devices</span>
-        </span>
-        <span class="auth-cta-arrow" aria-hidden="true">›</span>
-      </button>
-      <p class="settings-security-note"><span class="settings-status-dot" aria-hidden="true"></span><span id="settingsSyncNote">Your events stay on this device until you sign in.</span></p>
-      <button class="sync-now-btn" id="syncNow" type="button" hidden>Sync now</button>
-    </section>
-
-    <section class="settings-section" aria-labelledby="preferencesSectionTitle">
-      <h2 class="settings-section-heading" id="preferencesSectionTitle">Preferences</h2>
-      <div class="settings-group">
-        <button class="settings-row" id="timezoneToggle" type="button" aria-expanded="false" aria-controls="timezoneDetail">
-          <span class="settings-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>
-          </span>
-          <span class="settings-row-copy">
-            <span class="settings-row-title">Time zone</span>
-            <span class="settings-row-sub" id="timezoneSummary">Automatic · device time zone</span>
-          </span>
-          <span class="settings-chevron" aria-hidden="true">›</span>
-        </button>
-        <div class="settings-detail" id="timezoneDetail" hidden>
-          <div class="settings-label">Time zone</div>
-          <div class="timezone-mode" role="group" aria-label="Time zone mode">
-            <button type="button" id="timezoneAuto" class="timezone-mode-button" aria-pressed="true">Automatic</button>
-            <button type="button" id="timezoneManual" class="timezone-mode-button" aria-pressed="false">Choose time zone</button>
-          </div>
-          <div id="timezoneSearchWrap" hidden>
-            <label for="timezoneSearch">Search by city or region</label>
-            <input id="timezoneSearch" type="search" placeholder="Try London, Tokyo, or UTC…" autocomplete="off">
-            <div id="timezoneResults" class="timezone-results" role="listbox" aria-label="Matching time zones"></div>
-          </div>
-          <p class="settings-help" id="timezoneHelp">Automatic mode follows the time zone configured on this device.</p>
-          <div class="settings-inline"><button type="button" class="save-settings" id="saveTimezone">Save time zone</button></div>
-        </div>
-        <button class="settings-row" id="appearanceToggle" type="button" role="switch" aria-checked="false">
-          <span class="settings-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M20.5 14A8.5 8.5 0 0 1 10 3.5 8.5 8.5 0 1 0 20.5 14Z"/></svg>
-          </span>
-          <span class="settings-row-copy">
-            <span class="settings-row-title">Dark appearance</span>
-            <span class="settings-row-sub">Adjust the interface for low-light environments</span>
-          </span>
-          <span class="settings-switch" id="appearanceSwitch" aria-hidden="true"><span></span></span>
-        </button>
-      </div>
-    </section>
-
-    <section class="settings-section" aria-labelledby="dataSectionTitle">
-      <h2 class="settings-section-heading" id="dataSectionTitle">Your data</h2>
-      <div class="settings-group">
-        <button class="settings-row" id="exportCalendar" type="button">
-          <span class="settings-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></svg>
-          </span>
-          <span class="settings-row-copy">
-            <span class="settings-row-title">Export calendar</span>
-            <span class="settings-row-sub">Download a portable .ics calendar file</span>
-          </span>
-          <span class="settings-chevron" aria-hidden="true">›</span>
-        </button>
-        <button class="settings-row" id="importCalendar" type="button">
-          <span class="settings-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M12 15V3m-5 5 5-5 5 5M4 17v4h16v-4"/></svg>
-          </span>
-          <span class="settings-row-copy">
-            <span class="settings-row-title">Import calendar</span>
-            <span class="settings-row-sub">Add events from an .ics file (Google, Outlook, Apple)</span>
-          </span>
-          <span class="settings-chevron" aria-hidden="true">›</span>
-        </button>
-        <input type="file" id="importFile" accept=".ics,text/calendar" hidden>
-      </div>
-      <p class="settings-footnote">When signed out, your calendar is stored on this device. Signing in enables account-based sync. You can export a copy of your events at any time.</p>
-    </section>
-
-    <section class="settings-section" aria-labelledby="aboutSectionTitle">
-      <h2 class="settings-section-heading" id="aboutSectionTitle">About &amp; legal</h2>
-      <div class="settings-group">
-        <button class="settings-row" type="button" data-legal-screen="about">
-          <span class="settings-icon" aria-hidden="true">ⓘ</span>
-          <span class="settings-row-copy"><span class="settings-row-title">About Calex</span><span class="settings-row-sub">What Calex does and how to get help</span></span>
-          <span class="settings-chevron" aria-hidden="true">›</span>
-        </button>
-        <button class="settings-row" type="button" data-legal-screen="terms">
-          <span class="settings-icon" aria-hidden="true">§</span>
-          <span class="settings-row-copy"><span class="settings-row-title">Terms of service</span><span class="settings-row-sub">Rules and limitations for using Calex</span></span>
-          <span class="settings-chevron" aria-hidden="true">›</span>
-        </button>
-        <button class="settings-row" type="button" data-legal-screen="privacy">
-          <span class="settings-icon" aria-hidden="true">⌑</span>
-          <span class="settings-row-copy"><span class="settings-row-title">Privacy policy</span><span class="settings-row-sub">How calendar and account data are handled</span></span>
-          <span class="settings-chevron" aria-hidden="true">›</span>
-        </button>
-      </div>
-    </section>
-  </section>
-
-  <section id="aboutScreen" class="screen legal-screen" aria-label="About Calex">
-    <button class="legal-back" type="button" data-legal-back>‹ <span>Settings</span></button>
-    <div class="legal-content">
-      <p class="settings-eyebrow">ABOUT</p>
-      <h1>Calex</h1>
-      <p class="legal-lead">A calm, straightforward calendar for keeping track of your days.</p>
-      <h2>What you can do</h2>
-      <p>Create and manage events, browse dates, search your calendar, set a preferred time zone, and export events as an iCalendar (.ics) file.</p>
-      <h2>Your calendar, your choice</h2>
-      <p>You can use Calex on one device without signing in. Signing in enables account-based synchronisation where configured. You can export a copy of your events from Settings.</p>
-      <h2>Help and feedback</h2>
-      <p>Report a bug or request an improvement through the <a href="https://github.com/andygeng2023/Calex/issues" target="_blank" rel="noopener noreferrer">Calex GitHub issue tracker</a>. Do not include passwords, private event details, or other sensitive information in a public issue.</p>
-      <p class="legal-updated">Last updated: 11 October 2026</p>
-    </div>
-  </section>
-
-  <section id="termsScreen" class="screen legal-screen" aria-label="Terms of service">
-    <button class="legal-back" type="button" data-legal-back>‹ <span>Settings</span></button>
-    <article class="legal-content">
-      <p class="settings-eyebrow">LEGAL</p>
-      <h1>Terms of service</h1>
-      <p class="legal-updated">Effective date: 11 October 2026</p>
-      <p>These terms explain the basic conditions for using Calex. By using the app, you agree to these terms. If you do not agree, stop using the app.</p>
-      <h2>1. The service</h2>
-      <p>Calex provides calendar and event-management features, including local storage, optional account sign-in and synchronisation, time-zone preferences, and calendar export. Features may change, be unavailable, or be discontinued.</p>
-      <h2>2. Your information and responsibilities</h2>
-      <p>You are responsible for the accuracy of the events you enter and for keeping your account credentials secure. Do not use Calex as the only copy of important information. Export or otherwise back up events you cannot afford to lose.</p>
-      <h2>3. Acceptable use</h2>
-      <p>Do not misuse the service, attempt to gain unauthorised access, interfere with its operation, or use it in a way that violates applicable law or another person's rights.</p>
-      <h2>4. Availability and data loss</h2>
-      <p>Calex is provided on an “as available” basis. We do not guarantee uninterrupted service, error-free operation, successful synchronisation, or permanent preservation of data. Device failure, browser settings, clearing site data, account issues, or service outages may affect access to events.</p>
-      <h2>5. No professional advice or emergency service</h2>
-      <p>Calex is a general-purpose organisational tool. It is not a medical, legal, financial, or emergency service. You are responsible for checking event details, reminders, dates, and times that matter to you.</p>
-      <h2>6. Limitation of liability</h2>
-      <p>To the extent permitted by applicable law, Calex is not liable for indirect or consequential loss, missed appointments, or loss of calendar data arising from use of the service. Nothing in these terms excludes rights or liability that cannot lawfully be excluded.</p>
-      <h2>7. Changes to these terms</h2>
-      <p>These terms may be updated as the app changes. The effective date above indicates the latest published version. Continued use after an update means you accept the revised terms where the law permits.</p>
-      <h2>8. Contact</h2>
-      <p>For support or questions about these terms, use the <a href="https://github.com/andygeng2023/Calex/issues" target="_blank" rel="noopener noreferrer">Calex GitHub issue tracker</a>. Do not post confidential information publicly.</p>
-    </article>
-  </section>
-
-  <section id="privacyScreen" class="screen legal-screen" aria-label="Privacy policy">
-    <button class="legal-back" type="button" data-legal-back>‹ <span>Settings</span></button>
-    <article class="legal-content">
-      <p class="settings-eyebrow">LEGAL</p>
-      <h1>Privacy policy</h1>
-      <p class="legal-updated">Effective date: 11 October 2026</p>
-      <p>This policy describes how the current Calex app handles information. The precise handling of account data can depend on your sign-in and synchronisation configuration.</p>
-      <h2>1. Information you enter</h2>
-      <p>Calendar events may include titles, descriptions, dates, times, locations, attendees or people, repeat settings, and notes. Profile preferences may include a display name, location, time-zone choice, and appearance preference. Avoid entering information you do not want stored in your calendar.</p>
-      <h2>2. Local storage</h2>
-      <p>When you use Calex while signed out, events and preferences are saved in your browser's local storage on that device. They are not automatically available on another device. Clearing browser/site data, using private browsing, or losing access to the device may remove locally stored information. Use the export feature to keep a separate copy.</p>
-      <h2>3. Account and synchronisation</h2>
-      <p>If you sign in and synchronisation is enabled, Calex uses Supabase authentication and its configured database service to authenticate your account and synchronise calendar events and preferences. This means relevant data may be transmitted to and stored by that service. Account-based data is associated with your account, subject to the app's database access policies and service configuration.</p>
-      <h2>4. Time zone and device information</h2>
-      <p>Automatic time-zone mode reads the time-zone identifier provided by your browser or device. Calex uses it to display your preference; the app does not need your precise GPS location for this feature. If you enter a location in your profile or an event, that text is stored as part of the relevant data.</p>
-      <h2>5. Cookies, analytics, and third parties</h2>
-      <p>Calex uses browser storage for app data and may load the Supabase client library from a content delivery network. The app's authentication and synchronisation features rely on Supabase when configured. Third-party infrastructure may process technical information under its own terms and policies; consult those policies for details.</p>
-      <h2>6. Sharing and disclosure</h2>
-      <p>Calex does not provide a public calendar-sharing feature in the current interface. Data may be processed by the infrastructure providers required to operate sign-in and synchronisation, or disclosed where required by law. Anyone with access to your unlocked device or account may be able to access your calendar.</p>
-      <h2>7. Retention and deletion</h2>
-      <p>Local data remains in your browser until you remove it or the browser clears it. Signed-in data may remain in the configured cloud database until deleted through supported app or account-management processes or by the service operator. Export your events before clearing local data or changing accounts. If you need account data deleted, contact the app maintainer through the link below; do not include private event details in a public request.</p>
-      <h2>8. Your choices and security</h2>
-      <p>You can use Calex without signing in, choose whether to enable account synchronisation, export your calendar, and avoid entering unnecessary personal information. No online service can guarantee absolute security, so use a strong unique password and protect access to your device.</p>
-      <h2>9. Children and sensitive information</h2>
-      <p>Do not use Calex to store highly sensitive information unless you have assessed that it is appropriate for your circumstances and the service configuration. If you are using Calex under a parent's or organisation's guidance, follow their applicable rules.</p>
-      <h2>10. Policy changes and contact</h2>
-      <p>This policy may change as Calex evolves. For privacy questions or deletion requests, contact the maintainer through the <a href="https://github.com/andygeng2023/Calex/issues" target="_blank" rel="noopener noreferrer">Calex GitHub issue tracker</a>. Public issues are visible to others, so request a private contact route before sharing personal data.</p>
-    </article>
-  </section>
-  
-  </main>
-
-  <nav class="bottom-nav" aria-label="Main navigation">
-    <button class="nav-btn active" data-screen="home" aria-label="Home">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M3.5 10.5 12 3.7l8.5 6.8"/>
-        <path d="M5.5 9.5V20h5v-6h3v6h5V9.5"/>
-      </svg>
-      <span>Home</span>
-    </button>
-    <button class="nav-btn" data-screen="calendar" aria-label="Calendar">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <rect x="3.5" y="5.5" width="17" height="16" rx="2.2"/>
-        <path d="M7.5 3.5v4M16.5 3.5v4M3.5 10h17"/>
-        <path d="M7.5 13.5h.01M12 13.5h.01M16.5 13.5h.01M7.5 17h.01M12 17h.01"/>
-      </svg>
-      <span>Calendar</span>
-    </button>
-    <button class="nav-btn" data-screen="settings" aria-label="Settings">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="3.2"/>
-        <path d="M19.2 13.8a7.5 7.5 0 0 0 0-3.6l1.3-1-1.8-3.1-1.6.6a7.4 7.4 0 0 0-3.1-1.8L13.7 3h-3.4l-.3 1.9a7.4 7.4 0 0 0-3.1 1.8l-1.6-.6-1.8 3.1 1.3 1a7.5 7.5 0 0 0 0 3.6l-1.3 1 1.8 3.1 1.6-.6a7.4 7.4 0 0 0 3.1 1.8l.3 1.9h3.4l.3-1.9a7.4 7.4 0 0 0 3.1-1.8l1.6.6 1.8-3.1z"/>
-      </svg>
-      <span>Settings</span>
-    </button>
-  </nav>
-
-</div>
-<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div class="modal">
-    <div class="modal-top">
-      <h2 id="modalTitle">New event</h2>
-      <button class="close-btn" id="closeModal" aria-label="Close">
-        <svg viewBox="0 0 24 24">
-          <path d="m6 6 12 12M18 6 6 18"/>
-        </svg>
-      </button>
-    </div>
-    <div id="quickForm">
-      <div class="field">
-        <label for="quickText">Describe your event</label>
-        <textarea id="quickText" placeholder="e.g. Dentist tomorrow at 10:07 to 11am, repeat weekly"></textarea>
-      </div>
-      <p class="nlp-help">Try “Team meeting tomorrow 10:07 to 20:00”, “Gym every Monday at 6pm”, or “Lunch on 14 June at noon”. We’ll interpret common dates, times and repeats.</p>
-      <div id="quickPreview" class="nlp-help"></div>
-      <button class="primary icon-only" id="quickSave" aria-label="Create event" title="Create event">
-        <svg viewBox="0 0 24 24">
-          <path d="m5 12 4 4L19 6"/>
-        </svg>
-      </button>
-    </div>
-    
-    <form id="eventForm" hidden>
-      <div class="form-grid">
-        <div class="field full title-field">
-          <input id="eventTitle" required placeholder="Event name" aria-label="Event title"></div>
-        <div class="field full description-field">
-          <textarea id="eventDescription" placeholder="A short description..." aria-label="Event description"></textarea>
-        </div>
-        <div class="field">
-          <label for="eventDate">Date *</label>
-          <input id="eventDate" type="date" required>
-        </div>
-        <div class="field">
-          <label for="eventLocation">Location</label>
-          <input id="eventLocation" placeholder="Add a place">
-        </div>
-        <div class="field">
-          <label for="eventStart">Start time</label>
-          <input id="eventStart" type="time">
-        </div><div class="field">
-          <label for="eventEnd">End time</label>
-          <input id="eventEnd" type="time">
-        </div>
-        <div class="field">
-          <label for="eventRepeat">Repeat</label>
-          <select id="eventRepeat">
-            <option value="none">Never</option>
-            <option value="daily">Every day</option>
-            <option value="weekly">Every week</option>
-            <option value="fortnightly">Every fortnight</option>
-            <option value="monthly">Every month</option>
-            <option value="yearly">Every year</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="eventPeople">People</label>
-          <input id="eventPeople" placeholder="Names, separated by commas">
-        </div>
-        <div class="field full">
-          <label for="eventNotes">Notes</label>
-          <textarea id="eventNotes" placeholder="Anything else to remember"></textarea>
-        </div>
-      </div>
-      <button class="primary icon-only" type="submit" aria-label="Save event" title="Save event">
-        <svg viewBox="0 0 24 24">
-          <path d="m5 12 4 4L19 6"/>
-        </svg>
-      </button>
-    </form>
-  </div>
-</div>
-
-<div class="toast" id="toast" role="status"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3" defer></script>
-<script src="sync.js?v=26" defer></script>
-<script src="ics.js?v=26" defer></script>
-<script src="app.js?v=26" defer></script>
-
-</body>
-
+    <script
+      src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3"
+      defer
+    ></script>
+    <script src="icons.js?v=27" defer></script>
+    <script src="sync.js?v=27" defer></script>
+    <script src="ics.js?v=27" defer></script>
+    <script src="app.js?v=27" defer></script>
+    <script src="workspace.js?v=27" defer></script>
+  </body>
 </html>

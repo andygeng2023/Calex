@@ -1,49 +1,71 @@
-const CACHE_NAME = 'calex-shell-v26';
+const CACHE_NAME = "calex-shell-v27";
 const APP_SHELL = [
-  './',
-  './index.html',
-  './styles.css?v=26',
-  './sync.js?v=26',
-  './ics.js?v=26',
-  './app.js?v=26',
-  './manifest.webmanifest',
-  './icon.svg'
+  "./",
+  "./index.html",
+  "./styles.css?v=27",
+  "./workspace.css?v=27",
+  "./workspace.js?v=27",
+  "./icons.js?v=27",
+  "./sync.js?v=27",
+  "./ics.js?v=27",
+  "./app.js?v=27",
+  "./manifest.webmanifest",
+  "./icon.svg",
+  "./icon-192.png",
+  "./icon-512.png",
 ];
 
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    caches
+      .open(CACHE_NAME)
       .then((cache) => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
+      .then(() => self.skipWaiting()),
   );
 });
 
-self.addEventListener('activate', (event) => {
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys()
-      .then((keys) => Promise.all(
-        keys.filter((key) => key.startsWith('calex-shell-') && key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      ))
-      .then(() => self.clients.claim())
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter(
+              (key) => key.startsWith("calex-shell-") && key !== CACHE_NAME,
+            )
+            .map((key) => caches.delete(key)),
+        ),
+      )
+      .then(() => self.clients.claim()),
   );
 });
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener("fetch", (event) => {
   const request = event.request;
-  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
+  if (
+    request.method !== "GET" ||
+    new URL(request.url).origin !== self.location.origin
+  )
+    return;
 
-  if (request.mode === 'navigate') {
+  if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
         .then((response) => {
           if (response.ok) {
             const copy = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', copy));
+            caches
+              .open(CACHE_NAME)
+              .then((cache) => cache.put("./index.html", copy));
           }
           return response;
         })
-        .catch(async () => (await caches.match(request)) || (await caches.match('./index.html')))
+        .catch(
+          async () =>
+            (await caches.match(request)) ||
+            (await caches.match("./index.html")),
+        ),
     );
     return;
   }
@@ -58,6 +80,6 @@ self.addEventListener('fetch', (event) => {
         }
         return response;
       });
-    })
+    }),
   );
 });

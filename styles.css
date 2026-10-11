@@ -1352,9 +1352,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 }
 
 /* Calendar actions, transitions, and search-result refinements */
-.top-actions {
-	display: none!important;
-}
 
 #calendarScreen .panel-head {
 	align-items: center;
