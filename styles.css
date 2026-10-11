@@ -114,17 +114,23 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 }
 
 #homeScreen {
-	overflow: hidden;
-	overscroll-behavior: contain;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
 }
 
 #todayEvents {
-	flex: 1;
-	min-height: 0;
-	overflow-y: auto;
-	overscroll-behavior: contain;
-	padding-bottom: 8px;
+  flex: 0 0 auto;
+  min-height: 0;
+  overflow: visible;
+  padding-bottom: 8px;
 }
+
+#comingUpEvents {
+  flex: 0 0 auto;
+  padding-bottom: 8px;
+}
+
 
 #calendarScreen {
 	gap: 0;
@@ -1553,16 +1559,17 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 
 /* Quick event AI feedback */
 #quickPreview {
-	white-space: normal;
-	overflow-wrap: anywhere;
-	margin: 10px 0 12px;
-	padding: 10px 12px;
-	border: 1px solid #dce7dc;
-	border-radius: 12px;
-	background: #f5faf5;
-	color: #2b4830;
-	line-height: 1.5;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  margin: 10px 0 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  line-height: 1.5;
 }
+
 
 #quickSave[disabled] {
 	opacity: .65;
