@@ -1,9 +1,9 @@
-const CACHE_NAME = 'calex-shell-v22';
+const CACHE_NAME = 'calex-shell-v25';
 const APP_SHELL = [
   './',
   './index.html',
-  './styles.css',
-  './app.js',
+  './styles.css?v=25',
+  './app.js?v=25',
   './manifest.webmanifest',
   './icon.svg'
 ];

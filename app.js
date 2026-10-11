@@ -2186,11 +2186,15 @@
   function applyAppearance() {
     const enabled = !!appSettings.dark;
     document.querySelector(".app").classList.toggle("settings-dark", enabled);
+    document.body.classList.toggle("settings-dark", enabled);
     $("appearanceToggle").setAttribute("aria-checked", String(enabled));
     $("appearanceSwitch").setAttribute("data-enabled", String(enabled));
     $("appearanceToggle").setAttribute("aria-label", "Dark appearance " + (enabled ? "on" : "off"));
     document.documentElement.style.colorScheme = enabled ? "dark" : "light";
+    document.documentElement.style.backgroundColor = enabled ? "#101512" : "";
     document.body.style.background = enabled ? "#101512" : "";
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    if (themeColor) themeColor.setAttribute("content", enabled ? "#101512" : "#ffffff");
   }
   $("appearanceToggle").addEventListener("click", () => {
     appSettings.dark = !appSettings.dark;

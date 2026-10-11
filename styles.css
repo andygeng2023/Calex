@@ -3018,3 +3018,284 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 }
 #settingsScreen .settings-row-title { margin: 0; }
 #settingsScreen .settings-row-sub { margin-top: 4px; }
+
+
+/* Complete dark appearance: cover every surface, control, overlay, and settings panel. */
+.app.settings-dark {
+  --ink: #e8eee9;
+  --muted: #a2afa5;
+  --line: #303b33;
+  --paper: #151b17;
+  --bg: #101512;
+  --green: #8fcc9a;
+  --green-dark: #b7e5be;
+  --green-pale: #24382a;
+  --surface: #1b241e;
+  --surface-raised: #202a21;
+  --surface-inset: #141c16;
+  --settings-surface: #202a21;
+  --settings-border: #3b493d;
+  --settings-muted: #b1beb2;
+  background: var(--paper);
+  color: var(--ink);
+  color-scheme: dark;
+}
+
+/* Calendar, navigation, and selectable controls */
+.app.settings-dark .topbar,
+.app.settings-dark main,
+.app.settings-dark .screen,
+.app.settings-dark #settingsScreen {
+  color: var(--ink);
+}
+.app.settings-dark .bottom-nav {
+  background: #151b17ed;
+  border-color: var(--line);
+}
+.app.settings-dark .icon-btn,
+.app.settings-dark .month-controls button,
+.app.settings-dark .date-cell:not(.selected),
+.app.settings-dark .search,
+.app.settings-dark .small-btn:not(.green),
+.app.settings-dark .panel-text-btn:not(.primary-action),
+.app.settings-dark .secondary,
+.app.settings-dark .view-switch button.active {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+.app.settings-dark .month-controls button:hover,
+.app.settings-dark .view-switch button.active {
+  background: var(--surface-raised);
+}
+.app.settings-dark .weekdays {
+  background: #151b17;
+  color: var(--muted);
+  border-color: var(--line);
+}
+.app.settings-dark #calendarScreen.panel-open .selected-panel,
+.app.settings-dark .selected-panel {
+  background: #171f19;
+  color: var(--ink);
+  border-color: var(--line);
+}
+.app.settings-dark .date-cell.outside {
+  color: #7e8b80;
+}
+.app.settings-dark .check {
+  border-color: #667469;
+}
+.app.settings-dark .event.done .event-title {
+  color: #87958a;
+}
+.app.settings-dark .tag {
+  background: var(--green-pale);
+  color: var(--green-dark);
+}
+
+/* Search results, quick previews, popovers, and modals */
+.app.settings-dark .search-results .event,
+.app.settings-dark .search-event-list .event,
+.app.settings-dark .date-suggestion,
+.app.settings-dark #quickPreview,
+.app.settings-dark .modal,
+.app.settings-dark .settings-detail,
+.app.settings-dark .settings-detail input,
+.app.settings-dark .settings-detail select,
+.app.settings-dark .field input,
+.app.settings-dark .field textarea,
+.app.settings-dark .field select,
+.app.settings-dark .auth-card,
+.app.settings-dark .auth-card input {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+.app.settings-dark .date-suggestion:active {
+  background: var(--surface-raised);
+}
+.app.settings-dark .modal-backdrop {
+  background: #000a;
+}
+.app.settings-dark .close-btn {
+  background: #263229;
+  color: var(--ink);
+}
+.app.settings-dark .field label,
+.app.settings-dark .settings-detail label {
+  color: #b8c5ba;
+}
+.app.settings-dark input::placeholder,
+.app.settings-dark textarea::placeholder {
+  color: #87968a;
+  opacity: 1;
+}
+.app.settings-dark .top-action {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+.app.settings-dark .top-action.primary-action,
+.app.settings-dark .panel-text-btn.primary-action,
+.app.settings-dark .small-btn.green,
+.app.settings-dark .date-cell.selected,
+.app.settings-dark .primary,
+.app.settings-dark .settings-inline .save-settings {
+  background: #39774a;
+  color: #fff;
+  border-color: #39774a;
+}
+.app.settings-dark .toast {
+  background: #263229;
+  color: var(--ink);
+}
+
+/* Settings surfaces and nested editors */
+.app.settings-dark #settingsScreen .profile-card,
+.app.settings-dark #settingsScreen .settings-group {
+  background: var(--settings-surface);
+  border-color: var(--settings-border);
+  color: var(--ink);
+}
+.app.settings-dark #settingsScreen .settings-row {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--settings-border);
+}
+.app.settings-dark #settingsScreen .settings-row:active {
+  background: #2a382c;
+}
+.app.settings-dark #settingsScreen .settings-icon {
+  background: #2c4030;
+  color: #b4d6b9;
+}
+.app.settings-dark #settingsScreen .settings-detail {
+  background: #1b241c;
+  border-color: var(--settings-border);
+}
+.app.settings-dark #settingsScreen .timezone-mode {
+  background: #141c16;
+  border-color: var(--settings-border);
+}
+.app.settings-dark #settingsScreen .timezone-mode-button {
+  color: var(--settings-muted);
+}
+.app.settings-dark #settingsScreen .timezone-mode-button[aria-pressed="true"] {
+  background: #2c4030;
+  border-color: #4b6450;
+  color: #d6f0d9;
+}
+.app.settings-dark .profile-edit-hint {
+  color: var(--green-dark);
+}
+
+/* Account and authentication screens */
+.app.settings-dark .auth-screen {
+  background: #111a13;
+  color: var(--ink);
+}
+.app.settings-dark .auth-screen .auth-card {
+  background: var(--surface);
+  border-color: var(--line);
+}
+.app.settings-dark .auth-screen .auth-status {
+  background: #263229;
+  color: #b8c5ba;
+}
+.app.settings-dark .auth-screen .auth-card input,
+.app.settings-dark .auth-screen .secondary-auth,
+.app.settings-dark .auth-screen .google-auth {
+  background: #202b23 !important;
+  color: #f1f5f0 !important;
+  border-color: #3c4a3e !important;
+}
+.app.settings-dark .auth-screen #authForm label,
+.app.settings-dark .auth-screen-title {
+  color: #f1f5f0;
+}
+.app.settings-dark .auth-screen-intro,
+.app.settings-dark .auth-privacy-note {
+  color: #aab6aa;
+}
+
+/* Legal screens and secondary text */
+.app.settings-dark .legal-content .legal-disclaimer {
+  background: #202b22;
+  color: var(--ink);
+}
+.app.settings-dark .legal-content .legal-lead {
+  color: var(--ink);
+}
+.app.settings-dark .legal-content a {
+  color: var(--green-dark);
+}
+.app.settings-dark .settings-section-description,
+.app.settings-dark .settings-intro,
+.app.settings-dark .settings-security-note {
+  color: var(--muted);
+}
+
+
+/* The modal lives beside .app in the document, so theme its detached layer via body. */
+body.settings-dark {
+  --ink: #e8eee9;
+  --muted: #a2afa5;
+  --line: #303b33;
+  --paper: #151b17;
+  --bg: #101512;
+  --green: #8fcc9a;
+  --green-dark: #b7e5be;
+  --green-pale: #24382a;
+  --surface: #1b241e;
+  --surface-raised: #202a21;
+  --surface-inset: #141c16;
+  color-scheme: dark;
+}
+body.settings-dark .modal {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+body.settings-dark .modal .field input,
+body.settings-dark .modal .field textarea,
+body.settings-dark .modal .field select {
+  background: var(--surface-raised);
+  color: var(--ink);
+  border-color: var(--line);
+}
+body.settings-dark .modal .field label,
+body.settings-dark .modal .nlp-help {
+  color: var(--muted);
+}
+body.settings-dark .modal .close-btn,
+body.settings-dark .modal .secondary {
+  background: var(--surface-raised);
+  color: var(--ink);
+  border-color: var(--line);
+}
+body.settings-dark .modal .primary {
+  background: #39774a;
+  color: #fff;
+  border-color: #39774a;
+}
+body.settings-dark .modal-backdrop {
+  background: #000a;
+}
+
+
+/* Event-form controls have #eventForm ID selectors, so match that specificity inside the detached modal. */
+body.settings-dark .modal #eventForm .field input,
+body.settings-dark .modal #eventForm .field select,
+body.settings-dark .modal #eventForm .field textarea {
+  background: var(--surface-raised);
+  color: var(--ink);
+  border-color: var(--line);
+}
+body.settings-dark .modal #eventForm .field label {
+  color: var(--muted);
+}
+body.settings-dark .modal #eventForm .field input::placeholder,
+body.settings-dark .modal #eventForm .field textarea::placeholder {
+  color: #9aa89d;
+  opacity: 1;
+}
