@@ -2186,6 +2186,7 @@
   function applyAppearance() {
     const enabled = !!appSettings.dark;
     document.querySelector(".app").classList.toggle("settings-dark", enabled);
+    document.body.classList.toggle("settings-dark", enabled);
     $("appearanceToggle").setAttribute("aria-checked", String(enabled));
     $("appearanceSwitch").setAttribute("data-enabled", String(enabled));
     $("appearanceToggle").setAttribute("aria-label", "Dark appearance " + (enabled ? "on" : "off"));
