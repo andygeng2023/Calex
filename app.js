@@ -21,7 +21,7 @@
 		toastTimer;
 	const SUPABASE_URL = 'https://fwcijtjahtwpyaqedyhq.supabase.co';
 	const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_oWpplxsSIvn3KfinwmlLjg_3No69nPW';
-	let supabaseClient = null, authUser = null, cloudSyncBusy = false, cloudSyncTimer = null;
+	let supabaseClient = null, authUser = null, cloudSyncBusy = false, cloudSyncPending = false, cloudSyncTimer = null;
 	const guestEventsKey = 'calex-guest-events-v1', guestSettingsKey = 'calex-guest-settings-v1';
 	let guestEventsSnapshot = null, guestSettingsSnapshot = null;
 	function activeEventsKey() { return authUser ? 'calex-events-' + authUser.id : guestEventsKey; }
@@ -38,6 +38,21 @@
 			await authAction('signin');
 		});
 		$('authSignup').addEventListener('click', () => authAction('signup'));
+		$('authGoogle').addEventListener('click', async () => {
+			if (!supabaseClient) return showToast('Could not load authentication. Refresh and try again.');
+			$('authGoogle').disabled = true;
+			try {
+				const { error } = await supabaseClient.auth.signInWithOAuth({
+					provider: 'google',
+					options: { redirectTo: location.origin + location.pathname }
+				});
+				if (error) showToast(error.message);
+			} catch (err) {
+				showToast(err.message || 'Google sign-in could not start.');
+			} finally {
+				$('authGoogle').disabled = false;
+			}
+		});
 		$('authForgot').addEventListener('click', async () => {
 			if (!supabaseClient) return showToast('Authentication library is unavailable. Refresh and try again.');
 			const email = $('authEmail').value.trim();
@@ -93,6 +108,8 @@
 		}
 		authUser = user;
 		if (authUser) {
+			const migrationKey = 'calex-guest-migrated-' + authUser.id;
+			const shouldMigrateGuest = localStorage.getItem(migrationKey) !== '1';
 			try {
 				const { data: remoteEvents, error: eventsError } = await supabaseClient.from('calex_events').select('id,event_data').eq('user_id', authUser.id);
 				if (eventsError) throw eventsError;
@@ -100,14 +117,22 @@
 				if (prefsError) throw prefsError;
 				const local = JSON.parse(localStorage.getItem(activeEventsKey()) || '[]');
 				const merged = new Map((remoteEvents || []).map(row => [row.id, row.event_data]));
+				if (shouldMigrateGuest) (guestEventsSnapshot || JSON.parse(localStorage.getItem(guestEventsKey) || '[]')).forEach(item => merged.set(item.id, item));
 				local.forEach(item => merged.set(item.id, item));
 				events = [...merged.values()];
 				localStorage.setItem(activeEventsKey(), JSON.stringify(events));
-				if (local.length) await saveCloudNow();
-				const prefLocal = JSON.parse(localStorage.getItem(activeSettingsKey()) || '{}');
-				appSettings = { ...defaultSettings, ...(remotePrefs?.preferences || {}), ...prefLocal };
-				await saveSettingsCloudNow();
-			} catch (err) { showToast('Cloud sync failed: ' + (err.message || 'Unknown error')); }
+				appSettings = {
+					...defaultSettings,
+					...(remotePrefs?.preferences || {}),
+					...(!remotePrefs && shouldMigrateGuest ? (guestSettingsSnapshot || JSON.parse(localStorage.getItem(guestSettingsKey) || '{}')) : {}),
+					...JSON.parse(localStorage.getItem(activeSettingsKey()) || '{}')
+				};
+				const eventsSaved = await saveCloudNow();
+				const prefsSaved = await saveSettingsCloudNow();
+				if (shouldMigrateGuest && eventsSaved && prefsSaved) localStorage.setItem(migrationKey, '1');
+			} catch (err) {
+				showToast('Cloud sync failed: ' + (err.message || 'Unknown error'));
+			}
 		} else {
 			events = guestEventsSnapshot || JSON.parse(localStorage.getItem(guestEventsKey) || '[]');
 			appSettings = { ...defaultSettings, ...(guestSettingsSnapshot || JSON.parse(localStorage.getItem(guestSettingsKey) || '{}')) };
@@ -117,26 +142,39 @@
 		renderAuth(); renderProfile(); renderTimezone(); applyAppearance(); renderAll();
 	}
 	async function saveCloudNow() {
-		if (!supabaseClient || !authUser || cloudSyncBusy) return;
+		if (!supabaseClient || !authUser) return false;
+		if (cloudSyncBusy) { cloudSyncPending = true; return false; }
 		cloudSyncBusy = true;
+		let success = false;
 		try {
-			const { data: existing, error } = await supabaseClient.from('calex_events').select('id').eq('user_id', authUser.id);
+			const userId = authUser.id;
+			const { data: existing, error } = await supabaseClient.from('calex_events').select('id').eq('user_id', userId);
 			if (error) throw error;
 			const currentIds = new Set(events.map(e => e.id));
 			const removed = (existing || []).filter(row => !currentIds.has(row.id)).map(row => row.id);
-			if (removed.length) { const { error: delError } = await supabaseClient.from('calex_events').delete().eq('user_id', authUser.id).in('id', removed); if (delError) throw delError; }
+			if (removed.length) {
+				const { error: delError } = await supabaseClient.from('calex_events').delete().eq('user_id', userId).in('id', removed);
+				if (delError) throw delError;
+			}
 			if (events.length) {
-				const rows = events.map(item => ({ id: item.id, user_id: authUser.id, event_data: item, updated_at: new Date().toISOString() }));
+				const rows = events.map(item => ({ id: item.id, user_id: userId, event_data: item, updated_at: new Date().toISOString() }));
 				const { error: upsertError } = await supabaseClient.from('calex_events').upsert(rows, { onConflict: 'user_id,id' });
 				if (upsertError) throw upsertError;
 			}
-		} catch (err) { console.error('Calex event sync failed', err); }
-		finally { cloudSyncBusy = false; }
+			success = true;
+		} catch (err) {
+			console.error('Calex event sync failed', err);
+		} finally {
+			cloudSyncBusy = false;
+			if (cloudSyncPending) { cloudSyncPending = false; scheduleCloudSync(); }
+		}
+		return success;
 	}
 	async function saveSettingsCloudNow() {
-		if (!supabaseClient || !authUser) return;
+		if (!supabaseClient || !authUser) return false;
 		const { error } = await supabaseClient.from('calex_preferences').upsert({ user_id: authUser.id, preferences: appSettings, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
-		if (error) console.error('Calex preferences sync failed', error);
+		if (error) { console.error('Calex preferences sync failed', error); return false; }
+		return true;
 	}
 	function scheduleCloudSync() {
 		if (!authUser) return;
