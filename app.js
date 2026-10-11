@@ -169,11 +169,12 @@
             })
           : await supabaseClient.auth.signInWithPassword({ email, password });
       if (result.error) return showToast(result.error.message);
-      if (mode === "signup" && !result.data.session)
-        showToast(
-          "Account created. Check your email to confirm, then sign in.",
-        );
-      else showToast(mode === "signup" ? "Account created" : "Signed in");
+      if (mode === "signup" && result.data.user && !result.data.session)
+        showToast("Check your email to confirm your account, then sign in.");
+      else showToast(mode === "signup" ? "Account created" : "Sign-in request completed");
+    } catch (err) {
+      console.error("Calex authentication action failed", err);
+      showToast(err?.message || "Could not contact authentication. Check your connection and try again.");
     } finally {
       $("authSubmit").disabled = false;
       $("authSignup").disabled = false;
