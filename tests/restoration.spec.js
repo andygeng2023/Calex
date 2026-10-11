@@ -25,9 +25,9 @@ for (const [width, height] of [
     await page.setViewportSize({ width, height });
     await page.goto("/");
     await page.locator('[data-screen="calendar"]').click();
-    await expect(page.locator('[data-view="all"]')).toHaveAttribute(
-      "aria-pressed",
-      "true",
+    await expect(page.locator("#calendarScreen")).toHaveAttribute(
+      "data-view",
+      "all",
     );
     for (const id of [
       "prevYear",
@@ -41,16 +41,16 @@ for (const [width, height] of [
       expect(b.y + b.height).toBeLessThanOrEqual(height);
     }
     await dragView(page, -90);
-    await expect(page.locator('[data-view="month"]')).toHaveAttribute(
-      "aria-pressed",
-      "true",
+    await expect(page.locator("#calendarScreen")).toHaveAttribute(
+      "data-view",
+      "month",
     );
     await expect(page.locator("#dateGrid .date-cell")).toHaveCount(42);
     await expect(page.locator("#panelAdd")).toBeVisible();
     await dragView(page, -70);
-    await expect(page.locator('[data-view="week"]')).toHaveAttribute(
-      "aria-pressed",
-      "true",
+    await expect(page.locator("#calendarScreen")).toHaveAttribute(
+      "data-view",
+      "week",
     );
     await expect(page.locator("#dateGrid .date-cell")).toHaveCount(7);
     const rightmost = await page
@@ -59,14 +59,14 @@ for (const [width, height] of [
       .boundingBox();
     expect(rightmost.x + rightmost.width).toBeLessThanOrEqual(width);
     await dragView(page, 70);
-    await expect(page.locator('[data-view="month"]')).toHaveAttribute(
-      "aria-pressed",
-      "true",
+    await expect(page.locator("#calendarScreen")).toHaveAttribute(
+      "data-view",
+      "month",
     );
     await dragView(page, 90);
-    await expect(page.locator('[data-view="all"]')).toHaveAttribute(
-      "aria-pressed",
-      "true",
+    await expect(page.locator("#calendarScreen")).toHaveAttribute(
+      "data-view",
+      "all",
     );
     expect(
       await page.evaluate(
@@ -81,7 +81,7 @@ for (const [width, height] of [
 test("month and year arrows each work independently", async ({ page }) => {
   await page.goto("/");
   await page.locator('[data-screen="calendar"]').click();
-  await page.locator('[data-view="month"]').click();
+  await page.keyboard.press("m");
   const original = await page.locator("#monthTitle").textContent();
   await page.locator("#nextYear").click();
   await expect(page.locator("#monthTitle")).not.toHaveText(original);
@@ -91,6 +91,41 @@ test("month and year arrows each work independently", async ({ page }) => {
   await expect(page.locator("#monthTitle")).not.toHaveText(original);
   await page.locator("#prevMonth").click();
   await expect(page.locator("#monthTitle")).toHaveText(original);
+});
+
+test("calendar dates are unboxed and the redundant view switch is absent", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.locator('[data-screen="calendar"]').click();
+  await expect(page.locator(".view-segment")).toHaveCount(0);
+  await page.keyboard.press("m");
+  const appearance = () =>
+    page.locator("#dateGrid .date-cell").evaluateAll((cells) =>
+      cells.map((cell) => {
+        const style = getComputedStyle(cell);
+        return {
+          background: style.backgroundColor,
+          border: style.borderTopWidth,
+          shadow: style.boxShadow,
+        };
+      }),
+    );
+  for (const cell of await appearance()) {
+    expect(cell.background).toBe("rgba(0, 0, 0, 0)");
+    expect(cell.border).toBe("0px");
+    expect(cell.shadow).toBe("none");
+  }
+  await page.locator("#themeToggle").click();
+  for (const cell of await appearance())
+    expect(cell.background).toBe("rgba(0, 0, 0, 0)");
+  await page.keyboard.press("w");
+  await expect(page.locator("#dateGrid .date-cell")).toHaveCount(7);
+  await page.keyboard.press("y");
+  await expect(page.locator("#calendarScreen")).toHaveAttribute(
+    "data-view",
+    "all",
+  );
 });
 
 async function authMock(

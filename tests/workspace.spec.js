@@ -29,7 +29,7 @@ test("categorized events persist and appear in month, week, and agenda", async (
   await expect(page.locator(".date-cell.today:not(.outside)")).toContainText(
     "Project review",
   );
-  await page.locator('[data-view="week"]').click();
+  await page.keyboard.press("w");
   await expect(page.locator("#weekTimeline")).toBeHidden();
   await expect(page.locator("#dateGrid .date-cell")).toHaveCount(7);
   await expect(page.locator("#panelEvents")).toContainText("Project review");

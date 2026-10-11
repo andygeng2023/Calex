@@ -230,9 +230,6 @@
         C.refresh();
       }),
   );
-  document
-    .querySelectorAll("[data-view]")
-    .forEach((el) => (el.onclick = () => C.setView(el.dataset.view)));
   $("globalAdd").onclick = () => C.newEvent();
   $("homeQuickAdd").onclick = () => C.quickAdd();
   $("agendaToday").onclick = () => C.selectDate(C.dateKey(new Date()));
