@@ -1063,7 +1063,14 @@
     .forEach((b) =>
       b.addEventListener("click", () => switchScreen(b.dataset.screen)),
     );
-  $("openAuthScreen").addEventListener("click", () => switchScreen("auth"));
+  // Capture the account CTA before other page handlers so it always opens auth.
+  document.addEventListener("click", (event) => {
+    const trigger = event.target instanceof Element ? event.target.closest("#openAuthScreen") : null;
+    if (!trigger) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    switchScreen("auth");
+  }, true);
   $("authBack").addEventListener("click", () => switchScreen("settings"));
 
   function showToast(msg) {
