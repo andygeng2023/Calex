@@ -26,6 +26,10 @@
 	let guestEventsSnapshot = null, guestSettingsSnapshot = null;
 	function activeEventsKey() { return authUser ? 'calex-events-' + authUser.id : guestEventsKey; }
 	function activeSettingsKey() { return authUser ? 'calex-settings-' + authUser.id : guestSettingsKey; }
+	try {
+		if (!localStorage.getItem(guestEventsKey) && localStorage.getItem('daymark-events-v1')) localStorage.setItem(guestEventsKey, localStorage.getItem('daymark-events-v1'));
+		if (!localStorage.getItem(guestSettingsKey) && localStorage.getItem('daymark-settings-v1')) localStorage.setItem(guestSettingsKey, localStorage.getItem('daymark-settings-v1'));
+	} catch (_) {}
 	function initSupabase() {
 		if (!window.supabase || !window.supabase.createClient) return;
 		supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
