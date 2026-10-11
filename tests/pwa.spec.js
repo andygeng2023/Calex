@@ -43,8 +43,11 @@ test('dark appearance covers the calendar and event form surfaces', async ({ pag
   await page.locator('[data-date]').first().click();
   await page.locator('#panelAdd').click();
   await expect(page.locator('#eventForm')).toBeVisible();
-  const formSurface = await page.locator('#eventForm').evaluate((el) => getComputedStyle(el).backgroundColor);
-  expect(formSurface).toBe('rgb(27, 36, 30)');
+  const modalSurface = await page.locator('.modal').evaluate((el) => getComputedStyle(el).backgroundColor);
+  expect(modalSurface).toBe('rgb(27, 36, 30)');
+
+  const formControlSurface = await page.locator('#eventTitle').evaluate((el) => getComputedStyle(el).backgroundColor);
+  expect(formControlSurface).toBe('rgb(27, 36, 30)');
 });
 
 test('manifest is linked and service worker enables offline shell', async ({ page, context }) => {
