@@ -1074,6 +1074,12 @@
     $("authEmail").focus({ preventScroll: true });
   });
   $("authBack").addEventListener("click", () => switchScreen("settings"));
+  document.querySelectorAll("[data-legal-screen]").forEach((button) => {
+    button.addEventListener("click", () => switchScreen(button.dataset.legalScreen));
+  });
+  document.querySelectorAll("[data-legal-back]").forEach((button) => {
+    button.addEventListener("click", () => switchScreen("settings"));
+  });
 
   function showToast(msg) {
     const t = $("toast");
@@ -2033,12 +2039,30 @@
       : deviceTimezone();
   }
 
+  function timezoneDescription(tz) {
+    const city = tz === "UTC" ? "UTC" : (tz.split("/").pop() || tz).replace(/_/g, " ");
+    let longName = tz, offset = "";
+    try {
+      const parts = new Intl.DateTimeFormat(undefined, {
+        timeZone: tz, timeZoneName: "long"
+      }).formatToParts(new Date());
+      longName = parts.find((p) => p.type === "timeZoneName")?.value || tz;
+      const offsetParts = new Intl.DateTimeFormat("en", {
+        timeZone: tz, timeZoneName: "longOffset", hour: "2-digit"
+      }).formatToParts(new Date());
+      offset = offsetParts.find((p) => p.type === "timeZoneName")?.value || "";
+      if (offset === "GMT") offset = "UTC+00:00";
+      else if (offset.startsWith("GMT")) offset = "UTC" + offset.slice(3);
+    } catch (_) {}
+    return { city, longName, offset };
+  }
+
   function renderTimezone() {
     const tz = currentTimezone();
+    const zoneInfo = timezoneDescription(tz);
     $("timezoneSummary").textContent =
-      appSettings.timezoneMode === "auto"
-        ? "Automatic · " + deviceTimezone()
-        : tz;
+      (appSettings.timezoneMode === "auto" ? "Automatic · " : "Manual · ") +
+      zoneInfo.city + " · " + (zoneInfo.offset || zoneInfo.longName);
     $("timezoneAuto").setAttribute(
       "aria-pressed",
       String(appSettings.timezoneMode === "auto"),
@@ -2050,10 +2074,8 @@
     $("timezoneSearchWrap").hidden = appSettings.timezoneMode !== "manual";
     $("timezoneHelp").textContent =
       appSettings.timezoneMode === "auto"
-        ? "Follows the time zone configured on this device."
-        : "Selected: " +
-          tz +
-          ". Existing event dates and times are not converted.";
+        ? "Using " + tz + " (" + zoneInfo.longName + (zoneInfo.offset ? ", " + zoneInfo.offset : "") + "). This follows your device setting automatically."
+        : "Selected: " + tz + " (" + zoneInfo.longName + (zoneInfo.offset ? ", " + zoneInfo.offset : "") + "). Save to apply. Existing event dates and times are not converted.";
     populateTimezoneOptions($("timezoneSearch").value || "");
   }
 
@@ -2094,8 +2116,9 @@
       b.addEventListener("click", () => {
         appSettings.timezone = z;
         populateTimezoneOptions($("timezoneSearch").value);
+        const info = timezoneDescription(z);
         $("timezoneHelp").textContent =
-          "Selected: " + z + ". Save to apply this preference.";
+          "Selected: " + z + " (" + info.longName + (info.offset ? ", " + info.offset : "") + "). Save to apply.";
       });
       root.appendChild(b);
     });
@@ -2162,17 +2185,18 @@
   });
 
   function applyAppearance() {
-    document
-      .querySelector(".app")
-      .classList.toggle("settings-dark", !!appSettings.dark);
-    $("appearanceToggle").setAttribute(
-      "aria-checked",
-      String(!!appSettings.dark),
-    );
+    const enabled = !!appSettings.dark;
+    document.querySelector(".app").classList.toggle("settings-dark", enabled);
+    $("appearanceToggle").setAttribute("aria-checked", String(enabled));
+    $("appearanceSwitch").setAttribute("data-enabled", String(enabled));
+    $("appearanceToggle").setAttribute("aria-label", "Dark appearance " + (enabled ? "on" : "off"));
+    document.documentElement.style.colorScheme = enabled ? "dark" : "light";
+    document.body.style.background = enabled ? "#101512" : "";
   }
   $("appearanceToggle").addEventListener("click", () => {
     appSettings.dark = !appSettings.dark;
-    if (saveAppSettings()) applyAppearance();
+    applyAppearance();
+    if (!saveAppSettings()) showToast("Appearance changed for this session, but could not be saved.");
   });
   $("exportCalendar").addEventListener("click", () => {
     const escapeIcs = (v) =>
