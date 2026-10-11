@@ -163,6 +163,7 @@
               <button class="save-settings" type="submit" id="authSubmit">Sign in</button>
               <button class="save-settings secondary-auth" type="button" id="authSignup">Create account</button>
             </div>
+            <button class="save-settings google-auth" type="button" id="authGoogle">Continue with Google</button>
             <button class="auth-link" type="button" id="authForgot">Forgot password?</button>
           </form>
           <button class="save-settings" type="button" id="authSignout" hidden>Sign out</button>
@@ -198,7 +199,7 @@
         <span class="settings-chevron" aria-hidden="true">›</span>
       </button>
     </div>
-    <p class="settings-footnote">Your calendar and these preferences are stored locally in this browser. Account sign-in and cloud synchronisation are not configured.</p>
+    <p class="settings-footnote">Calendar data and preferences are stored on this device while signed out. Sign in to sync them securely with your account.</p>
   </section>
   
   </main>
@@ -306,7 +307,7 @@
 
 <div class="toast" id="toast" role="status"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.min.js" defer></script>
 <script src="app.js" defer></script>
 
 </body>
