@@ -2110,10 +2110,8 @@
     Object.entries(ids).forEach(([key, id]) => {
       const open = key === which && $(id).hidden;
       $(id).hidden = !open;
-      $(key === "timezone" ? "timezoneToggle" : "accountToggle").setAttribute(
-        "aria-expanded",
-        String(open),
-      );
+      const triggerId = key === "timezone" ? "timezoneToggle" : "profileEdit";
+      $(triggerId).setAttribute("aria-expanded", String(open));
     });
     if (which === "timezone" && !$("timezoneDetail").hidden) {
       renderTimezone();
