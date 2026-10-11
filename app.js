@@ -1068,7 +1068,6 @@
     .forEach((b) =>
       b.addEventListener("click", () => switchScreen(b.dataset.screen)),
     );
-  $("accountToggle").addEventListener("click", () => openSettingsDetail("account"));
   $("settingsSignIn").addEventListener("click", (event) => {
     event.preventDefault();
     switchScreen("auth");
@@ -2125,7 +2124,6 @@
   $("timezoneToggle").addEventListener("click", () =>
     openSettingsDetail("timezone"),
   );
-  $("accountToggle").addEventListener("click", () => switchScreen("auth"));
   $("timezoneAuto").addEventListener("click", () => {
     appSettings.timezoneMode = "auto";
     appSettings.timezone = deviceTimezone();
