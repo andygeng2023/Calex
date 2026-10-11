@@ -2736,3 +2736,176 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .app.settings-dark .auth-screen #authForm label,.app.settings-dark .auth-screen-title { color:#f1f5f0; }
 .app.settings-dark .auth-screen-intro,.app.settings-dark .auth-privacy-note { color:#aab6aa; }
 @media (max-height:720px) { .auth-screen-content { margin-top:8px; } .auth-screen-title { margin-top:14px; } .auth-screen .auth-card { margin-top:14px; padding:15px; gap:10px; } }
+
+
+/* Settings refresh: clear hierarchy, consistent surfaces, and reliable touch targets */
+#settingsScreen.settings-page {
+  --settings-surface: #ffffff;
+  --settings-border: #e5eae4;
+  --settings-muted: #68756a;
+  gap: 22px;
+  padding: 22px 20px 30px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--paper);
+}
+.settings-header { padding: 2px 1px 0; }
+.settings-eyebrow {
+  color: var(--green-dark);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  margin-bottom: 7px;
+}
+#settingsScreen .settings-title {
+  margin: 0;
+  font-size: clamp(29px, 7vw, 34px);
+  line-height: 1.12;
+  letter-spacing: -1.1px;
+}
+.settings-intro {
+  margin: 8px 0 0;
+  color: var(--settings-muted, #68756a);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.settings-section { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.settings-section-heading {
+  margin: 0 2px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -.2px;
+}
+.settings-section-description {
+  margin: -4px 2px 2px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+#settingsScreen .profile-card {
+  gap: 14px;
+  padding: 16px;
+  min-height: 94px;
+  border: 1px solid var(--settings-border, #e5eae4);
+  border-radius: 18px;
+  background: var(--settings-surface, #fff);
+  box-shadow: 0 3px 12px #172a1706;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+#settingsScreen .profile-avatar { width: 54px; height: 54px; flex-basis: 54px; font-size: 17px; }
+#settingsScreen .profile-name { font-size: 16px; line-height: 1.3; }
+#settingsScreen .profile-location { margin-top: 3px; font-size: 12px; }
+.profile-edit-hint { display: block; margin-top: 6px; color: var(--green-dark); font-size: 11px; font-weight: 750; }
+#settingsScreen .settings-chevron { font-size: 25px; line-height: 1; }
+#settingsScreen .auth-cta-button {
+  width: 100%;
+  min-height: 82px;
+  padding: 16px;
+  gap: 12px;
+  border-radius: 18px;
+  background: linear-gradient(120deg, #245b32, #317342);
+  box-shadow: 0 6px 18px #245b321f;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+#settingsScreen .auth-cta-button:focus-visible,
+#settingsScreen .settings-row:focus-visible,
+#settingsScreen .profile-card:focus-visible {
+  outline: 3px solid #83b88d;
+  outline-offset: 3px;
+}
+.auth-cta-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border: 1px solid #ffffff42;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 21px;
+  font-weight: 700;
+}
+#settingsScreen .auth-cta-copy { flex: 1; gap: 4px; }
+#settingsScreen .auth-cta-title { font-size: 14px; line-height: 1.35; }
+#settingsScreen .auth-cta-subtitle { font-size: 11px; line-height: 1.4; color: #e5f0e6; }
+#settingsScreen .auth-cta-arrow { font-size: 25px; line-height: 1; }
+.settings-security-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 2px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.settings-status-dot {
+  width: 7px; height: 7px; flex: 0 0 7px;
+  margin-top: 4px; border-radius: 50%;
+  background: #6e9e76;
+}
+#settingsScreen .settings-group {
+  border: 1px solid var(--settings-border, #e5eae4);
+  border-radius: 17px;
+  background: var(--settings-surface, #fff);
+  box-shadow: 0 3px 12px #172a1706;
+}
+#settingsScreen .settings-row {
+  min-height: 72px;
+  padding: 13px 14px;
+  gap: 12px;
+  background: transparent;
+  border-top-color: var(--settings-border, #e5eae4);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+#settingsScreen .settings-row:active { background: #f5f8f4; }
+#settingsScreen .settings-icon {
+  width: 40px; height: 40px; flex-basis: 40px;
+  border-radius: 13px;
+  background: #edf5ee;
+}
+#settingsScreen .settings-row-title { font-size: 13px; line-height: 1.35; }
+#settingsScreen .settings-row-sub { margin-top: 4px; font-size: 11px; line-height: 1.45; }
+#settingsScreen .settings-switch { flex: 0 0 auto; }
+#settingsScreen .settings-detail {
+  padding: 15px;
+  background: #fafcf9;
+  border-top: 1px solid var(--settings-border, #e5eae4);
+}
+#settingsScreen .settings-detail[hidden] { display: none; }
+#settingsScreen .settings-help { font-size: 12px; line-height: 1.5; }
+#settingsScreen .settings-inline { margin-top: 14px; }
+#settingsScreen .save-settings {
+  min-height: 44px;
+  border-radius: 12px;
+  font-weight: 750;
+}
+#settingsScreen .settings-footnote {
+  margin: 2px 2px 0;
+  font-size: 11px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+#settingsScreen .profile-editor { border-radius: 0 0 16px 16px; }
+#settingsScreen .profile-editor label { margin-top: 8px; }
+#settingsScreen .profile-editor input { min-height: 44px; }
+#settingsScreen .settings-row, #settingsScreen .profile-card, #settingsScreen .auth-cta-button {
+  max-width: 100%;
+}
+.settings-dark #settingsScreen.settings-page {
+  --settings-surface: #202a21;
+  --settings-border: #3b493d;
+  --settings-muted: #b1beb2;
+}
+.settings-dark #settingsScreen .profile-card,
+.settings-dark #settingsScreen .settings-group { background: var(--settings-surface); border-color: var(--settings-border); }
+.settings-dark #settingsScreen .settings-row { color: var(--ink); border-top-color: var(--settings-border); }
+.settings-dark #settingsScreen .settings-row:active { background: #2a382c; }
+.settings-dark #settingsScreen .settings-icon { background: #2c4030; color: #b4d6b9; }
+.settings-dark #settingsScreen .settings-detail { background: #1b241c; border-color: var(--settings-border); }
+@media (min-width: 600px) {
+  #settingsScreen.settings-page { padding: 28px 28px 36px; gap: 24px; }
+  #settingsScreen .profile-card, #settingsScreen .auth-cta-button, #settingsScreen .settings-group { border-radius: 20px; }
+}
