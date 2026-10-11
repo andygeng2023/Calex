@@ -19,12 +19,132 @@
 		view = 'all',
 		modalMode = 'normal',
 		toastTimer;
+	const SUPABASE_URL = 'https://fwcijtjahtwpyaqedyhq.supabase.co';
+	const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_oWpplxsSIvn3KfinwmlLjg_3No69nPW';
+	let supabaseClient = null, authUser = null, cloudSyncBusy = false, cloudSyncTimer = null;
+	const guestEventsKey = 'calex-guest-events-v1', guestSettingsKey = 'calex-guest-settings-v1';
+	let guestEventsSnapshot = null, guestSettingsSnapshot = null;
+	function activeEventsKey() { return authUser ? 'calex-events-' + authUser.id : guestEventsKey; }
+	function activeSettingsKey() { return authUser ? 'calex-settings-' + authUser.id : guestSettingsKey; }
+	function initSupabase() {
+		if (!window.supabase || !window.supabase.createClient) return;
+		supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+		$('authForm').addEventListener('submit', async e => {
+			e.preventDefault();
+			await authAction('signin');
+		});
+		$('authSignup').addEventListener('click', () => authAction('signup'));
+		$('authForgot').addEventListener('click', async () => {
+			if (!supabaseClient) return showToast('Authentication library is unavailable. Refresh and try again.');
+			const email = $('authEmail').value.trim();
+			if (!email) { showToast('Enter your email first.'); $('authEmail').focus(); return; }
+			const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+			showToast(error ? error.message : 'Password reset email requested. Check your inbox.');
+		});
+		$('authSignout').addEventListener('click', async () => {
+			if (!supabaseClient) return;
+			await saveCloudNow();
+			const { error } = await supabaseClient.auth.signOut();
+			if (error) return showToast(error.message);
+			await activateUser(null);
+			showToast('Signed out');
+		});
+		supabaseClient.auth.onAuthStateChange((event, session) => {
+			if (event === 'PASSWORD_RECOVERY') {
+				const password = prompt('Enter a new password (at least 6 characters):');
+				if (password && password.length >= 6) supabaseClient.auth.updateUser({ password }).then(({error}) => showToast(error ? error.message : 'Password updated.'));
+			}
+			setTimeout(() => activateUser(session?.user || null), 0);
+		});
+		supabaseClient.auth.getSession().then(({data}) => activateUser(data.session?.user || null));
+	}
+	async function authAction(mode) {
+		if (!supabaseClient) return showToast('Could not load authentication. Refresh and try again.');
+		const email = $('authEmail').value.trim(), password = $('authPassword').value;
+		if (!email || password.length < 6) return showToast('Enter a valid email and password of at least 6 characters.');
+		$('authSubmit').disabled = true; $('authSignup').disabled = true;
+		try {
+			const result = mode === 'signup'
+				? await supabaseClient.auth.signUp({ email, password, options: { emailRedirectTo: location.origin + location.pathname } })
+				: await supabaseClient.auth.signInWithPassword({ email, password });
+			if (result.error) return showToast(result.error.message);
+			if (mode === 'signup' && !result.data.session) showToast('Account created. Check your email to confirm, then sign in.');
+			else showToast(mode === 'signup' ? 'Account created' : 'Signed in');
+		} finally { $('authSubmit').disabled = false; $('authSignup').disabled = false; }
+	}
+	function renderAuth() {
+		const signedIn = !!authUser;
+		$('authStatus').textContent = signedIn ? 'Signed in as ' + authUser.email : 'Not signed in · using this device';
+		$('authForm').hidden = signedIn;
+		$('authSignout').hidden = !signedIn;
+		$('authEmail').autocomplete = 'email';
+		$('authPassword').autocomplete = 'current-password';
+	}
+	async function activateUser(user) {
+		if ((authUser?.id || null) === (user?.id || null)) { renderAuth(); return; }
+		if (authUser) await saveCloudNow();
+		if (!authUser) {
+			guestEventsSnapshot = JSON.parse(JSON.stringify(events));
+			guestSettingsSnapshot = JSON.parse(JSON.stringify(appSettings));
+		}
+		authUser = user;
+		if (authUser) {
+			try {
+				const { data: remoteEvents, error: eventsError } = await supabaseClient.from('calex_events').select('id,event_data').eq('user_id', authUser.id);
+				if (eventsError) throw eventsError;
+				const { data: remotePrefs, error: prefsError } = await supabaseClient.from('calex_preferences').select('preferences').eq('user_id', authUser.id).maybeSingle();
+				if (prefsError) throw prefsError;
+				const local = JSON.parse(localStorage.getItem(activeEventsKey()) || '[]');
+				const merged = new Map((remoteEvents || []).map(row => [row.id, row.event_data]));
+				local.forEach(item => merged.set(item.id, item));
+				events = [...merged.values()];
+				localStorage.setItem(activeEventsKey(), JSON.stringify(events));
+				if (local.length) await saveCloudNow();
+				const prefLocal = JSON.parse(localStorage.getItem(activeSettingsKey()) || '{}');
+				appSettings = { ...defaultSettings, ...(remotePrefs?.preferences || {}), ...prefLocal };
+				await saveSettingsCloudNow();
+			} catch (err) { showToast('Cloud sync failed: ' + (err.message || 'Unknown error')); }
+		} else {
+			events = guestEventsSnapshot || JSON.parse(localStorage.getItem(guestEventsKey) || '[]');
+			appSettings = { ...defaultSettings, ...(guestSettingsSnapshot || JSON.parse(localStorage.getItem(guestSettingsKey) || '{}')) };
+			persist();
+			saveAppSettings();
+		}
+		renderAuth(); renderProfile(); renderTimezone(); applyAppearance(); renderAll();
+	}
+	async function saveCloudNow() {
+		if (!supabaseClient || !authUser || cloudSyncBusy) return;
+		cloudSyncBusy = true;
+		try {
+			const { data: existing, error } = await supabaseClient.from('calex_events').select('id').eq('user_id', authUser.id);
+			if (error) throw error;
+			const currentIds = new Set(events.map(e => e.id));
+			const removed = (existing || []).filter(row => !currentIds.has(row.id)).map(row => row.id);
+			if (removed.length) { const { error: delError } = await supabaseClient.from('calex_events').delete().eq('user_id', authUser.id).in('id', removed); if (delError) throw delError; }
+			if (events.length) {
+				const rows = events.map(item => ({ id: item.id, user_id: authUser.id, event_data: item, updated_at: new Date().toISOString() }));
+				const { error: upsertError } = await supabaseClient.from('calex_events').upsert(rows, { onConflict: 'user_id,id' });
+				if (upsertError) throw upsertError;
+			}
+		} catch (err) { console.error('Calex event sync failed', err); }
+		finally { cloudSyncBusy = false; }
+	}
+	async function saveSettingsCloudNow() {
+		if (!supabaseClient || !authUser) return;
+		const { error } = await supabaseClient.from('calex_preferences').upsert({ user_id: authUser.id, preferences: appSettings, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+		if (error) console.error('Calex preferences sync failed', error);
+	}
+	function scheduleCloudSync() {
+		if (!authUser) return;
+		clearTimeout(cloudSyncTimer);
+		cloudSyncTimer = setTimeout(() => saveCloudNow(), 300);
+	}
 	const key = 'daymark-events-v1';
 	let events = [],
 		storageAvailable = true,
 		hasStoredEvents = false;
 	try {
-		const stored = localStorage.getItem(key);
+		const stored = localStorage.getItem(activeEventsKey());
 		hasStoredEvents = stored !== null;
 		events = stored ? JSON.parse(stored) : [];
 		if (!Array.isArray(events)) events = []
@@ -68,7 +188,8 @@
 
 	function persist() {
 		try {
-			localStorage.setItem(key, JSON.stringify(events));
+						localStorage.setItem(activeEventsKey(), JSON.stringify(events));
+			scheduleCloudSync();
 			return true
 		} catch (_) {
 			storageAvailable = false;
@@ -1088,7 +1209,7 @@
 		...defaultSettings
 	};
 	try {
-		const saved = JSON.parse(localStorage.getItem(settingsKey) || '{}');
+		const saved = JSON.parse(localStorage.getItem(activeSettingsKey()) || '{}');
 		if (saved && typeof saved === 'object') appSettings = {
 			...defaultSettings,
 			...saved
@@ -1097,7 +1218,8 @@
 
 	function saveAppSettings() {
 		try {
-			localStorage.setItem(settingsKey, JSON.stringify(appSettings));
+			localStorage.setItem(activeSettingsKey(), JSON.stringify(appSettings));
+			if (authUser) saveSettingsCloudNow();
 			return true
 		} catch (_) {
 			showToast('Could not save settings in this browser.');
@@ -1265,6 +1387,8 @@
 		});
 	}
 
+	initSupabase();
+	renderAuth();
 	renderProfile();
 	renderTimezone();
 	applyAppearance();
