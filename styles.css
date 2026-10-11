@@ -2995,3 +2995,26 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .legal-content { max-width: 660px; }
 .legal-content h2 { scroll-margin-top: 16px; }
 .legal-screen a:focus-visible { outline-offset: 4px; }
+
+
+/* Stack each settings label above its supporting grey description. */
+#settingsScreen .settings-row-copy {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  min-width: 0;
+  width: 100%;
+}
+#settingsScreen .settings-row-title,
+#settingsScreen .settings-row-sub {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+#settingsScreen .settings-row-title { margin: 0; }
+#settingsScreen .settings-row-sub { margin-top: 4px; }
