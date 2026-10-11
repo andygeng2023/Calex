@@ -78,6 +78,11 @@ test("Quick Add starts with its hint and previews the parsed repeat interval", a
   await page.locator("#quickText").fill("");
   await expect(preview).toHaveText("Start typing to see the preview...");
   await expect(preview).toHaveClass(/is-empty/);
+
+  await page.locator("#quickText").fill("Dentist tomorrow every 2 weeks");
+  await page.locator("#quickSave").click();
+  await expect(page.locator("#panelEvents")).toContainText("Dentist");
+  await expect(page.locator("#panelEvents")).toContainText("Repeats every 2 weeks");
 });
 
 test("Quick Add empty preview follows dark appearance", async ({ page }) => {
