@@ -3359,3 +3359,67 @@ body.settings-dark .modal #eventForm .field textarea::placeholder {
 .month-title { white-space: nowrap; font-size: clamp(19px, 5.6vw, 26px); min-width: 0; }
 .month-controls { gap: 1px; flex: 0 0 auto; }
 .today-btn { padding: 0 10px; margin-right: 4px; }
+
+
+/* Calex home and quick-add polish: preserve the existing design tokens. */
+#homeScreen {
+  display: none;
+  flex-direction: column;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+#homeScreen.active {
+  display: flex;
+}
+#todayEvents,
+#comingUpSection {
+  flex: 0 0 auto;
+  min-height: auto;
+  overflow: visible;
+}
+#comingUpSection {
+  margin-top: 18px;
+  padding-top: 4px;
+  padding-bottom: 16px;
+  border-top: 1px solid var(--line);
+}
+#comingUpHeading {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+#comingUpEvents .empty {
+  color: var(--muted);
+  padding: 8px 0 14px;
+}
+.event {
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+}
+.event .check {
+  align-self: center;
+  justify-self: center;
+  margin: 0;
+}
+.nlp-help {
+  color: var(--muted);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 0;
+  overflow-wrap: anywhere;
+}
+.nlp-help.is-empty {
+  color: var(--muted);
+}
+.app.settings-dark .nlp-help {
+  color: var(--muted);
+  background: #18221a;
+  border-color: var(--line);
+}
+.app.settings-dark .nlp-help.is-empty {
+  color: #aab7aa;
+}
