@@ -1794,6 +1794,55 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 	color: var(--ink);
 }
 
+.auth-cta-button {
+	width: 100%;
+	min-height: 76px;
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 16px 18px;
+	border: 0;
+	border-radius: 16px;
+	background: var(--green-dark);
+	color: #fff;
+	text-align: left;
+	box-shadow: 0 5px 14px #234f2a20;
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+	position: relative;
+	z-index: 1;
+}
+
+.auth-cta-button:active {
+	transform: scale(.99);
+	background: #245b32;
+}
+
+.auth-cta-copy {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	min-width: 0;
+}
+
+.auth-cta-title {
+	font-size: 15px;
+	font-weight: 800;
+}
+
+.auth-cta-subtitle {
+	font-size: 12px;
+	line-height: 1.4;
+	color: #e1eee2;
+}
+
+.auth-cta-arrow {
+	font-size: 24px;
+	flex: 0 0 auto;
+}
+
 .profile-avatar {
 	width: 62px;
 	height: 62px;
