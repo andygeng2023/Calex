@@ -23,8 +23,9 @@
       href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=27" />
-    <link rel="stylesheet" href="workspace.css?v=27" />
+    <link rel="stylesheet" href="styles.css?v=28" />
+    <link rel="stylesheet" href="workspace.css?v=28" />
+    <link rel="stylesheet" href="calendar.css?v=28" />
   </head>
 
   <body>
@@ -79,7 +80,7 @@
           <div id="todayEvents"></div>
         </section>
 
-        <section id="calendarScreen" class="screen">
+        <section id="calendarScreen" class="screen calendar-restored">
           <div class="search-wrap">
             <svg
               viewBox="0 0 24 24"
@@ -109,7 +110,7 @@
                 Week
               </button>
               <button type="button" data-view="all" aria-pressed="false">
-                Year
+                Full dates
               </button>
             </div>
             <button
@@ -174,7 +175,15 @@
 
           <section id="selectedPanel" class="selected-panel">
             <div class="panel-handle">
-              <span class="handle-grip" aria-hidden="true"></span>
+              <button
+                id="viewHandle"
+                class="handle-grip"
+                type="button"
+                aria-label="Change calendar view. Drag up for month and week, down for full dates."
+                title="Drag to change view"
+              >
+                <span aria-hidden="true"></span>
+              </button>
             </div>
             <div class="panel-head">
               <h2 id="panelDate">Selected day</h2>
@@ -238,7 +247,34 @@
               <div class="auth-status" id="authStatus" role="status">
                 Not signed in · using this device
               </div>
+              <p
+                id="authFeedback"
+                class="auth-feedback"
+                role="status"
+                aria-live="polite"
+                hidden
+              ></p>
+              <a
+                id="authOpenLive"
+                class="secondary"
+                href="https://andygeng2023.github.io/Calex/"
+                target="_blank"
+                rel="noopener noreferrer"
+                hidden
+                >Open live Calex to sign in</a
+              >
               <form id="authForm">
+                <button
+                  class="save-settings google-auth"
+                  type="button"
+                  id="authGoogle"
+                >
+                  Continue with Google
+                </button>
+                <p class="auth-provider-note">
+                  Already used Google? Choose Google again. Email/password works
+                  only after you have set a password for that account.
+                </p>
                 <label for="authEmail">Email</label>
                 <input
                   id="authEmail"
@@ -268,15 +304,11 @@
                     Create account
                   </button>
                 </div>
-                <button
-                  class="save-settings google-auth"
-                  type="button"
-                  id="authGoogle"
-                >
-                  Continue with Google
-                </button>
                 <button class="auth-link" type="button" id="authForgot">
                   Forgot password?
+                </button>
+                <button class="auth-link" type="button" id="authResend" hidden>
+                  Resend confirmation email
                 </button>
               </form>
               <button
@@ -287,6 +319,30 @@
               >
                 Sign out
               </button>
+              <form id="authRecovery" hidden>
+                <p class="auth-provider-note">
+                  Choose a password for your confirmed account.
+                </p>
+                <label for="recoveryPassword">New password</label>
+                <input
+                  id="recoveryPassword"
+                  type="password"
+                  autocomplete="new-password"
+                  minlength="6"
+                  required
+                />
+                <label for="recoveryConfirm">Confirm password</label>
+                <input
+                  id="recoveryConfirm"
+                  type="password"
+                  autocomplete="new-password"
+                  minlength="6"
+                  required
+                />
+                <button id="recoverySubmit" class="save-settings" type="submit">
+                  Set password
+                </button>
+              </form>
             </div>
 
             <p class="auth-privacy-note">
@@ -1240,10 +1296,10 @@
       src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3"
       defer
     ></script>
-    <script src="icons.js?v=27" defer></script>
-    <script src="sync.js?v=27" defer></script>
-    <script src="ics.js?v=27" defer></script>
-    <script src="app.js?v=27" defer></script>
-    <script src="workspace.js?v=27" defer></script>
+    <script src="icons.js?v=28" defer></script>
+    <script src="sync.js?v=28" defer></script>
+    <script src="ics.js?v=28" defer></script>
+    <script src="app.js?v=28" defer></script>
+    <script src="workspace.js?v=28" defer></script>
   </body>
 </html>

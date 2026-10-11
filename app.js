@@ -22,7 +22,7 @@
       12,
     ),
     cursor = new Date(selected),
-    view = "month",
+    view = "all",
     modalMode = "normal",
     toastTimer;
   const SUPABASE_URL = "https://fwcijtjahtwpyaqedyhq.supabase.co";
@@ -30,6 +30,7 @@
     "sb_publishable_oWpplxsSIvn3KfinwmlLjg_3No69nPW";
   let supabaseClient = null,
     authUser = null,
+    recoveringPassword = false,
     cloudSyncBusy = false,
     cloudSyncPending = false,
     cloudSyncTimer = null;
@@ -62,6 +63,8 @@
       );
   } catch (_) {}
   function initSupabase() {
+    const authReturnParams = new URLSearchParams(location.hash.slice(1));
+    const authReturnError = authReturnParams.get("error_description");
     if (!window.supabase || !window.supabase.createClient) {
       const unavailable = () =>
         showToast(
@@ -71,7 +74,7 @@
         e.preventDefault();
         unavailable();
       });
-      ["authSignup", "authGoogle", "authForgot"].forEach((id) =>
+      ["authSignup", "authGoogle", "authForgot", "authResend"].forEach((id) =>
         $(id).addEventListener("click", unavailable),
       );
       return;
@@ -92,7 +95,16 @@
       await authAction("signin");
     });
     $("authSignup").addEventListener("click", () => authAction("signup"));
+    $("authResend").addEventListener("click", resendConfirmation);
     $("authGoogle").addEventListener("click", async () => {
+      if (window.self !== window.top) {
+        authFeedback(
+          "Google sign-in must run outside this embedded preview. Open the live Calex site using the link below, then choose Continue with Google.",
+          true,
+        );
+        $("authOpenLive").hidden = false;
+        return;
+      }
       if (!supabaseClient)
         return showToast(
           "Could not load authentication. Refresh and try again.",
@@ -103,9 +115,9 @@
           provider: "google",
           options: { redirectTo: location.origin + location.pathname },
         });
-        if (error) showToast(error.message);
+        if (error) authFeedback(error.message, true);
       } catch (err) {
-        showToast(err.message || "Google sign-in could not start.");
+        authFeedback(err.message || "Google sign-in could not start.", true);
       } finally {
         $("authGoogle").disabled = false;
       }
@@ -121,14 +133,28 @@
         $("authEmail").focus();
         return;
       }
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: location.origin + location.pathname,
-      });
-      showToast(
-        error
-          ? error.message
-          : "Password reset email requested. Check your inbox.",
-      );
+      $("authForgot").disabled = true;
+      try {
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(
+          email,
+          {
+            redirectTo: location.origin + location.pathname,
+          },
+        );
+        authFeedback(
+          error
+            ? authErrorMessage(error)
+            : "Password reset requested. If an account exists for this email, check your inbox and spam folder.",
+          !!error,
+        );
+      } catch (err) {
+        authFeedback(
+          err.message || "Could not request a reset. Please try again.",
+          true,
+        );
+      } finally {
+        $("authForgot").disabled = false;
+      }
     });
     $("authSignout").addEventListener("click", async () => {
       if (!supabaseClient) return;
@@ -138,23 +164,140 @@
       await activateUser(null);
       showToast("Signed out");
     });
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY") {
-        const password = prompt(
-          "Enter a new password (at least 6 characters):",
+    $("authRecovery").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const password = $("recoveryPassword").value;
+      if (password !== $("recoveryConfirm").value) {
+        authFeedback("Passwords do not match.", true);
+        $("recoveryConfirm").focus();
+        return;
+      }
+      $("recoverySubmit").disabled = true;
+      try {
+        const { error } = await supabaseClient.auth.updateUser({ password });
+        if (error) {
+          authFeedback(authErrorMessage(error), true);
+          return;
+        }
+        recoveringPassword = false;
+        $("recoveryPassword").value = $("recoveryConfirm").value = "";
+        renderAuth();
+        authFeedback(
+          "Password set. You can now use email/password or Google for this account.",
         );
-        if (password && password.length >= 6)
-          supabaseClient.auth
-            .updateUser({ password })
-            .then(({ error }) =>
-              showToast(error ? error.message : "Password updated."),
-            );
+      } catch (error) {
+        authFeedback(error.message || "Could not set a password.", true);
+      } finally {
+        $("recoverySubmit").disabled = false;
+      }
+    });
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") recoveringPassword = false;
+      if (event === "PASSWORD_RECOVERY") {
+        recoveringPassword = true;
+        switchScreen("auth");
+        authFeedback("Reset link accepted. Choose a new password below.");
       }
       setTimeout(() => activateUser(session?.user || null), 0);
     });
     supabaseClient.auth
       .getSession()
-      .then(({ data }) => activateUser(data.session?.user || null));
+      .then(({ data, error }) => {
+        if (error || authReturnError) {
+          switchScreen("auth");
+          authFeedback(authReturnError || authErrorMessage(error), true);
+        }
+        return activateUser(data?.session?.user || null);
+      })
+      .catch((error) => {
+        switchScreen("auth");
+        authFeedback(
+          error.message ||
+            "Could not restore your sign-in session. Please try again.",
+          true,
+        );
+      });
+  }
+  function authFeedback(message, isError = false) {
+    const el = $("authFeedback");
+    el.hidden = false;
+    el.textContent = message;
+    el.classList.toggle("is-error", isError);
+  }
+  function authErrorMessage(error) {
+    if (error.code === "email_not_confirmed")
+      return "Your email is not confirmed yet. Check your inbox and spam folder, or request a new confirmation below.";
+    if (error.code === "invalid_credentials")
+      return "Email or password was not accepted. If you originally used Google, choose Continue with Google: that account may not have a password. Otherwise use password reset or confirm your email.";
+    if (
+      error.status === 429 ||
+      /rate.?limit|too many|over_email_send_rate_limit/i.test(
+        error.code || error.message || "",
+      )
+    )
+      return "The authentication service has reached its sending limit. Wait before retrying. The app maintainer may need to configure custom SMTP; Google sign-in is another option.";
+    if (/email.*not.*authorized/i.test(error.message || ""))
+      return "The email service cannot send to this address. The app maintainer must configure custom SMTP in Supabase. You can also try Google sign-in.";
+    if (
+      error.code === "unexpected_failure" ||
+      /sending.*email|smtp/i.test(error.message || "")
+    )
+      return "Supabase could not send the email. The app maintainer needs to check SMTP settings and Auth delivery logs.";
+    return (
+      error.message ||
+      "Authentication could not complete. Check your connection and try again."
+    );
+  }
+  let resendUntil = 0,
+    resendTimer;
+  async function resendConfirmation() {
+    if (!supabaseClient || Date.now() < resendUntil) return;
+    const email = $("authEmail").value.trim();
+    if (!$("authEmail").checkValidity() || !email) {
+      authFeedback(
+        "Enter a valid email address before requesting a confirmation.",
+        true,
+      );
+      $("authEmail").focus();
+      return;
+    }
+    $("authResend").disabled = true;
+    try {
+      const { error } = await supabaseClient.auth.resend({
+        type: "signup",
+        email,
+        options: { emailRedirectTo: location.origin + location.pathname },
+      });
+      if (error) {
+        authFeedback(authErrorMessage(error), true);
+        return;
+      }
+      authFeedback(
+        "Confirmation requested. Check your inbox and spam folder. A successful request does not guarantee delivery; if nothing arrives, the maintainer must check Supabase email settings.",
+      );
+      resendUntil = Date.now() + 60000;
+      clearInterval(resendTimer);
+      resendTimer = setInterval(() => {
+        const seconds = Math.max(
+          0,
+          Math.ceil((resendUntil - Date.now()) / 1000),
+        );
+        $("authResend").textContent = seconds
+          ? "Resend available in " + seconds + "s"
+          : "Resend confirmation email";
+        if (!seconds) {
+          clearInterval(resendTimer);
+          $("authResend").disabled = false;
+        }
+      }, 1000);
+    } catch (error) {
+      authFeedback(
+        error.message || "Could not request a confirmation email.",
+        true,
+      );
+    } finally {
+      $("authResend").disabled = Date.now() < resendUntil;
+    }
   }
   async function authAction(mode) {
     if (!supabaseClient)
@@ -176,18 +319,28 @@
               options: { emailRedirectTo: location.origin + location.pathname },
             })
           : await supabaseClient.auth.signInWithPassword({ email, password });
-      if (result.error) return showToast(result.error.message);
-      if (mode === "signup" && result.data.user && !result.data.session)
-        showToast("Check your email to confirm your account, then sign in.");
-      else
+      if (result.error) {
+        $("authResend").hidden = false;
+        authFeedback(authErrorMessage(result.error), true);
+        return;
+      }
+      if (mode === "signup" && !result.data.session) {
+        $("authResend").hidden = false;
+        authFeedback(
+          "Signup request accepted. If this address needs confirmation, check your inbox and spam folder. If you already used Google, choose Continue with Google instead: creating the account again does not set a password or require another confirmation.",
+        );
+      } else {
+        authFeedback("Signed in. Your calendar is connected.");
         showToast(
           mode === "signup" ? "Account created" : "Sign-in request completed",
         );
+      }
     } catch (err) {
       console.error("Calex authentication action failed", err);
-      showToast(
+      authFeedback(
         err?.message ||
           "Could not contact authentication. Check your connection and try again.",
+        true,
       );
     } finally {
       $("authSubmit").disabled = false;
@@ -200,7 +353,8 @@
       ? "Signed in as " + authUser.email
       : "Not signed in · using this device";
     $("authForm").hidden = signedIn;
-    $("authSignout").hidden = !signedIn;
+    $("authSignout").hidden = !signedIn || recoveringPassword;
+    $("authRecovery").hidden = !signedIn || !recoveringPassword;
     if ($("settingsSignInTitle")) {
       $("settingsSignInTitle").textContent = signedIn
         ? "Account connected"
@@ -837,10 +991,9 @@
   }
 
   function renderCalendar(settleTransition = false) {
-    // Explicit view controls supersede the old gesture-driven FLIP renderer.
-    // Rebuilding a 42-cell grid is inexpensive and avoids animating an entire
-    // workspace of event cards during keyboard or month navigation.
-    if (window.Calex) {
+    // Ordinary navigation updates immediately. The restored drag-release path
+    // retains the original FLIP animation without ghosting over other screens.
+    if (!settleTransition) {
       renderCalendarContent();
       return;
     }
@@ -1134,6 +1287,8 @@
     void sc.offsetWidth;
     sc.classList.add("view-enter");
     if (view === "all") {
+      timelineBusy = true;
+      const anchorKey = monthKey(cursor);
       grid.style.display = "block";
       grid.innerHTML = "";
       const start = new Date(
@@ -1149,14 +1304,15 @@
         );
       bindDateCells(grid);
       requestAnimationFrame(() => {
-        const target = grid.querySelector(
-          '[data-month="' + monthKey(cursor) + '"]',
-        );
+        const target = grid.querySelector('[data-month="' + anchorKey + '"]');
         if (target) {
           const sr = sc.getBoundingClientRect(),
             tr = target.getBoundingClientRect();
-          sc.scrollTop += tr.top - sr.top - 28;
+          sc.scrollTop += tr.top - sr.top - 44;
         }
+        requestAnimationFrame(() => {
+          timelineBusy = false;
+        });
       });
     } else {
       grid.style.display = "grid";
@@ -1692,12 +1848,6 @@
             : id === "prevMonth"
               ? -1
               : 1;
-      if (view === "week" && (id === "prevMonth" || id === "nextMonth")) {
-        selected = addDays(selected, amount * 7);
-        cursor = new Date(selected);
-        renderCalendar();
-        return;
-      }
       cursor = new Date(
         cursor.getFullYear(),
         cursor.getMonth() + amount,
@@ -1993,7 +2143,7 @@
     if (!handleDragging) return;
     const dy = (e.clientY ?? handleLastY) - handleY,
       dx = (e.clientX ?? handleX) - handleX;
-    const threshold = Math.max(55, window.innerHeight * 0.075);
+    const threshold = Math.max(40, Math.min(64, window.innerHeight * 0.06));
     const valid =
       Math.abs(dy) >= threshold &&
       Math.abs(dy) >= Math.abs(dx) * 1.15 &&
@@ -2015,7 +2165,12 @@
   $("calendarScroller").addEventListener(
     "scroll",
     () => {
-      if (view !== "all" || timelineBusy) return;
+      if (
+        view !== "all" ||
+        timelineBusy ||
+        !$("calendarScreen").classList.contains("active")
+      )
+        return;
       const sc = $("calendarScroller"),
         grid = $("dateGrid"),
         sections = grid.querySelectorAll(".timeline-month");
@@ -2023,7 +2178,7 @@
       const scRect = sc.getBoundingClientRect();
       let nearest = sections[0];
       for (const sec of sections) {
-        if (sec.getBoundingClientRect().top <= scRect.top + 35) nearest = sec;
+        if (sec.getBoundingClientRect().top <= scRect.top + 65) nearest = sec;
         else break;
       }
       const shown = nearest.dataset.month.split("-").map(Number);
@@ -2606,9 +2761,19 @@
     },
     setView: (value) => {
       if (!["month", "week", "all"].includes(value)) return;
+      if (value !== "all" && view === "all") {
+        selected = new Date(
+          cursor.getFullYear(),
+          cursor.getMonth(),
+          Math.min(
+            selected.getDate(),
+            new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0).getDate(),
+          ),
+          12,
+        );
+      }
       view = value;
       switchScreen("calendar");
-      renderCalendar();
     },
     refresh: renderAll,
     switchScreen,
