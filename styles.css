@@ -2655,3 +2655,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .auth-link{border:0;background:transparent;color:var(--accent,#477b50);padding:8px;text-decoration:underline;font:inherit}
 .auth-status{font-size:13px;overflow-wrap:anywhere;color:var(--muted,#667)}
 .auth-card button:disabled{opacity:.6}
+
+/* Email and Google authentication controls */
+.auth-card [hidden] { display: none !important; }
+.google-auth { width: 100%; margin-top: 2px; background: #fff!important; color: #233428!important; border: 1px solid var(--line)!important; }
+.auth-card .auth-actions .save-settings { min-width: 0; }
