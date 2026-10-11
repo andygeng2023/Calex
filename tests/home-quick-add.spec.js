@@ -168,3 +168,29 @@ test("event checkboxes align to the center of their event row", async ({ page })
   expect(alignment.horizontalOffset, JSON.stringify(alignment)).toBeLessThan(1);
   expect(alignment.verticalOffset, JSON.stringify(alignment)).toBeLessThan(1);
 });
+
+
+test("asset and service-worker cache versions stay in sync", async ({ page }) => {
+  await page.goto("/");
+  const assets = await page
+    .locator('link[rel="stylesheet"][href*="?v="], script[src*="?v="]')
+    .evaluateAll((elements) =>
+      elements.map((element) => {
+        const value = element.getAttribute("href") || element.getAttribute("src");
+        const [path, query] = value.split("?");
+        return { path: path.replace(/^\.\//, ""), version: new URLSearchParams(query).get("v") };
+      }),
+    );
+  expect(assets.length).toBeGreaterThan(0);
+  const versions = [...new Set(assets.map((asset) => asset.version))];
+  expect(versions).toHaveLength(1);
+
+  const response = await page.request.get("/sw.js");
+  expect(response.ok()).toBeTruthy();
+  const serviceWorker = await response.text();
+  const cacheVersion = serviceWorker.match(/const CACHE_NAME = "calex-shell-v(\d+)"/)?.[1];
+  expect(cacheVersion).toBe(versions[0]);
+  for (const asset of assets) {
+    expect(serviceWorker).toContain(`./${asset.path}?v=${asset.version}`);
+  }
+});
