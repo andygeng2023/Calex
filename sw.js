@@ -1,4 +1,4 @@
-const CACHE_NAME = 'calex-shell-v6';
+const CACHE_NAME = 'calex-shell-v7';
 const APP_SHELL = [
   './',
   './index.html',
