@@ -151,7 +151,22 @@
         <input id="settingsName" maxlength="80" placeholder="Your name">
         <label for="settingsLocation">Location</label>
         <input id="settingsLocation" maxlength="120" placeholder="City or region">
-        <p class="settings-help">This profile is saved on this device. Calex does not currently have sign-in or a synced account.</p>
+        <p class="settings-help">Sign in to sync your calendar and preferences across devices.</p>
+        <div class="auth-card" id="authCard">
+          <div class="auth-status" id="authStatus" role="status">Not signed in · using this device</div>
+          <form id="authForm">
+            <label for="authEmail">Email</label>
+            <input id="authEmail" type="email" autocomplete="email" required placeholder="you@example.com">
+            <label for="authPassword">Password</label>
+            <input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters">
+            <div class="auth-actions">
+              <button class="save-settings" type="submit" id="authSubmit">Sign in</button>
+              <button class="save-settings secondary-auth" type="button" id="authSignup">Create account</button>
+            </div>
+            <button class="auth-link" type="button" id="authForgot">Forgot password?</button>
+          </form>
+          <button class="save-settings" type="button" id="authSignout" hidden>Sign out</button>
+        </div>
         <div class="settings-inline">
           <button type="button" class="save-settings" id="saveProfile">Save profile</button>
         </div>
@@ -291,7 +306,8 @@
 
 <div class="toast" id="toast" role="status"></div>
 
-<script src="app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js" defer></script>
+<script src="app.js" defer></script>
 
 </body>
 
