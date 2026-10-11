@@ -1731,6 +1731,27 @@
   }
   let quickParseTimer = null;
 
+  function quickPreviewRepeatText(p) {
+    if (!p || !p.repeat || p.repeat === "none") return "";
+    const unit = p.repeatUnit || ({
+      daily: "day",
+      weekly: "week",
+      fortnightly: "week",
+      monthly: "month",
+      yearly: "year",
+    }[p.repeat] || "day");
+    const interval = Math.max(
+      1,
+      Number(p.repeatInterval) || (p.repeat === "fortnightly" ? 2 : 1),
+    );
+    const units = { day: "day", week: "week", month: "month", year: "year" };
+    if (interval === 1) {
+      const names = { day: "daily", week: "weekly", month: "monthly", year: "yearly" };
+      if (names[unit]) return " · Repeats " + names[unit];
+    }
+    return " · Repeats every " + interval + " " + (units[unit] || unit) + (interval === 1 ? "" : "s");
+  }
+
   function showQuickPreview(p, prefix = "Preview") {
     $("quickPreview").textContent =
       prefix +
@@ -1745,7 +1766,7 @@
       }) +
       " · " +
       (p.start ? p.start + (p.end ? "–" + p.end : "") : "All day") +
-      (p.repeat !== "none" ? repeatText(p) : "") +
+      quickPreviewRepeatText(p) +
       (p.description ? " · " + p.description : "") +
       (p.location ? " · " + p.location : "");
   }
