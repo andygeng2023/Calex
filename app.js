@@ -1063,16 +1063,7 @@
     .forEach((b) =>
       b.addEventListener("click", () => switchScreen(b.dataset.screen)),
     );
-  // Use delegated touch and click handling so the CTA works on mobile and desktop.
-  const openAccountScreen = (event) => {
-    const trigger = event.target instanceof Element ? event.target.closest("#openAuthScreen") : null;
-    if (!trigger) return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    switchScreen("auth");
-  };
-  document.addEventListener("pointerup", openAccountScreen, true);
-  document.addEventListener("click", openAccountScreen, true);
+  $("openAuthScreen").addEventListener("click", () => switchScreen("auth"));
   $("authBack").addEventListener("click", () => switchScreen("settings"));
 
   function showToast(msg) {
