@@ -11,7 +11,7 @@
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="./icon.svg"><meta name="description" content="A calm, simple calendar for your days.">
   <title>Calex</title>
-  <link rel="stylesheet" href="styles.css?v=17">
+  <link rel="stylesheet" href="styles.css?v=18">
 </head>
 
 <body>
@@ -118,32 +118,56 @@
     </div>
   </section>
 
-  <section id="settingsScreen" class="screen" aria-label="Settings">
-    <h1 class="settings-title">Settings</h1>
-    <button class="profile-card" id="profileEdit" type="button" aria-label="Edit profile">
-      <span class="profile-avatar" id="profileAvatar" aria-hidden="true">A</span>
-      <span class="profile-copy">
-        <span class="profile-name" id="profileName">Your name</span>
-        <span class="profile-location" id="profileLocation">Add your location</span>
-      </span>
-      <span class="profile-edit">Edit</span>
-    </button>
-    <button class="auth-cta-button" id="settingsSignIn" type="button">
-      <span class="auth-cta-copy">
-        <span class="auth-cta-title">Sign in or create account</span>
-        <span class="auth-cta-subtitle">Sync your calendar across devices</span>
-      </span>
-      <span class="auth-cta-arrow" aria-hidden="true">→</span>
-    </button>
-    
-    <div class="settings-group">
-      <div class="settings-group-title">Preferences</div>
+  <section id="settingsScreen" class="screen settings-page" aria-label="Settings">
+    <header class="settings-header">
+      <div class="settings-eyebrow">CALEX PREFERENCES</div>
+      <h1 class="settings-title">Settings</h1>
+      <p class="settings-intro">Make Calex work the way you do.</p>
+    </header>
+
+    <section class="settings-section profile-section" aria-labelledby="profileSectionTitle">
+      <h2 class="settings-section-heading" id="profileSectionTitle">Your profile</h2>
+      <button class="profile-card" id="profileEdit" type="button" aria-label="Edit profile">
+        <span class="profile-avatar" id="profileAvatar" aria-hidden="true">A</span>
+        <span class="profile-copy">
+          <span class="profile-name" id="profileName">Your name</span>
+          <span class="profile-location" id="profileLocation">Add your location</span>
+          <span class="profile-edit-hint">Edit profile details</span>
+        </span>
+        <span class="settings-chevron" aria-hidden="true">›</span>
+      </button>
+      <div class="settings-detail profile-editor" id="accountDetail" hidden>
+        <label for="settingsName">Display name</label>
+        <input id="settingsName" maxlength="80" placeholder="Your name" autocomplete="name">
+        <label for="settingsLocation">Location</label>
+        <input id="settingsLocation" maxlength="120" placeholder="City or region" autocomplete="address-level2">
+        <p class="settings-help">These details personalize your calendar on this device.</p>
+        <div class="settings-inline">
+          <button type="button" class="save-settings" id="saveProfile">Save profile</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-section" aria-labelledby="accountSectionTitle">
+      <h2 class="settings-section-heading" id="accountSectionTitle">Account & sync</h2>
+      <p class="settings-section-description">Keep your calendar and preferences available across devices.</p>
+      <button class="auth-cta-button" id="settingsSignIn" type="button">
+        <span class="auth-cta-icon" aria-hidden="true">↗</span>
+        <span class="auth-cta-copy">
+          <span class="auth-cta-title" id="settingsSignInTitle">Sign in or create account</span>
+          <span class="auth-cta-subtitle" id="settingsSignInSubtitle">Securely sync your calendar across devices</span>
+        </span>
+        <span class="auth-cta-arrow" aria-hidden="true">›</span>
+      </button>
+      <p class="settings-security-note"><span class="settings-status-dot" aria-hidden="true"></span><span id="settingsSyncNote">Your events stay on this device until you sign in.</span></p>
+    </section>
+
+    <section class="settings-section" aria-labelledby="preferencesSectionTitle">
+      <h2 class="settings-section-heading" id="preferencesSectionTitle">Preferences</h2>
+      <div class="settings-group">
         <button class="settings-row" id="timezoneToggle" type="button" aria-expanded="false" aria-controls="timezoneDetail">
           <span class="settings-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="9"/>
-              <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>
-            </svg>
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>
           </span>
           <span class="settings-row-copy">
             <span class="settings-row-title">Time zone</span>
@@ -151,73 +175,49 @@
           </span>
           <span class="settings-chevron" aria-hidden="true">›</span>
         </button>
-      <div class="settings-detail" id="timezoneDetail" hidden>
-        <div class="settings-label">Time zone</div>
+        <div class="settings-detail" id="timezoneDetail" hidden>
+          <div class="settings-label">Time zone</div>
           <div class="timezone-mode" role="group" aria-label="Time zone mode">
             <button type="button" id="timezoneAuto" class="timezone-mode-button" aria-pressed="true">Automatic</button>
             <button type="button" id="timezoneManual" class="timezone-mode-button" aria-pressed="false">Choose time zone</button>
           </div>
-        <div id="timezoneSearchWrap" hidden>
-          <label for="timezoneSearch">Search by city or region</label>
-          <input id="timezoneSearch" type="search" placeholder="Try London, Tokyo, or UTC…" autocomplete="off">
-          <div id="timezoneResults" class="timezone-results" role="listbox" aria-label="Matching time zones"></div>
+          <div id="timezoneSearchWrap" hidden>
+            <label for="timezoneSearch">Search by city or region</label>
+            <input id="timezoneSearch" type="search" placeholder="Try London, Tokyo, or UTC…" autocomplete="off">
+            <div id="timezoneResults" class="timezone-results" role="listbox" aria-label="Matching time zones"></div>
+          </div>
+          <p class="settings-help" id="timezoneHelp">Automatic mode follows the time zone configured on this device.</p>
+          <div class="settings-inline"><button type="button" class="save-settings" id="saveTimezone">Save time zone</button></div>
         </div>
-        <p class="settings-help" id="timezoneHelp">Automatic mode follows the time zone configured on this device.</p>
-        <div class="settings-inline">
-          <button type="button" class="save-settings" id="saveTimezone">Save time zone</button>
-        </div>
+        <button class="settings-row" id="appearanceToggle" type="button" role="switch" aria-checked="false">
+          <span class="settings-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M20.5 14A8.5 8.5 0 0 1 10 3.5 8.5 8.5 0 1 0 20.5 14Z"/></svg>
+          </span>
+          <span class="settings-row-copy">
+            <span class="settings-row-title">Dark appearance</span>
+            <span class="settings-row-sub">Adjust the interface for low-light environments</span>
+          </span>
+          <span class="settings-switch" id="appearanceSwitch" aria-hidden="true"><span></span></span>
+        </button>
       </div>
-      <button class="settings-row" id="accountToggle" type="button" aria-expanded="false" aria-controls="accountDetail">
-        <span class="settings-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <circle cx="12" cy="8" r="4"/>
-            <path d="M4 21a8 8 0 0 1 16 0"/>
-          </svg>
-        </span>
-        <span class="settings-row-copy">
-          <span class="settings-row-title">Sign in or create account</span>
-          <span class="settings-row-sub">Sync your calendar across devices</span>
-        </span>
-        <span class="settings-chevron" aria-hidden="true">›</span>
-      </button>
-      <div class="settings-detail" id="accountDetail" hidden>
-        <label for="settingsName">Display name</label>
-        <input id="settingsName" maxlength="80" placeholder="Your name">
-        <label for="settingsLocation">Location</label>
-        <input id="settingsLocation" maxlength="120" placeholder="City or region">
-        <p class="settings-help">Sign in to sync your calendar and preferences across devices.</p>
-        <div class="settings-inline">
-          <button type="button" class="save-settings" id="saveProfile">Save profile</button>
-        </div>
+    </section>
+
+    <section class="settings-section" aria-labelledby="dataSectionTitle">
+      <h2 class="settings-section-heading" id="dataSectionTitle">Your data</h2>
+      <div class="settings-group">
+        <button class="settings-row" id="exportCalendar" type="button">
+          <span class="settings-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></svg>
+          </span>
+          <span class="settings-row-copy">
+            <span class="settings-row-title">Export calendar</span>
+            <span class="settings-row-sub">Download a portable .ics calendar file</span>
+          </span>
+          <span class="settings-chevron" aria-hidden="true">›</span>
+        </button>
       </div>
-      <button class="settings-row" id="appearanceToggle" type="button" role="switch" aria-checked="false">
-        <span class="settings-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <path d="M20.5 14A8.5 8.5 0 0 1 10 3.5 8.5 8.5 0 1 0 20.5 14Z"/>
-          </svg>
-        </span>
-        <span class="settings-row-copy">
-          <span class="settings-row-title">Dark appearance</span>
-          <span class="settings-row-sub">Switch between light and dark themes</span>
-        </span>
-        <span class="settings-switch" id="appearanceSwitch" aria-hidden="true">
-          <span></span>
-        </span>
-      </button>
-      <button class="settings-row" id="exportCalendar" type="button">
-        <span class="settings-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/>
-          </svg>
-        </span>
-        <span class="settings-row-copy">
-          <span class="settings-row-title">Export events</span>
-          <span class="settings-row-sub">Download a calendar file (.ics)</span>
-        </span>
-        <span class="settings-chevron" aria-hidden="true">›</span>
-      </button>
-    </div>
-    <p class="settings-footnote">Calendar data and preferences are stored on this device while signed out. Sign in to sync them securely with your account.</p>
+      <p class="settings-footnote">When signed out, your calendar is stored on this device. Signing in enables account-based sync. You can export a copy of your events at any time.</p>
+    </section>
   </section>
   
   </main>
@@ -326,7 +326,7 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3" defer></script>
-<script src="app.js?v=17" defer></script>
+<script src="app.js?v=18" defer></script>
 
 </body>
 
