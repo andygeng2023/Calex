@@ -918,7 +918,10 @@
         listMarkup(done, "Completed events will appear here.") +
         "</div>";
 
-      $("comingUpEvents").innerHTML = upcomingMarkup(homeDay);
+      const comingUpMarkup = upcomingMarkup(homeDay);
+      $("comingUpEvents").innerHTML = comingUpMarkup;
+      $("comingUpHeading").hidden = !comingUpMarkup;
+      $("comingUpEvents").hidden = !comingUpMarkup;
       bindEventActions($("todayEvents"));
       bindEventActions($("comingUpEvents"));
   }
