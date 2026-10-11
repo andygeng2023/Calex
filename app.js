@@ -62,7 +62,12 @@
       );
   } catch (_) {}
   function initSupabase() {
-    if (!window.supabase || !window.supabase.createClient) return;
+    if (!window.supabase || !window.supabase.createClient) {
+      const unavailable = () => showToast("Authentication could not load. Check your connection, then refresh Calex.");
+      $("authForm").addEventListener("submit", (e) => { e.preventDefault(); unavailable(); });
+      ["authSignup", "authGoogle", "authForgot"].forEach((id) => $(id).addEventListener("click", unavailable));
+      return;
+    }
     supabaseClient = window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_PUBLISHABLE_KEY,
@@ -1057,6 +1062,8 @@
     .forEach((b) =>
       b.addEventListener("click", () => switchScreen(b.dataset.screen)),
     );
+  $("openAuthScreen").addEventListener("click", () => switchScreen("auth"));
+  $("authBack").addEventListener("click", () => switchScreen("settings"));
 
   function showToast(msg) {
     const t = $("toast");
