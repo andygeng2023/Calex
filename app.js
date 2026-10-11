@@ -910,19 +910,21 @@
     const list = onDay(homeDay),
       todo = list.filter((e) => !e.done),
       done = list.filter((e) => e.done);
-    $("todayEvents").innerHTML =
-      '<div class="eyebrow">To do · ' +
-      todo.length +
-      '</div><div class="event-list">' +
-      listMarkup(todo, "Nothing planned for this day.") +
-      '</div><div class="eyebrow">Completed · ' +
-      done.length +
-      '</div><div class="event-list">' +
-      listMarkup(done, "Completed events will appear here.") +
-      "</div>" +
-      upcomingMarkup(homeDay);
-    bindEventActions($("todayEvents"));
-  }
+      $("todayEvents").innerHTML =
+        '<div class="eyebrow">To do · ' +
+        todo.length +
+        '</div><div class="event-list">' +
+        listMarkup(todo, "Nothing planned for this day.") +
+        '</div><div class="eyebrow">Completed · ' +
+        done.length +
+        '</div><div class="event-list">' +
+        listMarkup(done, "Completed events will appear here.") +
+        "</div>";
+
+      $("comingUpEvents").innerHTML = upcomingMarkup(homeDay);
+      bindEventActions($("todayEvents"));
+      bindEventActions($("comingUpEvents"));
+
 
   function monthStart(d) {
     return new Date(d.getFullYear(), d.getMonth(), 1, 12);
@@ -1741,7 +1743,7 @@
       }) +
       " · " +
       (p.start ? p.start + (p.end ? "–" + p.end : "") : "All day") +
-      (p.repeat !== "none" ? " · " + repeatText(p.repeat) : "") +
+      (p.repeat !== "none" ? repeatText(p) : "") +
       (p.description ? " · " + p.description : "") +
       (p.location ? " · " + p.location : "");
   }
@@ -1749,7 +1751,7 @@
     const raw = $("quickText").value.trim();
     clearTimeout(quickParseTimer);
     if (!raw) {
-      $("quickPreview").textContent = "";
+      $("quickPreview").textContent = "Start typing to see the preview...";
       return;
     }
     showQuickPreview(parseNatural(raw), "Rule-based preview");
