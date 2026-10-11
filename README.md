@@ -7,11 +7,12 @@ A responsive, offline-capable calendar PWA built with plain HTML, CSS and JavaSc
 - Home screen with today's to-do and completed events, plus a **Coming up** list for the next 7 days.
 - A desktop workspace sidebar, responsive tablet layout, and mobile bottom navigation.
 - The original drag-to-change Full dates, month, and compact week views, with separate year/month navigation arrows and a fixed-height calendar shell. Month/week controls and the event panel remain on screen; Full dates scrolls internally through the continuous timeline.
-- Unboxed date numbers on the calendar background; selected dates use green text and an underline. View changes use the drag handle or M/W/Y shortcuts, without a redundant mode-switch toolbar.
+- Unboxed ordinary date numbers on the calendar background; the selected date has a green fill with white text, and today has a green outline. View changes use the drag handle or M/W/Y shortcuts, without a redundant mode-switch toolbar.
 - A 30-day agenda, mini-calendar, and Today shortcut.
 - Personal, Work & study, and Wellbeing calendars with synchronized category filters.
 - Search by title, description, location or date; keyboard shortcuts; overlap warnings; focus-trapped event editing.
 - Quick add with rule-based parsing of dates, times and repeats, and a full event editor.
+- Centered calendar action labels and consistent 48px single-line event fields, including native mobile date/time inputs.
 - Repeating events (daily, weekly, fortnightly, monthly, yearly, custom intervals).
 - **Undo** after deleting an event.
 - **Import** `.ics` files (Google, Outlook, Apple, TickTick) and **export** your calendar, including repeat rules.
@@ -40,7 +41,7 @@ Calendar sharing is off by default. When opted in, only the next 14 days of titl
 
 ## Hosting and updates
 
-GitHub Pages serves `main` from the repository root. Keep relative asset URLs and bump both HTML asset query versions and `sw.js`'s shell-cache name whenever releasing an update. The current visual cleanup uses `v29`. The offline shell includes the app, calendar stylesheet, local icons, and PNG install icons; cloud sync and AI need connectivity.
+GitHub Pages serves `main` from the repository root. Keep relative asset URLs and bump both HTML asset query versions and `sw.js`'s shell-cache name whenever releasing an update. The current highlight and input-alignment update uses `v30`. The offline shell includes the app, calendar stylesheet, local icons, and PNG install icons; cloud sync and AI need connectivity.
 
 Existing guest/user event storage keys and Supabase configuration are retained. New calendars start empty rather than receiving unlabelled demo appointments. Browser storage is used by the original app for backwards compatibility and offline persistence; opaque sandbox previews can block it and may also block service workers and popup authentication. Test installation and live AI from the top-level Pages origin. Always export a calendar backup before major upgrades.
 
@@ -58,7 +59,7 @@ The app now displays authentication errors inline, provides a confirmation-resen
 
 ```
 npm run test:unit
-npx playwright install chromium
+npx playwright install --with-deps chromium webkit
 npm test
 npm audit
 ```
