@@ -280,6 +280,12 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 	border-bottom: 1px solid var(--line);
 }
 
+.event > .check {
+  align-self: start;
+  margin-top: 2px;
+}
+
+
 .check {
 	appearance: none;
 	width: 21px;
