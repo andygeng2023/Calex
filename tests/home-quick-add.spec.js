@@ -138,15 +138,33 @@ test("event checkboxes align to the center of their event row", async ({ page })
     const checkbox = event.querySelector(":scope > input.check");
     const rowRect = event.getBoundingClientRect();
     const checkRect = checkbox.getBoundingClientRect();
+    const style = getComputedStyle(event);
+    const columns = style.gridTemplateColumns.split(" ");
+    const leftInset =
+      parseFloat(style.borderLeftWidth) + parseFloat(style.paddingLeft);
+    const topInset =
+      parseFloat(style.borderTopWidth) + parseFloat(style.paddingTop);
+    const contentHeight =
+      rowRect.height -
+      parseFloat(style.borderTopWidth) -
+      parseFloat(style.borderBottomWidth) -
+      parseFloat(style.paddingTop) -
+      parseFloat(style.paddingBottom);
     return {
       horizontalOffset: Math.abs(
-        checkRect.left + checkRect.width / 2 - (rowRect.left + 12),
+        checkRect.left +
+          checkRect.width / 2 -
+          (rowRect.left + leftInset + parseFloat(columns[0]) / 2),
       ),
       verticalOffset: Math.abs(
-        checkRect.top + checkRect.height / 2 - (rowRect.top + rowRect.height / 2),
+        checkRect.top +
+          checkRect.height / 2 -
+          (rowRect.top + topInset + contentHeight / 2),
       ),
+      gridColumns: style.gridTemplateColumns,
+      paddingLeft: style.paddingLeft,
     };
   });
-  expect(alignment.horizontalOffset).toBeLessThan(1);
-  expect(alignment.verticalOffset).toBeLessThan(1);
+  expect(alignment.horizontalOffset, JSON.stringify(alignment)).toBeLessThan(1);
+  expect(alignment.verticalOffset, JSON.stringify(alignment)).toBeLessThan(1);
 });
