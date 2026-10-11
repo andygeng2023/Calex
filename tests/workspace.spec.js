@@ -26,28 +26,29 @@ test("categorized events persist and appear in month, week, and agenda", async (
 }) => {
   await page.goto("/");
   await addEvent(page, "Project review", "work");
-  await expect(page.locator(".date-cell.today")).toContainText(
+  await expect(page.locator(".date-cell.today:not(.outside)")).toContainText(
     "Project review",
   );
   await page.locator('[data-view="week"]').click();
-  await expect(page.locator("#weekTimeline")).toBeVisible();
-  await expect(page.locator(".week-event")).toContainText("Project review");
-  await page.locator(".week-event").click();
+  await expect(page.locator("#weekTimeline")).toBeHidden();
+  await expect(page.locator("#dateGrid .date-cell")).toHaveCount(7);
+  await expect(page.locator("#panelEvents")).toContainText("Project review");
+  await page.locator("#panelEvents .edit-btn").click();
   await expect(page.locator("#eventTitle")).toHaveValue("Project review");
   await page.locator("#closeModal").click();
   await page.locator('[data-screen="agenda"]').click();
   await expect(page.locator("#agendaList")).toContainText("Project review");
   await page.reload();
   await page.locator('[data-screen="calendar"]').click();
-  await expect(page.locator(".date-cell.today")).toContainText(
+  await expect(page.locator(".date-cell.today:not(.outside)")).toContainText(
     "Project review",
   );
   await page.locator('.sidebar-tools [data-category="work"]').uncheck();
-  await expect(page.locator(".date-cell.today")).not.toContainText(
-    "Project review",
-  );
+  await expect(
+    page.locator(".date-cell.today:not(.outside)"),
+  ).not.toContainText("Project review");
   await page.locator('.sidebar-tools [data-category="work"]').check();
-  await expect(page.locator(".date-cell.today")).toContainText(
+  await expect(page.locator(".date-cell.today:not(.outside)")).toContainText(
     "Project review",
   );
 });
@@ -97,7 +98,7 @@ for (const width of [375, 820, 1440]) {
     await page.goto("/");
     await expect(page.locator("#globalAdd")).toBeVisible();
     await page.locator('[data-screen="calendar"]').click();
-    await expect(page.locator(".date-cell.today")).toBeVisible();
+    await expect(page.locator(".date-cell.today:not(.outside)")).toBeVisible();
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,

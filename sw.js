@@ -1,14 +1,15 @@
-const CACHE_NAME = "calex-shell-v27";
+const CACHE_NAME = "calex-shell-v28";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=27",
-  "./workspace.css?v=27",
-  "./workspace.js?v=27",
-  "./icons.js?v=27",
-  "./sync.js?v=27",
-  "./ics.js?v=27",
-  "./app.js?v=27",
+  "./styles.css?v=28",
+  "./workspace.css?v=28",
+  "./calendar.css?v=28",
+  "./workspace.js?v=28",
+  "./icons.js?v=28",
+  "./sync.js?v=28",
+  "./ics.js?v=28",
+  "./app.js?v=28",
   "./manifest.webmanifest",
   "./icon.svg",
   "./icon-192.png",

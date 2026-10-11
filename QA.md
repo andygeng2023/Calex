@@ -2,17 +2,18 @@
 
 ## Coverage inventory
 
-- Responsive overview, month grid, week timeline, agenda, settings, and assistant at 375px, 820px, and 1440px.
+- Responsive overview, Full dates timeline, compact month/week grids, agenda, settings, and assistant at 375px, 820px, and 1440px.
 - Create, edit, complete, delete, undo, recurring, all-day, timed, and categorized events.
-- Month/week/year switching; next/previous navigation; mini-calendar; Today; search; category filter toggles and empty states.
+- Pointer drag switching in both directions through Full dates/month/week; separate year/month arrow navigation; mini-calendar; Today; search; category filter toggles and empty states.
 - Event validation, overlap warning, keyboard shortcuts, focus trap/return, native dialog dismissal, light/dark cycle.
 - ICS import, duplicate skipping, export, local reload persistence, offline shell, PWA manifest and icon assets.
+- Google-first authentication layout, Google-only account guidance, signup feedback, SMTP/rate-limit failures, confirmation resend cooldown, and password recovery/confirmation.
 - Puter SDK lazy loading, deliberate authentication, disabled send before sign-in, successful response rendering, draft review without automatic save, context opt-in/off, request error, and timeout behavior.
 - Off-happy-path checks: malformed AI event payload, HTML injection in AI response and event title, unavailable storage, unavailable Supabase/AI network, invalid end time.
 
 ## External sign-off limitations
 
-The local release run passed 17 Chromium browser tests and 33 import/sync unit tests. `npm audit` reported zero known vulnerabilities at the time of this release. Desktop, tablet, and mobile screenshots were inspected, including dark-mode calendar, week timeline, overview, and assistant states. No page-level horizontal overflow or uncaught app exceptions were observed in the exercised flows. This is not a full cross-browser, security, or Supabase row-level-security audit.
+The v27 run passed 17 Chromium browser tests and 33 import/sync unit tests; the v28 corrective release expands coverage to 25 browser tests with explicit drag and authentication checks. `npm audit` reported zero known vulnerabilities at the time of the initial release. Desktop, tablet, and mobile screenshots are inspected, including compact calendar views, dark appearance, and authentication. The fixed calendar shell must not have page-level horizontal or vertical overflow; the continuous Full dates timeline and long event lists scroll internally. This is not a full cross-browser, security, or Supabase row-level-security audit.
 
 Live Puter authentication and paid/allowance-backed inference require an actual user's Puter account and are not exercised by automated tests. Puter integration tests use deterministic mocked SDK responses and errors. Supabase sign-in, database row-level security, and real cross-device sync require owner-account validation; pure merge rules and guest flows are tested here.
 

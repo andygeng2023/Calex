@@ -116,7 +116,7 @@
 
   function renderWeek() {
     const root = $("weekTimeline"),
-      active = C.getView() === "week";
+      active = false; // Compact seven-day calendar replaces the scrolling timetable.
     root.hidden = !active;
     if (!active) {
       root.innerHTML = "";

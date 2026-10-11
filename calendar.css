@@ -1,0 +1,403 @@
+/* Original compact, draggable full-dates/month/week calendar in the new shell. */
+body .app #calendarScreen.calendar-restored.active {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3) var(--space-6) 0;
+  gap: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+body .app #calendarScreen.calendar-restored .search-wrap {
+  margin: 0 0 var(--space-3);
+  width: 100%;
+  min-height: 40px;
+  flex: 0 0 40px;
+}
+body .app #calendarScreen.calendar-restored .calendar-toolbar {
+  padding: 0 0 var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+}
+body .app #calendarScreen.calendar-restored .month-title {
+  flex: 1;
+  min-width: 100px;
+  font-size: var(--text-lg);
+}
+body .app #calendarScreen.calendar-restored .month-controls {
+  display: flex;
+  order: 0;
+  gap: var(--space-1);
+  margin-left: auto;
+}
+body .app #calendarScreen.calendar-restored .month-controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+}
+body .app #calendarScreen.calendar-restored .month-controls .today-btn {
+  width: auto;
+  margin: 0 var(--space-1) 0 0;
+  padding: 0 var(--space-2);
+}
+body .app #calendarScreen.calendar-restored .view-segment {
+  order: 1;
+  margin: 0;
+}
+body .app #calendarScreen.calendar-restored #filterCalendars {
+  order: 2;
+  grid-area: auto;
+  display: inline-flex;
+  margin-left: auto;
+  width: 36px;
+  min-height: 36px;
+}
+body .app #calendarScreen.calendar-restored .calendar-scroller {
+  grid-area: auto;
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+}
+body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+}
+body
+  .app
+  #calendarScreen.calendar-restored.panel-open
+  .calendar-scroller.month-mode {
+  flex: 0 0 clamp(180px, 41dvh, 340px);
+  height: clamp(180px, 41dvh, 340px);
+  max-height: 52%;
+  display: flex;
+  flex-direction: column;
+}
+body
+  .app
+  #calendarScreen.calendar-restored.panel-open
+  .calendar-scroller.week-mode {
+  flex: 0 0 100px;
+  height: 100px;
+  max-height: 25%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+body .app #calendarScreen.calendar-restored .weekdays {
+  flex: 0 0 32px;
+  height: 32px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--paper);
+}
+body .app #calendarScreen.calendar-restored .weekdays span {
+  padding: var(--space-1) 0;
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+body .app #calendarScreen.calendar-restored .date-grid {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  gap: var(--space-1);
+  min-width: 0;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+body .app #calendarScreen.calendar-restored.panel-open #dateGrid {
+  flex: 1 1 auto;
+  min-height: 0;
+  grid-auto-rows: minmax(0, 1fr);
+  padding-bottom: var(--space-2);
+}
+body .app #calendarScreen.calendar-restored .date-cell,
+body .app #calendarScreen.calendar-restored.panel-open .date-cell {
+  border: 0;
+  border-radius: 8px;
+  height: 100%;
+  min-height: 0;
+  padding: var(--space-1);
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: none;
+}
+body .app #calendarScreen.calendar-restored .date-cell > span:first-child {
+  align-self: center;
+  width: auto;
+  height: auto;
+  background: transparent;
+  color: inherit;
+}
+body .app #calendarScreen.calendar-restored .date-cell.selected {
+  background: #28654a;
+  color: white;
+}
+body .app #calendarScreen.calendar-restored .date-cell.today:not(.selected) {
+  box-shadow: inset 0 0 0 1.5px var(--green);
+}
+body .app #calendarScreen.calendar-restored .date-cell.outside {
+  opacity: 0.45;
+}
+body .app #calendarScreen.calendar-restored .date-cell .dots {
+  display: flex;
+}
+body .app #calendarScreen.calendar-restored .date-cell .dots i {
+  background: var(--green);
+}
+body .app #calendarScreen.calendar-restored .date-cell.selected .dots i {
+  background: #fff;
+}
+body .app #calendarScreen.calendar-restored .cell-events {
+  display: none;
+}
+body .app #calendarScreen.calendar-restored .timeline-month {
+  padding: var(--space-3) 0;
+}
+body .app #calendarScreen.calendar-restored .timeline-title {
+  margin: var(--space-2) 0;
+  color: var(--ink);
+  font-size: var(--text-base);
+}
+body .app #calendarScreen.calendar-restored .timeline-month .date-cell {
+  height: clamp(36px, 5dvh, 48px);
+}
+body .app #calendarScreen.calendar-restored .selected-panel,
+body .app #calendarScreen.calendar-restored.panel-open .selected-panel {
+  grid-area: auto;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  margin: var(--space-2) calc(-1 * var(--space-6)) 0;
+  padding: 0 var(--space-6) var(--space-3);
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 16px 16px 0 0;
+  background: var(--surface);
+  overflow: hidden;
+}
+body .app #calendarScreen.calendar-restored:not(.panel-open) .selected-panel {
+  flex: 0 0 44px;
+  min-height: 44px;
+  border-radius: 0;
+  border-top: 0;
+  padding-bottom: 0;
+}
+body .app #calendarScreen.calendar-restored .selected-panel .panel-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  height: 44px;
+  min-height: 44px;
+}
+body .app #calendarScreen.calendar-restored .handle-grip {
+  width: 180px;
+  min-height: 44px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font-size: var(--text-xs);
+  touch-action: none;
+}
+body .app #calendarScreen.calendar-restored .handle-grip:after {
+  content: "Drag to change view";
+}
+body .app #calendarScreen.calendar-restored .handle-grip span {
+  width: 32px;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--muted);
+}
+body .app #calendarScreen.calendar-restored .selected-panel .panel-head,
+body
+  .app
+  #calendarScreen.calendar-restored.panel-open
+  .selected-panel
+  .panel-head {
+  display: flex;
+  flex-direction: row;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+  min-height: 36px;
+}
+body .app #calendarScreen.calendar-restored .selected-panel #panelEvents,
+body
+  .app
+  #calendarScreen.calendar-restored.panel-open
+  .selected-panel
+  #panelEvents {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0;
+}
+body .app #calendarScreen.calendar-restored #panelQuick {
+  display: inline-flex;
+}
+body
+  .app
+  #calendarScreen.calendar-restored.is-view-dragging.panel-open
+  .calendar-scroller {
+  flex-basis: var(--drag-scroller-height);
+  height: var(--drag-scroller-height);
+  max-height: 80%;
+}
+body
+  .app
+  #calendarScreen.calendar-restored.is-view-dragging:not(.panel-open)
+  .selected-panel {
+  flex-basis: calc(44px + var(--drag-panel-size, 0px));
+}
+body .app #calendarScreen.calendar-restored #searchResults {
+  top: 56px;
+  left: var(--space-6);
+  max-height: 45%;
+}
+body .app #authScreen {
+  padding: var(--space-4) var(--space-6);
+  overflow-y: auto;
+  background: var(--paper);
+}
+body .app #authScreen .auth-screen-content {
+  margin: var(--space-2) auto 0;
+}
+body .app #authScreen .auth-brand-mark {
+  display: none;
+}
+body .app #authScreen .auth-screen-title {
+  margin: var(--space-2) 0;
+}
+body .app #authScreen .auth-card {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  gap: var(--space-2);
+  border-radius: 12px;
+}
+body .app #authScreen .auth-actions {
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+body .app #authScreen #authForm,
+body .app #authScreen #authRecovery {
+  gap: var(--space-2);
+  display: grid;
+}
+.auth-feedback {
+  font-size: var(--text-xs);
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: 8px;
+  background: var(--green-pale);
+  color: var(--green-dark);
+}
+.auth-feedback.is-error {
+  background: var(--wellbeing-bg);
+  color: var(--wellbeing-ink);
+}
+body .app #authScreen .auth-privacy-note {
+  margin: var(--space-3) 0;
+  font-size: var(--text-xs);
+}
+.auth-provider-note {
+  margin: var(--space-2) 0;
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+@media (max-width: 700px) {
+  body .app #calendarScreen.calendar-restored.active {
+    padding: var(--space-2) var(--space-4) 0;
+  }
+  body .app #calendarScreen.calendar-restored .month-title {
+    font-size: var(--text-base);
+    min-width: 100px;
+  }
+  body .app #calendarScreen.calendar-restored .month-controls button {
+    width: 30px;
+    height: 36px;
+  }
+  body .app #calendarScreen.calendar-restored .calendar-toolbar {
+    display: flex;
+    gap: var(--space-2);
+  }
+  body .app #calendarScreen.calendar-restored .view-segment {
+    flex: 0 0 auto;
+  }
+  body
+    .app
+    #calendarScreen.calendar-restored.panel-open
+    .calendar-scroller.month-mode {
+    flex-basis: min(40dvh, 270px);
+    height: min(40dvh, 270px);
+    max-height: 48%;
+  }
+  body .app #calendarScreen.calendar-restored .selected-panel,
+  body .app #calendarScreen.calendar-restored.panel-open .selected-panel {
+    margin-left: calc(-1 * var(--space-4));
+    margin-right: calc(-1 * var(--space-4));
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  body .app #calendarScreen.calendar-restored .selected-panel .panel-head h2 {
+    font-size: var(--text-xs);
+  }
+  body .app #calendarScreen.calendar-restored .panel-text-btn {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+  }
+  body .app #authScreen {
+    padding: var(--space-3) var(--space-4);
+  }
+  body .app #authScreen .auth-screen-title {
+    font-size: var(--text-lg);
+  }
+  body .app #authScreen .auth-screen-intro {
+    font-size: var(--text-xs);
+  }
+  body .app #authScreen .auth-back {
+    min-height: 36px;
+  }
+}
+@media (max-height: 700px) {
+  body .app #calendarScreen.calendar-restored .handle-grip:after {
+    content: "Drag view";
+  }
+  body .app #calendarScreen.calendar-restored .selected-panel .panel-handle {
+    flex-basis: 32px;
+    height: 32px;
+    min-height: 32px;
+  }
+  body
+    .app
+    #calendarScreen.calendar-restored.panel-open
+    .calendar-scroller.month-mode {
+    flex-basis: 44%;
+    max-height: 44%;
+    height: 44%;
+  }
+}

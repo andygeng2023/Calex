@@ -6,7 +6,8 @@ A responsive, offline-capable calendar PWA built with plain HTML, CSS and JavaSc
 
 - Home screen with today's to-do and completed events, plus a **Coming up** list for the next 7 days.
 - A desktop workspace sidebar, responsive tablet layout, and mobile bottom navigation.
-- Month cards with event previews, a timed week calendar with overlap lanes, year view, a 30-day agenda, a mini-calendar, and a Today shortcut.
+- The original drag-to-change Full dates, month, and compact week views, with separate year/month navigation arrows and a fixed-height calendar shell. Month/week controls and the event panel remain on screen; Full dates scrolls internally through the continuous timeline.
+- A 30-day agenda, mini-calendar, and Today shortcut.
 - Personal, Work & study, and Wellbeing calendars with synchronized category filters.
 - Search by title, description, location or date; keyboard shortcuts; overlap warnings; focus-trapped event editing.
 - Quick add with rule-based parsing of dates, times and repeats, and a full event editor.
@@ -38,13 +39,19 @@ Calendar sharing is off by default. When opted in, only the next 14 days of titl
 
 ## Hosting and updates
 
-GitHub Pages serves `main` from the repository root. Keep relative asset URLs and bump both HTML asset query versions and `sw.js`'s shell-cache name whenever releasing an update. New versions of this release use `v27`. The offline shell includes the app, local icons, and PNG install icons; cloud sync and AI need connectivity.
+GitHub Pages serves `main` from the repository root. Keep relative asset URLs and bump both HTML asset query versions and `sw.js`'s shell-cache name whenever releasing an update. The current corrective release uses `v28`. The offline shell includes the app, calendar stylesheet, local icons, and PNG install icons; cloud sync and AI need connectivity.
 
 Existing guest/user event storage keys and Supabase configuration are retained. New calendars start empty rather than receiving unlabelled demo appointments. Browser storage is used by the original app for backwards compatibility and offline persistence; opaque sandbox previews can block it and may also block service workers and popup authentication. Test installation and live AI from the top-level Pages origin. Always export a calendar backup before major upgrades.
 
 ## Keyboard shortcuts
 
-`N`: new event. `Q`: quick add. `/`: search. `T`: today. `M`/`W`/`Y`: month/week/year. `?`: help. `Escape`: close dialog. Shortcuts do not intercept typing in fields.
+`N`: new event. `Q`: quick add. `/`: search. `T`: today. `M`/`W`/`Y`: month/week/Full dates. `?`: help. `Escape`: close dialog. Shortcuts do not intercept typing in fields.
+
+## Account sign-in and email confirmation
+
+Google and email/password are distinct sign-in methods. An account originally created with Google can have a confirmed email but no password; use **Continue with Google** or use **Forgot password** to establish a password through the recovery flow. Creating that already-confirmed account again does not establish a password or necessarily send a new confirmation.
+
+The app now displays authentication errors inline, provides a confirmation-resend action with a 60-second cooldown, and uses an explicit recovery form rather than `prompt()` to set a new password. A successful signup/resend request does not guarantee an email reached the inbox. Supabase controls delivery, rate limits, and anti-enumeration responses. Check [Supabase SMTP configuration](https://supabase.com/docs/guides/auth/auth-smtp) and Auth logs when troubleshooting genuine delivery failures. Never disable confirmation or manually alter a user's password as a shortcut.
 
 ## Test
 
