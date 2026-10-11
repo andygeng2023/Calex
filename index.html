@@ -11,7 +11,7 @@
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="./icon.svg"><meta name="description" content="A calm, simple calendar for your days.">
   <title>Calex</title>
-  <link rel="stylesheet" href="styles.css?v=19">
+  <link rel="stylesheet" href="styles.css?v=20">
 </head>
 
 <body>
@@ -218,6 +218,101 @@
       </div>
       <p class="settings-footnote">When signed out, your calendar is stored on this device. Signing in enables account-based sync. You can export a copy of your events at any time.</p>
     </section>
+
+    <section class="settings-section" aria-labelledby="aboutSectionTitle">
+      <h2 class="settings-section-heading" id="aboutSectionTitle">About &amp; legal</h2>
+      <div class="settings-group">
+        <button class="settings-row" type="button" data-legal-screen="about">
+          <span class="settings-icon" aria-hidden="true">ⓘ</span>
+          <span class="settings-row-copy"><span class="settings-row-title">About Calex</span><span class="settings-row-sub">What Calex does and how to get help</span></span>
+          <span class="settings-chevron" aria-hidden="true">›</span>
+        </button>
+        <button class="settings-row" type="button" data-legal-screen="terms">
+          <span class="settings-icon" aria-hidden="true">§</span>
+          <span class="settings-row-copy"><span class="settings-row-title">Terms of service</span><span class="settings-row-sub">Rules and limitations for using Calex</span></span>
+          <span class="settings-chevron" aria-hidden="true">›</span>
+        </button>
+        <button class="settings-row" type="button" data-legal-screen="privacy">
+          <span class="settings-icon" aria-hidden="true">⌑</span>
+          <span class="settings-row-copy"><span class="settings-row-title">Privacy policy</span><span class="settings-row-sub">How calendar and account data are handled</span></span>
+          <span class="settings-chevron" aria-hidden="true">›</span>
+        </button>
+      </div>
+    </section>
+  </section>
+
+  <section id="aboutScreen" class="screen legal-screen" aria-label="About Calex">
+    <button class="legal-back" type="button" data-legal-back>‹ <span>Settings</span></button>
+    <div class="legal-content">
+      <p class="settings-eyebrow">ABOUT</p>
+      <h1>Calex</h1>
+      <p class="legal-lead">A calm, straightforward calendar for keeping track of your days.</p>
+      <h2>What you can do</h2>
+      <p>Create and manage events, browse dates, search your calendar, set a preferred time zone, and export events as an iCalendar (.ics) file.</p>
+      <h2>Your calendar, your choice</h2>
+      <p>You can use Calex on one device without signing in. Signing in enables account-based synchronisation where configured. You can export a copy of your events from Settings.</p>
+      <h2>Help and feedback</h2>
+      <p>Report a bug or request an improvement through the <a href="https://github.com/andygeng2023/Calex/issues" target="_blank" rel="noopener noreferrer">Calex GitHub issue tracker</a>. Do not include passwords, private event details, or other sensitive information in a public issue.</p>
+      <p class="legal-updated">Last updated: 11 October 2026</p>
+    </div>
+  </section>
+
+  <section id="termsScreen" class="screen legal-screen" aria-label="Terms of service">
+    <button class="legal-back" type="button" data-legal-back>‹ <span>Settings</span></button>
+    <article class="legal-content">
+      <p class="settings-eyebrow">LEGAL</p>
+      <h1>Terms of service</h1>
+      <p class="legal-updated">Effective date: 11 October 2026</p>
+      <p>These terms explain the basic conditions for using Calex. By using the app, you agree to these terms. If you do not agree, stop using the app.</p>
+      <h2>1. The service</h2>
+      <p>Calex provides calendar and event-management features, including local storage, optional account sign-in and synchronisation, time-zone preferences, and calendar export. Features may change, be unavailable, or be discontinued.</p>
+      <h2>2. Your information and responsibilities</h2>
+      <p>You are responsible for the accuracy of the events you enter and for keeping your account credentials secure. Do not use Calex as the only copy of important information. Export or otherwise back up events you cannot afford to lose.</p>
+      <h2>3. Acceptable use</h2>
+      <p>Do not misuse the service, attempt to gain unauthorised access, interfere with its operation, or use it in a way that violates applicable law or another person's rights.</p>
+      <h2>4. Availability and data loss</h2>
+      <p>Calex is provided on an “as available” basis. We do not guarantee uninterrupted service, error-free operation, successful synchronisation, or permanent preservation of data. Device failure, browser settings, clearing site data, account issues, or service outages may affect access to events.</p>
+      <h2>5. No professional advice or emergency service</h2>
+      <p>Calex is a general-purpose organisational tool. It is not a medical, legal, financial, or emergency service. You are responsible for checking event details, reminders, dates, and times that matter to you.</p>
+      <h2>6. Limitation of liability</h2>
+      <p>To the extent permitted by applicable law, Calex is not liable for indirect or consequential loss, missed appointments, or loss of calendar data arising from use of the service. Nothing in these terms excludes rights or liability that cannot lawfully be excluded.</p>
+      <h2>7. Changes to these terms</h2>
+      <p>These terms may be updated as the app changes. The effective date above indicates the latest published version. Continued use after an update means you accept the revised terms where the law permits.</p>
+      <h2>8. Contact</h2>
+      <p>For support or questions about these terms, use the <a href="https://github.com/andygeng2023/Calex/issues" target="_blank" rel="noopener noreferrer">Calex GitHub issue tracker</a>. Do not post confidential information publicly.</p>
+      <p class="legal-disclaimer">This is a general-purpose template, not legal advice. The app owner should review it for the jurisdictions where Calex is offered before relying on it as a final legal document.</p>
+    </article>
+  </section>
+
+  <section id="privacyScreen" class="screen legal-screen" aria-label="Privacy policy">
+    <button class="legal-back" type="button" data-legal-back>‹ <span>Settings</span></button>
+    <article class="legal-content">
+      <p class="settings-eyebrow">LEGAL</p>
+      <h1>Privacy policy</h1>
+      <p class="legal-updated">Effective date: 11 October 2026</p>
+      <p>This policy describes how the current Calex app handles information. The precise handling of account data can depend on your sign-in and synchronisation configuration.</p>
+      <h2>1. Information you enter</h2>
+      <p>Calendar events may include titles, descriptions, dates, times, locations, attendees or people, repeat settings, and notes. Profile preferences may include a display name, location, time-zone choice, and appearance preference. Avoid entering information you do not want stored in your calendar.</p>
+      <h2>2. Local storage</h2>
+      <p>When you use Calex while signed out, events and preferences are saved in your browser's local storage on that device. They are not automatically available on another device. Clearing browser/site data, using private browsing, or losing access to the device may remove locally stored information. Use the export feature to keep a separate copy.</p>
+      <h2>3. Account and synchronisation</h2>
+      <p>If you sign in and synchronisation is enabled, Calex uses Supabase authentication and its configured database service to authenticate your account and synchronise calendar events and preferences. This means relevant data may be transmitted to and stored by that service. Account-based data is associated with your account, subject to the app's database access policies and service configuration.</p>
+      <h2>4. Time zone and device information</h2>
+      <p>Automatic time-zone mode reads the time-zone identifier provided by your browser or device. Calex uses it to display your preference; the app does not need your precise GPS location for this feature. If you enter a location in your profile or an event, that text is stored as part of the relevant data.</p>
+      <h2>5. Cookies, analytics, and third parties</h2>
+      <p>Calex uses browser storage for app data and may load the Supabase client library from a content delivery network. The app's authentication and synchronisation features rely on Supabase when configured. This policy does not claim that third-party infrastructure has no logs or that third-party providers never process technical data; consult their policies for details. No separate analytics or advertising feature is described by this policy.</p>
+      <h2>6. Sharing and disclosure</h2>
+      <p>Calex does not provide a public calendar-sharing feature in the current interface. Data may be processed by the infrastructure providers required to operate sign-in and synchronisation, or disclosed where required by law. Anyone with access to your unlocked device or account may be able to access your calendar.</p>
+      <h2>7. Retention and deletion</h2>
+      <p>Local data remains in your browser until you remove it or the browser clears it. Signed-in data may remain in the configured cloud database until deleted through supported app or account-management processes or by the service operator. Export your events before clearing local data or changing accounts. If you need account data deleted, contact the app maintainer through the link below; do not include private event details in a public request.</p>
+      <h2>8. Your choices and security</h2>
+      <p>You can use Calex without signing in, choose whether to enable account synchronisation, export your calendar, and avoid entering unnecessary personal information. No online service can guarantee absolute security, so use a strong unique password and protect access to your device.</p>
+      <h2>9. Children and sensitive information</h2>
+      <p>Do not use Calex to store highly sensitive information unless you have assessed that it is appropriate for your circumstances and the service configuration. If you are using Calex under a parent's or organisation's guidance, follow their applicable rules.</p>
+      <h2>10. Policy changes and contact</h2>
+      <p>This policy may change as Calex evolves. For privacy questions or deletion requests, contact the maintainer through the <a href="https://github.com/andygeng2023/Calex/issues" target="_blank" rel="noopener noreferrer">Calex GitHub issue tracker</a>. Public issues are visible to others, so request a private contact route before sharing personal data.</p>
+      <p class="legal-disclaimer">This document is a practical starting point, not legal advice or a guarantee of compliance. The app owner should confirm the actual hosting, database, logging, retention, and account-deletion arrangements and obtain jurisdiction-specific review before treating it as a final privacy notice.</p>
+    </article>
   </section>
   
   </main>
@@ -326,7 +421,7 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3" defer></script>
-<script src="app.js?v=19" defer></script>
+<script src="app.js?v=20" defer></script>
 
 </body>
 
