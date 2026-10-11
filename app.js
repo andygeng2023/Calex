@@ -725,7 +725,9 @@
     return "Until " + e.end;
   }
 
-  function repeatText(e) {
+  // One formatter drives both the Quick Add preview and saved-event metadata.
+  // This prevents the preview from collapsing weekly/monthly/yearly rules to daily.
+  function repeatDescription(e) {
     if (!e || !e.repeat || e.repeat === "none") return "";
     const unit =
         e.repeatUnit ||
@@ -737,29 +739,24 @@
           yearly: "year",
         }[e.repeat] ||
         "day",
-      n = Math.max(
+      interval = Math.max(
         1,
         Number(e.repeatInterval) || (e.repeat === "fortnightly" ? 2 : 1),
-      );
-    if (
-      n === 1 &&
-      {
-        day: "daily",
-        week: "weekly",
-        month: "monthly",
-        year: "yearly",
-      }[unit]
-    )
-      return (
-        "Repeats " +
-        {
-          day: "daily",
-          week: "weekly",
-          month: "monthly",
-          year: "yearly",
-        }[unit]
-      );
-    return "Repeats every " + n + " " + unit + (n === 1 ? "" : "s");
+      ),
+      units = { day: "day", week: "week", month: "month", year: "year" },
+      adverbs = { day: "daily", week: "weekly", month: "monthly", year: "yearly" };
+    if (interval === 1 && adverbs[unit]) return "Repeats " + adverbs[unit];
+    return (
+      "Repeats every " +
+      interval +
+      " " +
+      (units[unit] || unit) +
+      (interval === 1 ? "" : "s")
+    );
+  }
+
+  function repeatText(e) {
+    return repeatDescription(e);
   }
 
   function eventMarkup(e) {
@@ -885,7 +882,7 @@
         list.map(eventMarkup).join("") +
         "</div></div>";
     }
-    return out ? '<div class="eyebrow">Coming up</div>' + out : "";
+    return out;
   }
 
   function renderHome() {
@@ -921,7 +918,10 @@
         listMarkup(done, "Completed events will appear here.") +
         "</div>";
 
-      $("comingUpEvents").innerHTML = upcomingMarkup(homeDay);
+      const comingUpMarkup = upcomingMarkup(homeDay);
+      $("comingUpEvents").innerHTML = comingUpMarkup;
+      $("comingUpHeading").hidden = !comingUpMarkup;
+      $("comingUpEvents").hidden = !comingUpMarkup;
       bindEventActions($("todayEvents"));
       bindEventActions($("comingUpEvents"));
   }
@@ -1462,7 +1462,8 @@
     if ($("eventFeedback")) $("eventFeedback").textContent = "";
     if (mode === "quick") {
       $("quickText").value = "";
-      $("quickPreview").textContent = "";
+      $("quickPreview").textContent = "Start typing to see the preview...";
+      $("quickPreview").classList.add("is-empty");
       setTimeout(() => $("quickText").focus(), 100);
     } else if (!$("eventTitle").value) setNormalDefaults();
   }
@@ -1657,8 +1658,14 @@
       title = title.replace(/\bmidnight\b/i, " ");
     }
     let rec = null;
-    const combo = /\bevery\s+(\d+)\s*weeks?\s+and\s+(\d+)\s*days?\b/i.exec(s);
-    if (combo) {
+    const combo = /\bevery\s+(\d+)\s*weeks?\s+and\s+(\d+)\s*days?\b/i.exec(s),
+      biweekly = /\b(?:fortnightly|biweekly|every\s+other\s+week)\b/i.exec(s);
+    if (biweekly) {
+      repeat = "weekly";
+      repeatUnit = "week";
+      repeatInterval = 2;
+      rec = biweekly[0];
+    } else if (combo) {
       repeat = "daily";
       repeatUnit = "day";
       repeatInterval = Math.max(1, Number(combo[1]) * 7 + Number(combo[2]));
@@ -1729,6 +1736,11 @@
   }
   let quickParseTimer = null;
 
+  function quickPreviewRepeatText(p) {
+    const description = repeatDescription(p);
+    return description ? " · " + description : "";
+  }
+
   function showQuickPreview(p, prefix = "Preview") {
     $("quickPreview").textContent =
       prefix +
@@ -1743,7 +1755,7 @@
       }) +
       " · " +
       (p.start ? p.start + (p.end ? "–" + p.end : "") : "All day") +
-      (p.repeat !== "none" ? repeatText(p) : "") +
+      quickPreviewRepeatText(p) +
       (p.description ? " · " + p.description : "") +
       (p.location ? " · " + p.location : "");
   }
@@ -1752,8 +1764,10 @@
     clearTimeout(quickParseTimer);
     if (!raw) {
       $("quickPreview").textContent = "Start typing to see the preview...";
+      $("quickPreview").classList.add("is-empty");
       return;
     }
+    $("quickPreview").classList.remove("is-empty");
     showQuickPreview(parseNatural(raw), "Rule-based preview");
   });
   $("quickSave").addEventListener("click", () => {

@@ -3359,3 +3359,80 @@ body.settings-dark .modal #eventForm .field textarea::placeholder {
 .month-title { white-space: nowrap; font-size: clamp(19px, 5.6vw, 26px); min-width: 0; }
 .month-controls { gap: 1px; flex: 0 0 auto; }
 .today-btn { padding: 0 10px; margin-right: 4px; }
+
+
+/* Home scroll and Quick Add polish. The home screen is the single scroll container,
+   so the date hero, summary, Today list and Coming up list move together. */
+main#mainContent {
+  min-height: 0;
+  overflow: hidden;
+}
+
+#homeScreen.screen.active {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  height: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  padding-bottom: 24px;
+  scrollbar-width: thin;
+}
+
+#homeScreen > * {
+  flex: 0 0 auto;
+}
+
+#todayEvents,
+#comingUpEvents {
+  flex: 0 0 auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+#comingUpHeading {
+  margin-top: 22px;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* Keep each checkbox centred in the first grid track, vertically aligned with
+   the full event row even when title/metadata wraps onto multiple lines. */
+.event {
+  grid-template-columns: 24px minmax(0, 1fr) 32px;
+  align-items: center;
+}
+
+.event > input.check {
+  width: 21px;
+  height: 21px;
+  align-self: center;
+  justify-self: center;
+  margin: 0 !important;
+}
+
+/* Quick Add preview uses theme tokens; the modal is a sibling of .app, so its
+   dark-mode selector must target body.settings-dark rather than .app.settings-dark. */
+.modal #quickPreview {
+  color: var(--muted);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 0 0 16px;
+  overflow-wrap: anywhere;
+}
+
+.modal #quickPreview.is-empty {
+  color: var(--muted);
+}
+
+body.settings-dark .modal #quickPreview {
+  color: var(--muted);
+  background: var(--surface-inset);
+  border-color: var(--line);
+}
