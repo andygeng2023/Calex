@@ -924,7 +924,7 @@
       $("comingUpEvents").innerHTML = upcomingMarkup(homeDay);
       bindEventActions($("todayEvents"));
       bindEventActions($("comingUpEvents"));
-
+  }
 
   function monthStart(d) {
     return new Date(d.getFullYear(), d.getMonth(), 1, 12);
