@@ -725,7 +725,9 @@
     return "Until " + e.end;
   }
 
-  function repeatText(e) {
+  // One formatter drives both the Quick Add preview and saved-event metadata.
+  // This prevents the preview from collapsing weekly/monthly/yearly rules to daily.
+  function repeatDescription(e) {
     if (!e || !e.repeat || e.repeat === "none") return "";
     const unit =
         e.repeatUnit ||
@@ -737,29 +739,24 @@
           yearly: "year",
         }[e.repeat] ||
         "day",
-      n = Math.max(
+      interval = Math.max(
         1,
         Number(e.repeatInterval) || (e.repeat === "fortnightly" ? 2 : 1),
-      );
-    if (
-      n === 1 &&
-      {
-        day: "daily",
-        week: "weekly",
-        month: "monthly",
-        year: "yearly",
-      }[unit]
-    )
-      return (
-        "Repeats " +
-        {
-          day: "daily",
-          week: "weekly",
-          month: "monthly",
-          year: "yearly",
-        }[unit]
-      );
-    return "Repeats every " + n + " " + unit + (n === 1 ? "" : "s");
+      ),
+      units = { day: "day", week: "week", month: "month", year: "year" },
+      adverbs = { day: "daily", week: "weekly", month: "monthly", year: "yearly" };
+    if (interval === 1 && adverbs[unit]) return "Repeats " + adverbs[unit];
+    return (
+      "Repeats every " +
+      interval +
+      " " +
+      (units[unit] || unit) +
+      (interval === 1 ? "" : "s")
+    );
+  }
+
+  function repeatText(e) {
+    return repeatDescription(e);
   }
 
   function eventMarkup(e) {
@@ -1658,8 +1655,14 @@
       title = title.replace(/\bmidnight\b/i, " ");
     }
     let rec = null;
-    const combo = /\bevery\s+(\d+)\s*weeks?\s+and\s+(\d+)\s*days?\b/i.exec(s);
-    if (combo) {
+    const combo = /\bevery\s+(\d+)\s*weeks?\s+and\s+(\d+)\s*days?\b/i.exec(s),
+      biweekly = /\b(?:fortnightly|biweekly|every\s+other\s+week)\b/i.exec(s);
+    if (biweekly) {
+      repeat = "weekly";
+      repeatUnit = "week";
+      repeatInterval = 2;
+      rec = biweekly[0];
+    } else if (combo) {
       repeat = "daily";
       repeatUnit = "day";
       repeatInterval = Math.max(1, Number(combo[1]) * 7 + Number(combo[2]));
@@ -1731,24 +1734,8 @@
   let quickParseTimer = null;
 
   function quickPreviewRepeatText(p) {
-    if (!p || !p.repeat || p.repeat === "none") return "";
-    const unit = p.repeatUnit || ({
-      daily: "day",
-      weekly: "week",
-      fortnightly: "week",
-      monthly: "month",
-      yearly: "year",
-    }[p.repeat] || "day");
-    const interval = Math.max(
-      1,
-      Number(p.repeatInterval) || (p.repeat === "fortnightly" ? 2 : 1),
-    );
-    const units = { day: "day", week: "week", month: "month", year: "year" };
-    if (interval === 1) {
-      const names = { day: "daily", week: "weekly", month: "monthly", year: "yearly" };
-      if (names[unit]) return " · Repeats " + names[unit];
-    }
-    return " · Repeats every " + interval + " " + (units[unit] || unit) + (interval === 1 ? "" : "s");
+    const description = repeatDescription(p);
+    return description ? " · " + description : "";
   }
 
   function showQuickPreview(p, prefix = "Preview") {
