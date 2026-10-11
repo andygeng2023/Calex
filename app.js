@@ -1265,11 +1265,15 @@
     const screen = $("calendarScreen");
     if (!settleTransition) screen.classList.remove("is-view-settling");
     screen.classList.toggle("panel-open", view !== "all");
-    document
-      .querySelectorAll("[data-view]")
-      .forEach((b) =>
-        b.setAttribute("aria-pressed", String(b.dataset.view === view)),
-      );
+    screen.dataset.view = view;
+    const viewName =
+      view === "all" ? "Full dates" : view === "month" ? "Month" : "Week";
+    screen.setAttribute("aria-label", "Calendar: " + viewName + " view");
+    $("viewHandle").setAttribute(
+      "aria-label",
+      viewName +
+        " view. Drag up for month and week, down for full dates. Keyboard shortcuts: M, W, Y.",
+    );
     $("monthTitle").textContent = fmtDate(cursor, {
       month: "long",
       year: "numeric",
