@@ -2660,3 +2660,23 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .auth-card [hidden] { display: none !important; }
 .google-auth { width: 100%; margin-top: 2px; background: #fff!important; color: #233428!important; border: 1px solid var(--line)!important; }
 .auth-card .auth-actions .save-settings { min-width: 0; }
+
+/* Dedicated account screen */
+.auth-screen { overflow-y:auto; padding: max(20px,env(safe-area-inset-top)) 24px 32px; }
+.auth-back { align-self:flex-start; display:flex; align-items:center; gap:8px; border:0; background:transparent; color:var(--ink); padding:10px 0; font:inherit; font-weight:650; cursor:pointer; }
+.auth-back:first-letter { font-size:28px; }
+.auth-screen-content { width:100%; max-width:420px; margin:clamp(18px,6vh,58px) auto 0; }
+.auth-brand-mark { display:grid; place-items:center; width:52px; height:52px; border-radius:16px; background:var(--green-pale); color:var(--green-dark); font-size:28px; font-weight:800; }
+.auth-screen-title { margin:22px 0 8px; font-size:30px; letter-spacing:-.8px; }
+.auth-screen-intro,.auth-privacy-note { color:var(--muted); font-size:14px; line-height:1.55; }
+.auth-screen .auth-card { margin-top:24px; padding:18px; gap:12px; }
+.auth-screen .auth-card input { box-sizing:border-box; min-height:48px; }
+.auth-screen .auth-actions { flex-direction:column; }
+.auth-screen .auth-actions button,.auth-screen .google-auth { min-height:48px; border-radius:12px; cursor:pointer; }
+.auth-screen .auth-link { display:block; width:100%; min-height:44px; cursor:pointer; }
+.auth-screen button:focus-visible { outline:3px solid #4e8d5c; outline-offset:3px; }
+.auth-screen .auth-status { padding:8px 10px; border-radius:9px; background:var(--green-pale); }
+.account-open-button { width:100%; min-height:44px; margin-top:12px; border:0; border-radius:10px; background:var(--green); color:#fff; font-weight:700; cursor:pointer; }
+.auth-privacy-note { margin-top:18px; font-size:12px; }
+.app.settings-dark .auth-screen .auth-card { background:#1b241e; }
+.app.settings-dark .auth-screen .google-auth { background:#fff!important; color:#233428!important; }
