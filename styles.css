@@ -3423,3 +3423,60 @@ body.settings-dark .modal #eventForm .field textarea::placeholder {
 .app.settings-dark .nlp-help.is-empty {
   color: #aab7aa;
 }
+
+
+/* Follow-up fixes: scroll the home content, not an inner event list. */
+main#mainContent {
+  min-height: 0;
+  overflow: hidden;
+}
+#homeScreen.screen.active {
+  display: block;
+  flex: 1 1 0%;
+  height: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 24px;
+}
+#homeScreen > * {
+  flex-shrink: 0;
+}
+#todayEvents,
+#comingUpEvents {
+  flex: none;
+  min-height: auto;
+  overflow: visible;
+}
+#comingUpHeading {
+  margin-top: 22px;
+  padding-top: 0;
+  border-top: 0;
+}
+#comingUpEvents > .eyebrow {
+  display: none;
+}
+.event {
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  align-items: center;
+}
+.event .check {
+  width: 18px;
+  height: 18px;
+  align-self: center;
+  justify-self: center;
+  margin: 0;
+}
+.nlp-help {
+  background: var(--paper);
+  color: var(--muted);
+  border-color: var(--line);
+}
+.app.settings-dark #quickPreview,
+.app.settings-dark .nlp-help {
+  background: var(--surface, #18221a);
+  color: var(--muted, #aab7aa);
+  border-color: var(--line, #344337);
+}
