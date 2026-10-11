@@ -2646,5 +2646,5 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 
 /* Lower the selected-day panel in month view for better vertical balance. */
 #calendarScreen.panel-open .calendar-scroller.month-mode + .selected-panel {
-	margin-top: 24px;
+	margin-top: 40px;
 }
