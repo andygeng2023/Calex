@@ -726,7 +726,7 @@ body .app .event-meta {
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
-body .app .check {
+body .app #calendarScreen .check {
   width: 16px;
   height: 16px;
   min-width: 16px;
