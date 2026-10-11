@@ -3361,122 +3361,78 @@ body.settings-dark .modal #eventForm .field textarea::placeholder {
 .today-btn { padding: 0 10px; margin-right: 4px; }
 
 
-/* Calex home and quick-add polish: preserve the existing design tokens. */
-#homeScreen {
-  display: none;
-  flex-direction: column;
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior-y: contain;
-  -webkit-overflow-scrolling: touch;
-}
-#homeScreen.active {
-  display: flex;
-}
-#todayEvents,
-#comingUpSection {
-  flex: 0 0 auto;
-  min-height: auto;
-  overflow: visible;
-}
-#comingUpSection {
-  margin-top: 18px;
-  padding-top: 4px;
-  padding-bottom: 16px;
-  border-top: 1px solid var(--line);
-}
-#comingUpHeading {
-  margin-top: 12px;
-  margin-bottom: 12px;
-}
-#comingUpEvents .empty {
-  color: var(--muted);
-  padding: 8px 0 14px;
-}
-.event {
-  grid-template-columns: 24px minmax(0, 1fr) auto;
-  align-items: center;
-}
-.event .check {
-  align-self: center;
-  justify-self: center;
-  margin: 0;
-}
-.nlp-help {
-  color: var(--muted);
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 12px 14px;
-  margin-top: 0;
-  overflow-wrap: anywhere;
-}
-.nlp-help.is-empty {
-  color: var(--muted);
-}
-.app.settings-dark .nlp-help {
-  color: var(--muted);
-  background: #18221a;
-  border-color: var(--line);
-}
-.app.settings-dark .nlp-help.is-empty {
-  color: #aab7aa;
-}
-
-
-/* Follow-up fixes: scroll the home content, not an inner event list. */
+/* Home scroll and Quick Add polish. The home screen is the single scroll container,
+   so the date hero, summary, Today list and Coming up list move together. */
 main#mainContent {
   min-height: 0;
   overflow: hidden;
 }
+
 #homeScreen.screen.active {
-  display: block;
+  display: flex;
   flex: 1 1 0%;
+  flex-direction: column;
   height: 0;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   padding-bottom: 24px;
+  scrollbar-width: thin;
 }
+
 #homeScreen > * {
-  flex-shrink: 0;
+  flex: 0 0 auto;
 }
+
 #todayEvents,
 #comingUpEvents {
-  flex: none;
-  min-height: auto;
+  flex: 0 0 auto;
+  min-height: 0;
   overflow: visible;
 }
+
 #comingUpHeading {
   margin-top: 22px;
   padding-top: 0;
   border-top: 0;
 }
-#comingUpEvents > .eyebrow {
-  display: none;
-}
+
+/* Keep each checkbox centred in the first grid track, vertically aligned with
+   the full event row even when title/metadata wraps onto multiple lines. */
 .event {
-  grid-template-columns: 22px minmax(0, 1fr) auto;
+  grid-template-columns: 24px minmax(0, 1fr) 32px;
   align-items: center;
 }
-.event .check {
-  width: 18px;
-  height: 18px;
+
+.event > input.check {
+  width: 21px;
+  height: 21px;
   align-self: center;
   justify-self: center;
-  margin: 0;
+  margin: 0 !important;
 }
-.nlp-help {
-  background: var(--paper);
+
+/* Quick Add preview uses theme tokens; the modal is a sibling of .app, so its
+   dark-mode selector must target body.settings-dark rather than .app.settings-dark. */
+.modal #quickPreview {
   color: var(--muted);
-  border-color: var(--line);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 0 0 16px;
+  overflow-wrap: anywhere;
 }
-.app.settings-dark #quickPreview,
-.app.settings-dark .nlp-help {
-  background: var(--surface, #18221a);
-  color: var(--muted, #aab7aa);
-  border-color: var(--line, #344337);
+
+.modal #quickPreview.is-empty {
+  color: var(--muted);
+}
+
+body.settings-dark .modal #quickPreview {
+  color: var(--muted);
+  background: var(--surface-inset);
+  border-color: var(--line);
 }
