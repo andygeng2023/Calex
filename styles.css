@@ -2170,20 +2170,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 	border-bottom: 1px solid var(--line);
 }
 
-/* Keep the account CTA above nearby layout layers on touch screens. */
-#accountDetail { position: relative; isolation: isolate; }
-#openAuthScreen {
-	position: relative;
-	z-index: 5;
-	display: block;
-	width: 100%;
-	min-height: 48px;
-	margin: 14px 0 0;
-	pointer-events: auto;
-	touch-action: manipulation;
-	-webkit-tap-highlight-color: transparent;
-}
-
 .settings-detail label,.settings-label {
 	display: block;
 	font-size: 12px;
