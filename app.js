@@ -2819,4 +2819,4 @@
   renderTimezone();
   applyAppearance();
   renderAll();
-}();
+}());
