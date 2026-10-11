@@ -1464,7 +1464,6 @@
       $("quickText").value = "";
       $("quickPreview").textContent = "Start typing to see the preview...";
       $("quickPreview").classList.add("is-empty");
-      $("quickPreview").textContent = "";
       setTimeout(() => $("quickText").focus(), 100);
     } else if (!$("eventTitle").value) setNormalDefaults();
   }
