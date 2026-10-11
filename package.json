@@ -2,13 +2,20 @@
   "name": "calex-pwa",
   "version": "1.0.0",
   "private": true,
+  "overrides": {
+    "compression": "^1.8.2"
+  },
   "scripts": {
     "format": "prettier --write \"**/*.{html,css,js,json,md,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{html,css,js,json,md,yml,yaml}\"",
-    "test": "playwright test"
+    "test": "playwright test",
+    "test:unit": "node --test tests/ics.unit.js tests/sync.unit.js",
+    "start": "serve . -l 4173 --no-clipboard"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
-    "prettier": "^3.6.2"
+    "lucide": "^0.468.0",
+    "prettier": "^3.6.2",
+    "serve": "^14.2.6"
   }
 }
