@@ -885,7 +885,7 @@
         list.map(eventMarkup).join("") +
         "</div></div>";
     }
-    return out || '<p class="empty">Nothing coming up in the next 7 days.</p>';
+    return out;
   }
 
   function renderHome() {
