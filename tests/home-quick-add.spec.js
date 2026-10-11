@@ -194,3 +194,36 @@ test("asset and service-worker cache versions stay in sync", async ({ page }) =>
     expect(serviceWorker).toContain(`./${asset.path}?v=${asset.version}`);
   }
 });
+
+
+test("checked checkbox tick stays inside its square", async ({ page }) => {
+  await seedEvents(page, [0]);
+  await page.goto("/");
+  await page.locator("#todayEvents .event > input.check").first().check();
+
+  const tick = await page
+    .locator("#todayEvents .event > input.check")
+    .first()
+    .evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      const style = getComputedStyle(element, "::after");
+      return {
+        content: style.content,
+        width: parseFloat(style.width),
+        height: parseFloat(style.height),
+        borderRightWidth: parseFloat(style.borderRightWidth),
+        borderBottomWidth: parseFloat(style.borderBottomWidth),
+        transform: style.transform,
+        boxWidth: box.width,
+        boxHeight: box.height,
+        lineHeight: style.lineHeight,
+      };
+    });
+
+  expect(tick.content).toBe('""');
+  expect(tick.width).toBeLessThan(tick.boxWidth - 2);
+  expect(tick.height).toBeLessThan(tick.boxHeight - 2);
+  expect(tick.borderRightWidth).toBe(2);
+  expect(tick.borderBottomWidth).toBe(2);
+  expect(tick.transform).toContain("matrix");
+});

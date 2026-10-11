@@ -303,11 +303,14 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 	border-color: var(--green);
 }
 
-.check:checked:after {
-	content: "✓";
-	color: #fff;
-	font-size: 14px;
-	font-weight: 800;
+.check:checked::after {
+  content: "";
+  display: block;
+  width: 5px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: translateY(-1px) rotate(45deg);
 }
 
 .event-title {
