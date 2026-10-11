@@ -1063,7 +1063,7 @@
     .forEach((b) =>
       b.addEventListener("click", () => switchScreen(b.dataset.screen)),
     );
-  $("openAuthScreen").addEventListener("click", () => switchScreen("auth"));
+  $("accountToggle").addEventListener("click", () => switchScreen("auth"));
   $("authBack").addEventListener("click", () => switchScreen("settings"));
 
   function showToast(msg) {
@@ -2117,9 +2117,7 @@
   $("timezoneToggle").addEventListener("click", () =>
     openSettingsDetail("timezone"),
   );
-  $("accountToggle").addEventListener("click", () =>
-    openSettingsDetail("account"),
-  );
+  $("accountToggle").addEventListener("click", () => switchScreen("auth"));
   $("timezoneAuto").addEventListener("click", () => {
     appSettings.timezoneMode = "auto";
     appSettings.timezone = deviceTimezone();
