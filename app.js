@@ -190,10 +190,56 @@
     if ($("settingsSignInTitle")) {
       $("settingsSignInTitle").textContent = signedIn ? "Account connected" : "Sign in or create account";
       $("settingsSignInSubtitle").textContent = signedIn ? "Manage your account and sign-out options" : "Securely sync your calendar across devices";
-      $("settingsSyncNote").textContent = signedIn ? "You’re signed in. Your calendar can sync with your account." : "Your events stay on this device until you sign in.";
+      $("settingsSyncNote").textContent = syncText();
+      $("syncNow").hidden = !signedIn;
+      $("syncNow").disabled = syncState === "syncing";
     }
     $("authEmail").autocomplete = "email";
     $("authPassword").autocomplete = "current-password";
+  }
+  /* ---- Cloud sync: pure merge rules live in sync.js (unit-tested) ---- */
+  let localRev = 0,
+    syncState = "idle",
+    syncFailToasted = false;
+  const lsGet = (k, fallback) => {
+      try {
+        const v = JSON.parse(localStorage.getItem(k));
+        return v == null ? fallback : v;
+      } catch (_) {
+        return fallback;
+      }
+    },
+    lsSet = (k, v) => {
+      try {
+        localStorage.setItem(k, JSON.stringify(v));
+      } catch (_) {}
+    },
+    tombKey = (id) => "calex-tombstones-" + id,
+    metaKey = (id) => "calex-syncmeta-" + id,
+    touch = (e) => {
+      e.updatedAt = Date.now();
+      return e;
+    };
+  function setSyncState(state) {
+    syncState = state;
+    renderAuth();
+  }
+  function syncText() {
+    if (!authUser) return "Your events stay on this device until you sign in.";
+    if (syncState === "syncing") return "Syncing…";
+    if (syncState === "offline")
+      return "You’re offline. Changes are saved here and will sync when you’re back online.";
+    if (syncState === "error")
+      return "Couldn’t sync just now. Your changes are safe on this device. Tap Sync now to retry.";
+    const t = lsGet(metaKey(authUser.id), {}).lastSyncAt;
+    return t
+      ? "Synced at " +
+          new Date(t).toLocaleTimeString("en-GB", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }) +
+          ". Your calendar is up to date across devices."
+      : "You’re signed in. Your calendar syncs with your account.";
   }
   async function activateUser(user) {
     if ((authUser?.id || null) === (user?.id || null)) {
@@ -209,48 +255,27 @@
     if (authUser) {
       const migrationKey = "calex-guest-migrated-" + authUser.id;
       const shouldMigrateGuest = localStorage.getItem(migrationKey) !== "1";
-      try {
-        const { data: remoteEvents, error: eventsError } = await supabaseClient
-          .from("calex_events")
-          .select("id,event_data")
-          .eq("user_id", authUser.id);
-        if (eventsError) throw eventsError;
-        const { data: remotePrefs, error: prefsError } = await supabaseClient
-          .from("calex_preferences")
-          .select("preferences")
-          .eq("user_id", authUser.id)
-          .maybeSingle();
-        if (prefsError) throw prefsError;
-        const local = JSON.parse(
-          localStorage.getItem(activeEventsKey()) || "[]",
-        );
-        const merged = new Map(
-          (remoteEvents || []).map((row) => [row.id, row.event_data]),
-        );
-        if (shouldMigrateGuest)
-          (
-            guestEventsSnapshot ||
-            JSON.parse(localStorage.getItem(guestEventsKey) || "[]")
-          ).forEach((item) => merged.set(item.id, item));
-        local.forEach((item) => merged.set(item.id, item));
-        events = [...merged.values()];
-        localStorage.setItem(activeEventsKey(), JSON.stringify(events));
-        appSettings = {
-          ...defaultSettings,
-          ...(remotePrefs?.preferences || {}),
-          ...(!remotePrefs && shouldMigrateGuest
-            ? guestSettingsSnapshot ||
-              JSON.parse(localStorage.getItem(guestSettingsKey) || "{}")
-            : {}),
-          ...JSON.parse(localStorage.getItem(activeSettingsKey()) || "{}"),
-        };
-        const eventsSaved = await saveCloudNow();
-        const prefsSaved = await saveSettingsCloudNow();
-        if (shouldMigrateGuest && eventsSaved && prefsSaved)
-          localStorage.setItem(migrationKey, "1");
-      } catch (err) {
-        showToast("Cloud sync failed: " + (err.message || "Unknown error"));
+      const local = lsGet(activeEventsKey(), []);
+      if (shouldMigrateGuest) {
+        const have = new Set(local.map((x) => x.id));
+        (
+          guestEventsSnapshot ||
+          lsGet(guestEventsKey, [])
+        ).forEach((item) => {
+          if (!have.has(item.id)) local.push(item);
+        });
       }
+      events = local;
+      appSettings = {
+        ...defaultSettings,
+        ...(shouldMigrateGuest
+          ? guestSettingsSnapshot || lsGet(guestSettingsKey, {})
+          : {}),
+        ...lsGet(activeSettingsKey(), {}),
+      };
+      lsSet(activeEventsKey(), events);
+      const synced = await saveCloudNow();
+      if (synced && shouldMigrateGuest) localStorage.setItem(migrationKey, "1");
     } else {
       events =
         guestEventsSnapshot ||
@@ -269,50 +294,94 @@
     applyAppearance();
     renderAll();
   }
+  /** Pull, merge, push. Safe to call any time; coalesces overlapping calls. */
   async function saveCloudNow() {
     if (!supabaseClient || !authUser) return false;
     if (cloudSyncBusy) {
       cloudSyncPending = true;
       return false;
     }
+    if (navigator.onLine === false) {
+      setSyncState("offline");
+      return false;
+    }
     cloudSyncBusy = true;
+    setSyncState("syncing");
     let success = false;
+    const uid = authUser.id,
+      startedAt = Date.now(),
+      rev = localRev;
     try {
-      const userId = authUser.id;
-      const { data: existing, error } = await supabaseClient
+      const { data: rows, error } = await supabaseClient
         .from("calex_events")
-        .select("id")
-        .eq("user_id", userId);
+        .select("id,event_data,updated_at")
+        .eq("user_id", uid);
       if (error) throw error;
-      const currentIds = new Set(events.map((e) => e.id));
-      const removed = (existing || [])
-        .filter((row) => !currentIds.has(row.id))
-        .map((row) => row.id);
-      if (removed.length) {
+      const remote = (rows || []).map((r) => ({
+          id: r.id,
+          data: r.event_data,
+          ts:
+            Number(r.event_data && r.event_data.updatedAt) ||
+            Date.parse(r.updated_at) ||
+            0,
+        })),
+        meta = lsGet(metaKey(uid), {}),
+        tombs = lsGet(tombKey(uid), {}),
+        res = window.CalexSync.mergeEvents({
+          local: events,
+          remote,
+          tombstones: tombs,
+          syncedIds: meta.syncedIds || [],
+          lastSyncAt: meta.lastSyncAt || 0,
+          now: startedAt,
+        });
+      if (res.remove.length) {
         const { error: delError } = await supabaseClient
           .from("calex_events")
           .delete()
-          .eq("user_id", userId)
-          .in("id", removed);
+          .eq("user_id", uid)
+          .in("id", res.remove);
         if (delError) throw delError;
       }
-      if (events.length) {
-        const rows = events.map((item) => ({
-          id: item.id,
-          user_id: userId,
-          event_data: item,
-          updated_at: new Date().toISOString(),
-        }));
+      if (res.push.length) {
         const { error: upsertError } = await supabaseClient
           .from("calex_events")
-          .upsert(rows, { onConflict: "user_id,id" });
+          .upsert(
+            res.push.map((item) => ({
+              id: item.id,
+              user_id: uid,
+              event_data: item,
+              updated_at: new Date(item.updatedAt || startedAt).toISOString(),
+            })),
+            { onConflict: "user_id,id" },
+          );
         if (upsertError) throw upsertError;
       }
-      success = true;
+      const prefsOk = await syncSettings(uid);
+      if (authUser && authUser.id === uid && rev === localRev) {
+        const changed = JSON.stringify(res.events) !== JSON.stringify(events);
+        events = res.events;
+        const left = { ...lsGet(tombKey(uid), {}) };
+        res.clearTombstones.forEach((id) => delete left[id]);
+        lsSet(tombKey(uid), left);
+        lsSet(metaKey(uid), {
+          syncedIds: events.map((e) => e.id),
+          lastSyncAt: startedAt,
+        });
+        lsSet(activeEventsKey(), events);
+        if (changed) renderAll();
+      } else cloudSyncPending = true; // edited mid-sync: run again, nothing lost
+      success = prefsOk;
+      syncFailToasted = false;
     } catch (err) {
       console.error("Calex event sync failed", err);
+      if (!syncFailToasted) {
+        syncFailToasted = true;
+        showToast("Couldn’t sync. Your changes are saved on this device.");
+      }
     } finally {
       cloudSyncBusy = false;
+      setSyncState(success ? "idle" : navigator.onLine === false ? "offline" : "error");
       if (cloudSyncPending) {
         cloudSyncPending = false;
         scheduleCloudSync();
@@ -320,18 +389,37 @@
     }
     return success;
   }
+  async function syncSettings(uid) {
+    const { data, error } = await supabaseClient
+      .from("calex_preferences")
+      .select("preferences")
+      .eq("user_id", uid)
+      .maybeSingle();
+    if (error) throw error;
+    const m = window.CalexSync.mergeSettings(
+      appSettings,
+      data && data.preferences,
+    );
+    if (m.adopt) {
+      appSettings = { ...defaultSettings, ...m.adopt };
+      lsSet(activeSettingsKey(), appSettings);
+      renderProfile();
+      renderTimezone();
+      applyAppearance();
+      return true;
+    }
+    return m.push ? saveSettingsCloudNow() : true;
+  }
   async function saveSettingsCloudNow() {
     if (!supabaseClient || !authUser) return false;
-    const { error } = await supabaseClient
-      .from("calex_preferences")
-      .upsert(
-        {
-          user_id: authUser.id,
-          preferences: appSettings,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "user_id" },
-      );
+    const { error } = await supabaseClient.from("calex_preferences").upsert(
+      {
+        user_id: authUser.id,
+        preferences: appSettings,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    );
     if (error) {
       console.error("Calex preferences sync failed", error);
       return false;
@@ -343,6 +431,11 @@
     clearTimeout(cloudSyncTimer);
     cloudSyncTimer = setTimeout(() => saveCloudNow(), 300);
   }
+  window.addEventListener("online", scheduleCloudSync);
+  window.addEventListener("offline", () => authUser && setSyncState("offline"));
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") scheduleCloudSync();
+  });
   const key = "daymark-events-v1";
   let events = [],
     storageAvailable = true,
@@ -396,6 +489,7 @@
 
   function persist() {
     try {
+      localRev++;
       localStorage.setItem(activeEventsKey(), JSON.stringify(events));
       scheduleCloudSync();
       return true;
@@ -573,6 +667,7 @@
         const e = events.find((x) => x.id === el.dataset.check);
         if (e) {
           e.done = el.checked;
+          touch(e);
           persist();
           renderAll();
         }
@@ -585,6 +680,30 @@
           openNormal(events.find((x) => x.id === el.dataset.edit)),
         ),
       );
+  }
+
+  function upcomingMarkup(from) {
+    let out = "",
+      shown = 0;
+    for (let i = 1; i <= 7 && shown < 12; i++) {
+      const day = addDays(from, i),
+        list = onDay(day).filter((e) => !e.done);
+      if (!list.length) continue;
+      shown += list.length;
+      out +=
+        '<div class="upcoming-day"><div class="upcoming-label">' +
+        esc(
+          i === 1
+            ? "Tomorrow"
+            : fmtDate(day, { weekday: "long", day: "numeric", month: "short" }),
+        ) +
+        '</div><div class="event-list">' +
+        list.map(eventMarkup).join("") +
+        "</div></div>";
+    }
+    return out
+      ? '<div class="eyebrow">Coming up</div>' + out
+      : "";
   }
 
   function renderHome() {
@@ -618,7 +737,8 @@
       done.length +
       '</div><div class="event-list">' +
       listMarkup(done, "Completed events will appear here.") +
-      "</div>";
+      "</div>" +
+      upcomingMarkup(homeDay);
     bindEventActions($("todayEvents"));
   }
 
@@ -1081,12 +1201,23 @@
     button.addEventListener("click", () => switchScreen("settings"));
   });
 
-  function showToast(msg) {
+  function showToast(msg, action) {
     const t = $("toast");
     t.textContent = msg;
+    if (action) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "toast-action";
+      b.textContent = action.label;
+      b.addEventListener("click", () => {
+        t.classList.remove("show");
+        action.fn();
+      });
+      t.appendChild(b);
+    }
     t.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+    toastTimer = setTimeout(() => t.classList.remove("show"), action ? 6000 : 2600);
   }
 
   function openModal(mode) {
@@ -1138,14 +1269,30 @@
       del.style.cssText =
         "width:48px;height:44px;display:grid;place-items:center;margin:10px 0 0 auto;padding:0";
       del.onclick = () => {
-        if (confirm("Delete this event?")) {
-          events = events.filter((x) => x.id !== e.id);
-          persist();
-          closeModal();
-
-          renderAll();
-          showToast("Event deleted");
+        const removed = e;
+        events = events.filter((x) => x.id !== removed.id);
+        if (authUser) {
+          const t = lsGet(tombKey(authUser.id), {});
+          t[removed.id] = Date.now();
+          lsSet(tombKey(authUser.id), t);
         }
+        persist();
+        closeModal();
+        renderAll();
+        showToast("Event deleted", {
+          label: "Undo",
+          fn: () => {
+            if (authUser) {
+              const t = lsGet(tombKey(authUser.id), {});
+              delete t[removed.id];
+              lsSet(tombKey(authUser.id), t);
+            }
+            events.push(touch({ ...removed }));
+            persist();
+            renderAll();
+            showToast("Event restored");
+          },
+        });
       };
       $("eventForm").appendChild(del);
     } else {
@@ -1388,15 +1535,17 @@
       showToast("End time must be later than start time.");
       return;
     }
-    events.push({
-      id: crypto.randomUUID(),
-      ...p,
-      done: false,
-      description: "",
-      location: "",
-      people: "",
-      notes: "",
-    });
+    events.push(
+      touch({
+        id: crypto.randomUUID(),
+        ...p,
+        done: false,
+        description: "",
+        location: "",
+        people: "",
+        notes: "",
+      }),
+    );
     persist();
     selected = parseDate(p.date);
     cursor = new Date(selected);
@@ -1444,6 +1593,7 @@
       $("eventEnd").focus();
       return;
     }
+    touch(item);
     if (id) events = events.map((x) => (x.id === id ? item : x));
     else events.push(item);
     selected = parseDate(item.date);
@@ -1956,7 +2106,7 @@
     location: "",
     timezoneMode: "auto",
     timezone: deviceTimezone(),
-    dark: false,
+    dark: !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches),
   };
   let appSettings = {
     ...defaultSettings,
@@ -1972,6 +2122,7 @@
 
   function saveAppSettings() {
     try {
+      appSettings.updatedAt = Date.now();
       localStorage.setItem(activeSettingsKey(), JSON.stringify(appSettings));
       if (authUser) saveSettingsCloudNow();
       return true;
@@ -2201,54 +2352,83 @@
     applyAppearance();
     if (!saveAppSettings()) showToast("Appearance changed for this session, but could not be saved.");
   });
+  $("goToday").addEventListener("click", () => {
+    const n = new Date();
+    selected = new Date(n.getFullYear(), n.getMonth(), n.getDate(), 12);
+    cursor = new Date(selected);
+    view = "month";
+    renderAll();
+  });
+  $("syncNow").addEventListener("click", () => {
+    syncFailToasted = false;
+    saveCloudNow();
+  });
   $("exportCalendar").addEventListener("click", () => {
-    const escapeIcs = (v) =>
-      String(v || "")
-        .replace(/\\/g, "\\\\")
-        .replace(/\n/g, "\\n")
-        .replace(/,/g, "\\,")
-        .replace(/;/g, "\\;");
-    const lines = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "PRODID:-//Daymark//SimpleCalendar//EN",
-      "CALSCALE:GREGORIAN",
-    ];
-    events.forEach((e) => {
-      if (!validEventDate(e.date)) return;
-      const stamp = e.date.replace(/-/g, "");
-      lines.push(
-        "BEGIN:VEVENT",
-        "UID:" + escapeIcs(e.id || crypto.randomUUID()) + "@daymark",
-        "DTSTAMP:" +
-          new Date()
-            .toISOString()
-            .replace(/[-:]/g, "")
-            .replace(/\.\d{3}/, ""),
-        e.start
-          ? "DTSTART:" + stamp + "T" + e.start.replace(":", "") + "00"
-          : "DTSTART;VALUE=DATE:" + stamp,
-      );
-      if (e.end && e.start)
-        lines.push("DTEND:" + stamp + "T" + e.end.replace(":", "") + "00");
-      lines.push("SUMMARY:" + escapeIcs(e.title));
-      if (e.description) lines.push("DESCRIPTION:" + escapeIcs(e.description));
-      if (e.location) lines.push("LOCATION:" + escapeIcs(e.location));
-      lines.push("END:VEVENT");
+    const text = window.CalexICS.build(events, {
+      name: "Calex",
+      timezone: currentTimezone(),
     });
-    lines.push("END:VCALENDAR");
-    const blob = new Blob([lines.join("\r\n") + "\r\n"], {
-        type: "text/calendar;charset=utf-8",
-      }),
+    const blob = new Blob([text], { type: "text/calendar;charset=utf-8" }),
       url = URL.createObjectURL(blob),
       a = document.createElement("a");
     a.href = url;
-    a.download = "daymark-calendar.ics";
+    a.download = "calex-calendar.ics";
     document.body.appendChild(a);
     a.click();
     a.remove();
-    URL.revokeObjectURL(url);
-    showToast("Calendar export prepared");
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast("Exported " + events.length + " events");
+  });
+  $("importCalendar").addEventListener("click", () => $("importFile").click());
+  $("importFile").addEventListener("change", async () => {
+    const file = $("importFile").files[0];
+    $("importFile").value = "";
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024)
+      return showToast("That file is too large to import (5 MB max).");
+    try {
+      const parsed = window.CalexICS.parse(await file.text());
+      if (!parsed.events.length)
+        return showToast("No events found in that file.");
+      const now = Date.now(),
+        res = window.CalexICS.toCalexEvents(parsed.events, {
+          tz: currentTimezone(),
+          from: now - 30 * 86400000,
+          to: now + 366 * 86400000,
+          max: 1000,
+        }),
+        sig = (e) => [e.title, e.date, e.start].join("|").toLowerCase(),
+        have = new Set(events.map(sig));
+      let added = 0;
+      res.events.forEach((e) => {
+        if (!e.title || !validEventDate(e.date) || have.has(sig(e))) return;
+        have.add(sig(e));
+        events.push(
+          touch({
+            id: crypto.randomUUID(),
+            ...e,
+            done: false,
+            tag: e.repeat !== "none" ? "Repeating" : e.start ? "Timed" : "",
+          }),
+        );
+        added++;
+      });
+      if (added) {
+        persist();
+        renderAll();
+      }
+      const dup = res.events.length - added;
+      showToast(
+        added
+          ? "Imported " + added + " event" + (added === 1 ? "" : "s") +
+              (dup ? " · " + dup + " duplicates skipped" : "") +
+              (res.truncated ? " · limit reached" : "")
+          : "Nothing new to import.",
+      );
+    } catch (err) {
+      console.error("Calex import failed", err);
+      showToast("Couldn’t read that file. Is it a valid .ics calendar?");
+    }
   });
   if (
     "serviceWorker" in navigator &&

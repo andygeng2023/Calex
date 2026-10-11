@@ -78,3 +78,37 @@ test('manifest is linked and service worker enables offline shell', async ({ pag
   await expect(page.locator('#homeScreen')).toHaveClass(/active/);
   await expect(page.locator('#heroDate')).not.toBeEmpty();
 });
+
+test('deleting an event can be undone', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('[data-screen="calendar"]').click();
+  await page.locator('[data-date]').first().click();
+  await page.locator('#panelAdd').click();
+  await page.locator('#eventTitle').fill('Undo me');
+  await page.locator('#eventDate').fill('2026-10-12');
+  await page.locator('#eventForm button[type="submit"]').click();
+  await page.locator('#panelEvents [data-edit]').first().click();
+  await page.locator('.delete-event').click();
+  await expect(page.locator('#toast')).toContainText('Event deleted');
+  await page.locator('.toast-action').click();
+  await expect(page.locator('#toast')).toContainText('Event restored');
+});
+
+test('importing an .ics file adds events and skips duplicates', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('[data-screen="settings"]').click();
+  const ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nUID:t1\r\nSUMMARY:Imported dentist\r\nDTSTART:20261020T093000\r\nDTEND:20261020T103000\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n';
+  const file = { name: 'a.ics', mimeType: 'text/calendar', buffer: Buffer.from(ics) };
+  await page.locator('#importFile').setInputFiles(file);
+  await expect(page.locator('#toast')).toContainText('Imported 1 event');
+  await page.locator('#importFile').setInputFiles(file);
+  await expect(page.locator('#toast')).toContainText('Nothing new to import');
+});
+
+test('Today button returns the calendar to the current month', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('[data-screen="calendar"]').click();
+  await page.locator('#nextYear').click();
+  await page.locator('#goToday').click();
+  await expect(page.locator('#monthTitle')).toContainText(String(new Date().getFullYear()));
+});
