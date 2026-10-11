@@ -885,7 +885,7 @@
         list.map(eventMarkup).join("") +
         "</div></div>";
     }
-    return out ? '<div class="eyebrow">Coming up</div>' + out : "";
+    return out || '<p class="empty">Nothing coming up in the next 7 days.</p>';
   }
 
   function renderHome() {
@@ -1462,6 +1462,8 @@
     if ($("eventFeedback")) $("eventFeedback").textContent = "";
     if (mode === "quick") {
       $("quickText").value = "";
+      $("quickPreview").textContent = "Start typing to see the preview...";
+      $("quickPreview").classList.add("is-empty");
       $("quickPreview").textContent = "";
       setTimeout(() => $("quickText").focus(), 100);
     } else if (!$("eventTitle").value) setNormalDefaults();
@@ -1752,8 +1754,10 @@
     clearTimeout(quickParseTimer);
     if (!raw) {
       $("quickPreview").textContent = "Start typing to see the preview...";
+      $("quickPreview").classList.add("is-empty");
       return;
     }
+    $("quickPreview").classList.remove("is-empty");
     showQuickPreview(parseNatural(raw), "Rule-based preview");
   });
   $("quickSave").addEventListener("click", () => {
