@@ -25,6 +25,28 @@ test('calendar loads and core navigation works', async ({ page }) => {
   expect(pageErrors).toEqual([]);
 });
 
+
+test('dark appearance covers the calendar and event form surfaces', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('[data-screen="settings"]').click();
+  await expect(page.locator('#settingsScreen')).toHaveClass(/active/);
+  await page.locator('#appearanceToggle').click();
+  await expect(page.locator('.app')).toHaveClass(/settings-dark/);
+
+  const shellBackground = await page.locator('.app').evaluate((el) => getComputedStyle(el).backgroundColor);
+  expect(shellBackground).toBe('rgb(21, 27, 23)');
+
+  await page.locator('[data-screen="calendar"]').click();
+  const calendarSurface = await page.locator('.date-cell:not(.selected)').first().evaluate((el) => getComputedStyle(el).backgroundColor);
+  expect(calendarSurface).toBe('rgb(27, 36, 30)');
+
+  await page.locator('[data-date]').first().click();
+  await page.locator('#panelAdd').click();
+  await expect(page.locator('#eventForm')).toBeVisible();
+  const formSurface = await page.locator('#eventForm').evaluate((el) => getComputedStyle(el).backgroundColor);
+  expect(formSurface).toBe('rgb(27, 36, 30)');
+});
+
 test('manifest is linked and service worker enables offline shell', async ({ page, context }) => {
   await page.goto('/');
   expect(await page.locator('link[rel="manifest"]').getAttribute('href')).toBe('./manifest.webmanifest');
