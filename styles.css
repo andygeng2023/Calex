@@ -2643,3 +2643,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 		font-size: 21px;
 	}
 }
+
+/* Lower the selected-day panel in month view for better vertical balance. */
+#calendarScreen.panel-open .calendar-scroller.month-mode + .selected-panel {
+	margin-top: 24px;
+}
