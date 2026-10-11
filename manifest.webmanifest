@@ -1,6 +1,6 @@
 {
-  "name": "Daymark Calendar",
-  "short_name": "Daymark",
+  "name": "Calex Calendar",
+  "short_name": "Calex",
   "description": "A calm, simple calendar for your days.",
   "start_url": "./",
   "scope": "./",
