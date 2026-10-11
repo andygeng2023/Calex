@@ -2990,3 +2990,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 @media (prefers-reduced-motion: reduce) {
   #appearanceToggle .settings-switch, #appearanceToggle .settings-switch span { transition: none; }
 }
+
+/* Legal screens keep comfortable reading measure on narrow and wide screens */
+.legal-content { max-width: 660px; }
+.legal-content h2 { scroll-margin-top: 16px; }
+.legal-screen a:focus-visible { outline-offset: 4px; }
