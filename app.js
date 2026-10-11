@@ -187,6 +187,11 @@
       : "Not signed in · using this device";
     $("authForm").hidden = signedIn;
     $("authSignout").hidden = !signedIn;
+    if ($("settingsSignInTitle")) {
+      $("settingsSignInTitle").textContent = signedIn ? "Account connected" : "Sign in or create account";
+      $("settingsSignInSubtitle").textContent = signedIn ? "Manage your account and sign-out options" : "Securely sync your calendar across devices";
+      $("settingsSyncNote").textContent = signedIn ? "You’re signed in. Your calendar can sync with your account." : "Your events stay on this device until you sign in.";
+    }
     $("authEmail").autocomplete = "email";
     $("authPassword").autocomplete = "current-password";
   }
@@ -1063,7 +1068,7 @@
     .forEach((b) =>
       b.addEventListener("click", () => switchScreen(b.dataset.screen)),
     );
-  $("accountToggle").addEventListener("click", () => switchScreen("auth"));
+  $("accountToggle").addEventListener("click", () => openSettingsDetail("account"));
   $("settingsSignIn").addEventListener("click", (event) => {
     event.preventDefault();
     switchScreen("auth");
