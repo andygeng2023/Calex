@@ -26,7 +26,7 @@ jobs:
       - name: Export formatted app source for exact repository formatting
         run: |
           echo "CALX_FORMATTED_APP_BEGIN"
-          base64 -w0 app.js | fold -w 2000 | awk '{ printf "CALX_FORMATTED_APP_CHUNK_%04d:%s\\n", NR, $0 }'
+          base64 -w0 app.js | fold -w 2000 | awk '{ printf "CALX_FORMATTED_APP_CHUNK_%04d:%s\n", NR, $0 }'
           echo "CALX_FORMATTED_APP_END"
       - name: Verify formatting
         run: npm run format:check
