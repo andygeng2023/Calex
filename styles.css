@@ -2643,3 +2643,15 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 		font-size: 21px;
 	}
 }
+
+/* Supabase account UI */
+
+.auth-card{display:grid;gap:10px;margin:12px 0;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--surface,#fff)}
+.auth-card label{display:block;font-size:13px;font-weight:650;margin:4px 0}
+.auth-card input{width:100%;min-height:42px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface,#fff);color:inherit;font:inherit}
+.auth-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.auth-actions button{flex:1}
+.secondary-auth{background:transparent!important;border:1px solid var(--line)!important;color:inherit!important}
+.auth-link{border:0;background:transparent;color:var(--accent,#477b50);padding:8px;text-decoration:underline;font:inherit}
+.auth-status{font-size:13px;overflow-wrap:anywhere;color:var(--muted,#667)}
+.auth-card button:disabled{opacity:.6}
