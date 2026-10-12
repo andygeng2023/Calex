@@ -1818,273 +1818,171 @@
   // Additional static labels and runtime messages discovered by the localization audit.
   Object.assign(ASIAN_TRANSLATIONS, {
     "Search dates or events…": [
-      "Buscar fechas o eventos…",
-      "Rechercher des dates ou des événements…",
-      "Daten oder Termine suchen…",
       "搜索日期或日程…",
       "日付や予定を検索…",
       "날짜 또는 일정 검색…"
     ],
     "At least 6 characters": [
-      "Al menos 6 caracteres",
-      "Au moins 6 caractères",
-      "Mindestens 6 Zeichen",
       "至少 6 个字符",
       "6文字以上",
       "6자 이상"
     ],
     "e.g. Dentist tomorrow at 10:07 to 11am, repeat weekly": [
-      "p. ej., dentista mañana de 10:07 a 11:00, repetir cada semana",
-      "ex. : dentiste demain de 10 h 07 à 11 h, chaque semaine",
-      "z. B. morgen Zahnarzt von 10:07 bis 11:00, wöchentlich",
       "例如：明天 10:07 至 11:00 牙医，每周重复",
       "例：明日10:07〜11:00 歯科、毎週繰り返し",
       "예: 내일 10:07~11:00 치과, 매주 반복"
     ],
     "Event name": [
-      "Nombre del evento",
-      "Nom de l’événement",
-      "Terminname",
       "日程名称",
       "予定名",
       "일정 이름"
     ],
     "A short description...": [
-      "Una breve descripción…",
-      "Une courte description…",
-      "Eine kurze Beschreibung…",
       "简短描述…",
       "短い説明…",
       "간단한 설명…"
     ],
     "Add a place": [
-      "Añadir un lugar",
-      "Ajouter un lieu",
-      "Ort hinzufügen",
       "添加地点",
       "場所を追加",
       "장소 추가"
     ],
     "Names, separated by commas": [
-      "Nombres, separados por comas",
-      "Noms, séparés par des virgules",
-      "Namen, durch Kommas getrennt",
       "姓名，使用逗号分隔",
       "名前をカンマで区切って入力",
       "이름을 쉼표로 구분"
     ],
     "Anything else to remember": [
-      "Algo más que recordar",
-      "Autre chose à retenir",
-      "Sonst noch etwas zu beachten",
       "其他需要记住的事项",
       "ほかに覚えておくこと",
       "기억할 다른 사항"
     ],
     "What would you like to make time for?": [
-      "¿A qué te gustaría dedicar tiempo?",
-      "À quoi aimeriez-vous consacrer du temps ?",
-      "Wofür möchtest du dir Zeit nehmen?",
       "你想为哪些事情留出时间？",
       "何のために時間を作りたいですか？",
       "어떤 일에 시간을 내고 싶으세요?"
     ],
     "Filter calendars": [
-      "Filtrar calendarios",
-      "Filtrer les calendriers",
-      "Kalender filtern",
       "筛选日历",
       "カレンダーを絞り込む",
       "캘린더 필터"
     ],
     "Previous year": [
-      "Año anterior",
-      "Année précédente",
-      "Vorheriges Jahr",
       "上一年",
       "前年",
       "이전 연도"
     ],
     "Previous month": [
-      "Mes anterior",
-      "Mois précédent",
-      "Vorheriger Monat",
       "上个月",
       "前の月",
       "이전 달"
     ],
     "Next month": [
-      "Mes siguiente",
-      "Mois suivant",
-      "Nächster Monat",
       "下个月",
       "次の月",
       "다음 달"
     ],
     "Next year": [
-      "Año siguiente",
-      "Année suivante",
-      "Nächstes Jahr",
       "下一年",
       "翌年",
       "다음 연도"
     ],
     "Drag to change view": [
-      "Arrastra para cambiar la vista",
-      "Faites glisser pour changer de vue",
-      "Ziehen, um die Ansicht zu ändern",
       "拖动以切换视图",
       "ドラッグして表示を切り替え",
       "드래그하여 보기 변경"
     ],
     "Keyboard shortcuts": [
-      "Atajos de teclado",
-      "Raccourcis clavier",
-      "Tastenkürzel",
       "键盘快捷键",
       "キーボードショートカット",
       "키보드 단축키"
     ],
     "Create event": [
-      "Crear evento",
-      "Créer un événement",
-      "Termin erstellen",
       "创建日程",
       "予定を作成",
       "일정 만들기"
     ],
     "Search dates or events": [
-      "Buscar fechas o eventos",
-      "Rechercher des dates ou des événements",
-      "Daten oder Termine suchen",
       "搜索日期或日程",
       "日付や予定を検索",
       "날짜 또는 일정 검색"
     ],
     "Change calendar view. Drag up for month and week, down for full dates.": [
-      "Cambiar la vista del calendario. Arrastra hacia arriba para ver el mes o la semana y hacia abajo para ver todas las fechas.",
-      "Changer la vue du calendrier. Faites glisser vers le haut pour afficher le mois ou la semaine, vers le bas pour afficher toutes les dates.",
-      "Kalenderansicht ändern. Nach oben ziehen für Monat und Woche, nach unten für alle Daten.",
       "更改日历视图。向上拖动可切换到月视图或周视图，向下拖动可查看所有日期。",
       "カレンダー表示を変更します。上にドラッグすると月・週表示、下にドラッグすると全日付表示になります。",
       "캘린더 보기를 변경합니다. 위로 드래그하면 월/주 보기, 아래로 드래그하면 전체 날짜 보기가 됩니다."
     ],
     "Upcoming agenda": [
-      "Próximas actividades",
-      "Agenda à venir",
-      "Anstehende Termine",
       "即将到来的日程",
       "今後の予定",
       "다가오는 일정"
     ],
     "Back to settings": [
-      "Volver a ajustes",
-      "Retour aux paramètres",
-      "Zurück zu den Einstellungen",
       "返回设置",
       "設定に戻る",
       "설정으로 돌아가기"
     ],
     "Edit profile": [
-      "Editar perfil",
-      "Modifier le profil",
-      "Profil bearbeiten",
       "编辑个人资料",
       "プロフィールを編集",
       "프로필 수정"
     ],
     "Available languages": [
-      "Idiomas disponibles",
-      "Langues disponibles",
-      "Verfügbare Sprachen",
       "可用语言",
       "利用可能な言語",
       "사용 가능한 언어"
     ],
     "Main navigation": [
-      "Navegación principal",
-      "Navigation principale",
-      "Hauptnavigation",
       "主导航",
       "メインナビゲーション",
       "기본 탐색"
     ],
     "Calex logo": [
-      "Logotipo de Calex",
-      "Logo Calex",
-      "Calex-Logo",
       "Calex 标志",
       "Calex ロゴ",
       "Calex 로고"
     ],
     "Home": [
-      "Inicio",
-      "Accueil",
-      "Startseite",
       "主页",
       "ホーム",
       "홈"
     ],
     "Previous mini-calendar month": [
-      "Mes anterior del minicalendario",
-      "Mois précédent du mini-calendrier",
-      "Vorheriger Monat im Minikalender",
       "迷你日历的上个月",
       "ミニカレンダーの前の月",
       "미니 캘린더 이전 달"
     ],
     "Next mini-calendar month": [
-      "Mes siguiente del minicalendario",
-      "Mois suivant du mini-calendrier",
-      "Nächster Monat im Minikalender",
       "迷你日历的下个月",
       "ミニカレンダーの次の月",
       "미니 캘린더 다음 달"
     ],
     "Close": [
-      "Cerrar",
-      "Fermer",
-      "Schließen",
       "关闭",
       "閉じる",
       "닫기"
     ],
     "Event title": [
-      "Título del evento",
-      "Titre de l’événement",
-      "Termintitel",
       "日程标题",
       "予定のタイトル",
       "일정 제목"
     ],
     "Event description": [
-      "Descripción del evento",
-      "Description de l’événement",
-      "Terminbeschreibung",
       "日程描述",
       "予定の説明",
       "일정 설명"
     ],
     "Assistant conversation": [
-      "Conversación con el asistente",
-      "Conversation avec l’assistant",
-      "Assistentenkonversation",
       "助手对话",
       "アシスタントとの会話",
       "어시스턴트 대화"
     ],
     "Send message": [
-      "Enviar mensaje",
-      "Envoyer le message",
-      "Nachricht senden",
       "发送消息",
       "メッセージを送信",
       "메시지 보내기"
     ],
     "Choose a language or use Auto to follow your device's system language.": [
-      "Elige un idioma o usa Automático para seguir el idioma del sistema de tu dispositivo.",
-      "Choisissez une langue ou utilisez Auto pour suivre la langue système de votre appareil.",
-      "Wähle eine Sprache oder nutze Auto, um der Systemsprache deines Geräts zu folgen.",
       "选择一种语言，或选择“自动”以跟随设备的系统语言。",
       "言語を選択するか、「自動」を選んでデバイスのシステム言語に従ってください。",
       "언어를 선택하거나 ‘자동’을 사용해 기기의 시스템 언어를 따르세요."
