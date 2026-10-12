@@ -90,6 +90,16 @@
     ["Adjust the interface for low-light environments", "Adapta la interfaz a entornos con poca luz", "Adaptez l’interface aux environnements peu éclairés", "Passe die Oberfläche an schwach beleuchtete Umgebungen an"],
     ["Language", "Idioma", "Langue", "Sprache"],
     ["Choose your language", "Elige tu idioma", "Choisissez votre langue", "Wähle deine Sprache"],
+    ["Manual", "Manual", "Manuel", "Manuell"],
+    ["Using", "Usando", "Utilisation de", "Verwendet"],
+    ["on", "activada", "activée", "ein"],
+    ["off", "desactivada", "désactivée", "aus"],
+    ["What's on the horizon", "Lo que viene", "À l’horizon", "Was steht an"],
+    ["Help me plan a balanced day.", "Ayúdame a planificar un día equilibrado.", "Aidez-moi à organiser une journée équilibrée.", "Hilf mir, einen ausgewogenen Tag zu planen."],
+    ["Find a 60-minute focus window in my upcoming calendar.", "Encuentra un bloque de 60 minutos de concentración en mi calendario.", "Trouve un créneau de concentration de 60 minutes dans mon calendrier.", "Finde einen 60-minütigen Fokusblock in meinem Kalender."],
+    ["Schedule a 30-minute weekly planning session tomorrow at 9am.", "Programa mañana a las 9 una sesión semanal de planificación de 30 minutos.", "Planifie demain à 9 h une séance hebdomadaire de planification de 30 minutes.", "Plane morgen um 9 Uhr eine wöchentliche Planungssitzung von 30 Minuten."],
+    ["YOU", "TÚ", "VOUS", "DU"],
+    ["event today", "evento hoy", "événement aujourd’hui", "Termin heute"],
     ["Display language", "Idioma de la interfaz", "Langue de l’interface", "Anzeigesprache"],
     ["Your interface language is saved with your preferences.", "El idioma de la interfaz se guarda con tus preferencias.", "La langue de l’interface est enregistrée avec vos préférences.", "Die Anzeigesprache wird zusammen mit deinen Einstellungen gespeichert."],
     ["Your data", "Tus datos", "Vos données", "Deine Daten"],
@@ -404,6 +414,34 @@
     let match = source.match(/^Calendar: (Full dates|Month|Week) view$/);
     if (match) return t("Calendar") + ": " + t(match[1]) + " " + t("view");
 
+    match = source.match(/^(.+), (\d+) events?$/);
+    if (match) {
+      const count = Number(match[2]);
+      const eventLabel = count === 1 ? t("event") : t("events");
+      return match[1] + ", " + count + " " + eventLabel;
+    }
+
+    match = source.match(/^of (\d+) completed$/);
+    if (match) {
+      if (code === "es") return "de " + match[1] + " completados";
+      if (code === "fr") return "sur " + match[1] + " terminés";
+      return "von " + match[1] + " erledigt";
+    }
+
+    match = source.match(/^Last updated: (.+)$/);
+    if (match) {
+      if (code === "es") return "Última actualización: " + match[1];
+      if (code === "fr") return "Dernière mise à jour : " + match[1];
+      return "Zuletzt aktualisiert: " + match[1];
+    }
+
+    match = source.match(/^Effective date: (.+)$/);
+    if (match) {
+      if (code === "es") return "Fecha de entrada en vigor: " + match[1];
+      if (code === "fr") return "Date d’entrée en vigueur : " + match[1];
+      return "Gültig ab: " + match[1];
+    }
+
     match = source.match(/^To do · (\d+)$/);
     if (match) return t("To do") + " · " + match[1];
 
@@ -521,9 +559,29 @@
     });
   }
 
+  function updateWeekdayLabels() {
+    if (!document.body) return;
+    const monday = new Date(2024, 0, 1, 12);
+    const fullWeekday = new Intl.DateTimeFormat(locale(), { weekday: "short" });
+    const narrowWeekday = new Intl.DateTimeFormat(locale(), { weekday: "narrow" });
+    document.querySelectorAll("#calendarScreen .weekdays span").forEach((node, index) => {
+      const day = new Date(monday);
+      day.setDate(monday.getDate() + index);
+      const label = fullWeekday.format(day);
+      if (node.textContent !== label) node.textContent = label;
+    });
+    document.querySelectorAll(".mini-weekdays span").forEach((node, index) => {
+      const day = new Date(monday);
+      day.setDate(monday.getDate() + index);
+      const label = narrowWeekday.format(day);
+      if (node.textContent !== label) node.textContent = label;
+    });
+  }
+
   function translateDocument() {
     document.documentElement.lang = currentLanguage;
     translateElement(document.body);
+    updateWeekdayLabels();
     const pageTitle = translate(document.title);
     if (pageTitle !== document.title) document.title = pageTitle;
   }
