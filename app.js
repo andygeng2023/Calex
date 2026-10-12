@@ -3373,6 +3373,9 @@
       $("eventStart").value = draft.start || "";
       $("eventEnd").value = draft.end || "";
       $("eventLocation").value = draft.location || "";
+      $("eventDescription").value = draft.description || "";
+      $("eventPeople").value = draft.people || "";
+      $("eventNotes").value = draft.notes || "";
       $("eventCategory").value = ["personal", "work", "wellbeing"].includes(
         draft.category,
       )
@@ -3388,6 +3391,7 @@
       ].includes(draft.repeat)
         ? draft.repeat
         : "none";
+      window.CalexI18n?.refresh();
     },
     showToast,
     validEventDate,
