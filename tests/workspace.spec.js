@@ -473,10 +473,7 @@ test("Chinese, Japanese, and Korean cover every bundled phrase", async ({ page }
   });
 });
 
-test("East Asian languages translate sidebar, empty states, event forms, previews, and time zones", async ({ page }) => {
-  await page.goto("/");
-
-  const languages = [
+const eastAsianLanguages = [
     {
       code: "zh",
       workspace: "工作区",
@@ -551,7 +548,10 @@ test("East Asian languages translate sidebar, empty states, event forms, preview
     },
   ];
 
-  for (const lang of languages) {
+for (const lang of eastAsianLanguages) {
+  test(`${lang.code} translates sidebar, empty states, event forms, previews, and time zones`, async ({ page }) => {
+    page.setDefaultTimeout(5000);
+    await page.goto("/");
     await page.locator('[data-screen="settings"]').click();
     await page.locator("#languageToggle").click();
     await page.locator(`#languageResults [data-language="${lang.code}"]`).click();
@@ -647,8 +647,8 @@ test("East Asian languages translate sidebar, empty states, event forms, preview
           ? "一致するタイムゾーンがありません。都市名や地域名をお試しください。"
           : "일치하는 시간대가 없습니다. 도시 또는 지역 이름을 입력하세요.",
     );
-  }
-});
+  });
+}
 
 test("Quick Add preview labels update with language changes while keeping event text intact", async ({ page }) => {
   await page.goto("/");
