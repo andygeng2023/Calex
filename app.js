@@ -1302,6 +1302,7 @@
           " view. Drag up for month and week, down for full dates. Keyboard shortcuts: M, W, Y.",
       ),
     );
+    $("viewHandle").title = translateUiText("Drag to change view");
     $("monthTitle").textContent = fmtDate(cursor, {
       month: "long",
       year: "numeric",
