@@ -2374,7 +2374,7 @@
     }, 450);
   }
 
-  calendarScroller.addEventListener(
+  calendarScreen.addEventListener(
     "click",
     (event) => {
       if (!suppressCalendarClick) return;
@@ -2523,19 +2523,30 @@
     finishCalendarSwipeAt(event.clientX, cancelled);
   }
 
+  function calendarGestureStartAllowed(event) {
+    const target = event.target;
+    if (!(target instanceof Element)) return true;
+    return !target.closest(
+      "#searchInput, .search-wrap, .month-controls, .view-segment, " +
+        "#filterCalendars, .handle-grip, button:not(.date-cell), " +
+        "input, textarea, select, a, [role='dialog']",
+    );
+  }
+
   function calendarTouchById(list, identifier) {
     return Array.from(list || []).find((touch) => touch.identifier === identifier);
   }
 
   // Keep a Touch Events path for mobile browsers/WebViews that cancel Pointer
   // Events during gesture arbitration. Pointer handling remains for mouse/pen.
-  calendarScroller.addEventListener(
+  calendarScreen.addEventListener(
     "touchstart",
     (event) => {
       if (
         view === "all" ||
         !calendarScreen.classList.contains("active") ||
         calendarScreen.classList.contains("is-view-settling") ||
+        !calendarGestureStartAllowed(event) ||
         $("searchInput").value.trim() ||
         event.touches.length !== 1
       )
@@ -2557,7 +2568,7 @@
     { passive: true },
   );
 
-  calendarScroller.addEventListener(
+  calendarScreen.addEventListener(
     "touchmove",
     (event) => {
       const state = calendarSwipe;
@@ -2591,7 +2602,7 @@
     { passive: false },
   );
 
-  calendarScroller.addEventListener(
+  calendarScreen.addEventListener(
     "touchend",
     (event) => {
       const state = calendarSwipe;
@@ -2606,7 +2617,7 @@
     { passive: true },
   );
 
-  calendarScroller.addEventListener(
+  calendarScreen.addEventListener(
     "touchcancel",
     (event) => {
       const state = calendarSwipe;
@@ -2620,12 +2631,13 @@
     { passive: true },
   );
 
-  calendarScroller.addEventListener(
+  calendarScreen.addEventListener(
     "pointerdown",
     (event) => {
       if (
         event.pointerType === "touch" ||
         view === "all" ||
+        !calendarGestureStartAllowed(event) ||
         !calendarScreen.classList.contains("active") ||
         calendarScreen.classList.contains("is-calendar-swiping") ||
         calendarScreen.classList.contains("is-view-settling") ||
@@ -2648,7 +2660,7 @@
     { passive: true },
   );
 
-  calendarScroller.addEventListener(
+  calendarScreen.addEventListener(
     "pointermove",
     (event) => {
       const state = calendarSwipe;
@@ -2678,11 +2690,11 @@
     },
     { passive: false },
   );
-  calendarScroller.addEventListener("pointerup", finishCalendarSwipe);
-  calendarScroller.addEventListener("pointercancel", (event) =>
+  calendarScreen.addEventListener("pointerup", finishCalendarSwipe);
+  calendarScreen.addEventListener("pointercancel", (event) =>
     finishCalendarSwipe(event, true),
   );
-  calendarScroller.addEventListener("lostpointercapture", (event) =>
+  calendarScreen.addEventListener("lostpointercapture", (event) =>
     finishCalendarSwipe(event, true),
   );
 
