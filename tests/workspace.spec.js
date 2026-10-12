@@ -74,6 +74,7 @@ test("language setting translates the interface and persists the choice", async 
       htmlLang: document.documentElement.lang,
       apiLanguage: window.CalexI18n.language(),
       dictionary: window.CalexI18n.translate("Settings", "es"),
+      translationStats: window.CalexI18n.debugTranslation(),
       settingsTitle: heading && heading.textContent,
       firstTextNode: heading && heading.firstChild && heading.firstChild.nodeValue,
       skippedAncestor: heading && heading.closest(skipSelector) && heading.closest(skipSelector).outerHTML,
