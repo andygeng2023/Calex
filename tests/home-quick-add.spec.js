@@ -321,6 +321,50 @@ test("month swipe advances one month and clamps the selected day", async ({ page
 });
 
 
+
+test("touch swipes navigate week view on mobile-style events", async ({ page }) => {
+  await seedEvents(page, []);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.evaluate(() => window.Calex.setView("week"));
+  await expect(page.locator("#calendarScreen")).not.toHaveClass(/is-view-settling/);
+
+  const expectedNext = await page.evaluate(() => {
+    const date = window.Calex.selected();
+    date.setDate(date.getDate() + 7);
+    return [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, "0"),
+      String(date.getDate()).padStart(2, "0"),
+    ].join("-");
+  });
+
+  await page.locator("#calendarScroller").evaluate((scroller) => {
+    const touch = (identifier, clientX, clientY) => ({
+      identifier,
+      clientX,
+      clientY,
+      pageX: clientX,
+      pageY: clientY,
+      screenX: clientX,
+      screenY: clientY,
+      target: scroller,
+    });
+    const dispatch = (type, touches, changedTouches) => {
+      const event = new Event(type, { bubbles: true, cancelable: true });
+      Object.defineProperty(event, "touches", { value: touches });
+      Object.defineProperty(event, "changedTouches", { value: changedTouches });
+      scroller.dispatchEvent(event);
+    };
+    dispatch("touchstart", [touch(1, 320, 100)], [touch(1, 320, 100)]);
+    dispatch("touchmove", [touch(1, 210, 101)], [touch(1, 210, 101)]);
+    dispatch("touchend", [], [touch(1, 210, 101)]);
+  });
+
+  await expect.poll(() => selectedDateKey(page)).toBe(expectedNext);
+  await expect(page.locator("#calendarScreen")).not.toHaveClass(/is-calendar-swiping/);
+});
+
 test("horizontal trackpad gestures also advance the current period", async ({ page }) => {
   await seedEvents(page, []);
   await page.goto("/");
