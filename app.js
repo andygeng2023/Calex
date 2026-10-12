@@ -407,10 +407,13 @@
     const t = lsGet(metaKey(authUser.id), {}).lastSyncAt;
     return t
       ? "Synced at " +
-          new Date(t).toLocaleTimeString("en-GB", {
-            hour: "2-digit",
-            minute: "2-digit",
-          }) +
+          new Date(t).toLocaleTimeString(
+            window.CalexI18n?.locale() || "en-GB",
+            {
+              hour: "2-digit",
+              minute: "2-digit",
+            },
+          ) +
           ". Your calendar is up to date across devices."
       : "You’re signed in. Your calendar syncs with your account.";
   }
@@ -2749,6 +2752,9 @@
         ...saved,
       };
   } catch (_) {}
+  // Account-specific preferences may override a device's guest language.
+  if (window.CalexI18n?.languages[appSettings.language])
+    window.CalexI18n.setLanguage(appSettings.language);
 
   function saveAppSettings() {
     try {
