@@ -589,6 +589,17 @@ test("East Asian languages translate sidebar, empty states, event forms, preview
     await page.locator("#closeModal").click();
 
     await page.locator('[data-screen="calendar"]').click();
+    await expect(page.locator("#workspaceTitle")).toHaveText(
+      lang.code === "zh"
+        ? "为每件事留出一点空间"
+        : lang.code === "ja"
+          ? "すべてに少しずつ余裕を"
+          : "모든 일을 위한 작은 여유",
+    );
+    await expect(page.locator("#viewHandle")).toHaveAttribute(
+      "aria-label",
+      new RegExp(lang.code === "zh" ? "拖动" : lang.code === "ja" ? "ドラッグ" : "드래그"),
+    );
     await page.locator("#panelAdd").click();
     await expect(page.locator("#modalTitle")).toHaveText(
       lang.code === "zh" ? "新建事件" : lang.code === "ja" ? "新しい予定" : "새 일정",
@@ -605,6 +616,16 @@ test("East Asian languages translate sidebar, empty states, event forms, preview
     await expect(page.locator(".agenda-empty p")).toHaveText(lang.agendaBody);
 
     await page.locator('[data-screen="settings"]').click();
+    await expect(page.locator(".settings-row-title[data-i18n='Import calendar']")).toHaveText(
+      lang.code === "zh" ? "导入日历" : lang.code === "ja" ? "カレンダーをインポート" : "캘린더 가져오기",
+    );
+    await expect(page.locator(".settings-row-sub[data-i18n*='.ics file']")).toHaveText(
+      lang.code === "zh"
+        ? "从 .ics 文件添加日程（Google、Outlook、Apple）"
+        : lang.code === "ja"
+          ? ".ics ファイル（Google、Outlook、Apple）から予定を追加"
+          : ".ics 파일(Google, Outlook, Apple)에서 일정 추가",
+    );
     await expect(page.locator("#settingsSignInTitle")).toHaveText(lang.accountTitle);
     await expect(page.locator("#settingsSignInSubtitle")).toHaveText(lang.accountSubtitle);
     await expect(page.locator("#settingsSyncNote")).toHaveText(lang.syncNote);
