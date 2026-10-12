@@ -227,7 +227,7 @@
             type="button"
             aria-label="Back to settings"
           >
-            ‹ <span>Settings</span>
+            ‹ <span data-i18n="Settings">Settings</span>
           </button>
           <div class="auth-screen-content">
             <div class="auth-brand-mark" aria-hidden="true">C</div>
@@ -971,7 +971,7 @@
             <path d="M3.5 10.5 12 3.7l8.5 6.8" />
             <path d="M5.5 9.5V20h5v-6h3v6h5V9.5" />
           </svg>
-          <span>Overview</span>
+          <span data-i18n="Overview">Overview</span>
         </button>
         <button class="nav-btn" data-screen="calendar" aria-label="Calendar">
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -981,7 +981,7 @@
               d="M7.5 13.5h.01M12 13.5h.01M16.5 13.5h.01M7.5 17h.01M12 17h.01"
             />
           </svg>
-          <span>Calendar</span>
+          <span data-i18n="Calendar">Calendar</span>
         </button>
         <button class="nav-btn" data-screen="settings" aria-label="Settings">
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -993,7 +993,7 @@
           <span>Settings</span>
         </button>
         <button class="nav-btn" data-screen="agenda" aria-label="Agenda">
-          <i data-lucide="list"></i><span>Agenda</span>
+          <i data-lucide="list"></i><span data-i18n="Agenda">Agenda</span>
         </button>
         <div class="sidebar-tools">
           <div class="mini-head">
@@ -1011,25 +1011,25 @@
             ><span>F</span><span>S</span><span>S</span>
           </div>
           <div id="miniGrid" class="mini-grid"></div>
-          <div class="sidebar-caption">MY CALENDARS</div>
+          <div class="sidebar-caption" data-i18n="MY CALENDARS">MY CALENDARS</div>
           <div class="category-filters">
             <label
               ><input type="checkbox" data-category="personal" checked /><span
                 class="category-dot personal"
               ></span
-              >Personal</label
+              ><span data-i18n="Personal">Personal</span></label>
             >
             <label
               ><input type="checkbox" data-category="work" checked /><span
                 class="category-dot work"
               ></span
-              >Work & study</label
+              ><span data-i18n="Work & study">Work & study</span></label>
             >
             <label
               ><input type="checkbox" data-category="wellbeing" checked /><span
                 class="category-dot wellbeing"
               ></span
-              >Wellbeing</label
+              ><span data-i18n="Wellbeing">Wellbeing</span></label>
             >
           </div>
           <button
@@ -1163,9 +1163,9 @@
             <div class="field full">
               <label for="eventCategory" data-i18n="Calendar">Calendar</label
               ><select id="eventCategory">
-                <option value="personal">Personal</option>
-                <option value="work">Work & study</option>
-                <option value="wellbeing">Wellbeing</option>
+                <option value="personal" data-i18n="Personal">Personal</option>
+                <option value="work" data-i18n="Work & study">Work & study</option>
+                <option value="wellbeing" data-i18n="Wellbeing">Wellbeing</option>
               </select>
             </div>
             <div class="field full">
