@@ -352,20 +352,24 @@
   }
   function renderAuth() {
     const signedIn = !!authUser;
-    $("authStatus").textContent = signedIn
-      ? "Signed in as " + authUser.email
-      : "Not signed in · using this device";
+    $("authStatus").textContent = translateUiText(
+      signedIn
+        ? "Signed in as " + authUser.email
+        : "Not signed in · using this device",
+    );
     $("authForm").hidden = signedIn;
     $("authSignout").hidden = !signedIn || recoveringPassword;
     $("authRecovery").hidden = !signedIn || !recoveringPassword;
     if ($("settingsSignInTitle")) {
-      $("settingsSignInTitle").textContent = signedIn
-        ? "Account connected"
-        : "Sign in or create account";
-      $("settingsSignInSubtitle").textContent = signedIn
-        ? "Manage your account and sign-out options"
-        : "Securely sync your calendar across devices";
-      $("settingsSyncNote").textContent = syncText();
+      $("settingsSignInTitle").textContent = translateUiText(
+        signedIn ? "Account connected" : "Sign in or create account",
+      );
+      $("settingsSignInSubtitle").textContent = translateUiText(
+        signedIn
+          ? "Manage your account and sign-out options"
+          : "Securely sync your calendar across devices",
+      );
+      $("settingsSyncNote").textContent = translateUiText(syncText());
       $("syncNow").hidden = !signedIn;
       $("syncNow").disabled = syncState === "syncing";
     }
@@ -1287,11 +1291,16 @@
     screen.dataset.view = view;
     const viewName =
       view === "all" ? "Full dates" : view === "month" ? "Month" : "Week";
-    screen.setAttribute("aria-label", "Calendar: " + viewName + " view");
+    screen.setAttribute(
+      "aria-label",
+      translateUiText("Calendar: " + viewName + " view"),
+    );
     $("viewHandle").setAttribute(
       "aria-label",
-      viewName +
-        " view. Drag up for month and week, down for full dates. Keyboard shortcuts: M, W, Y.",
+      translateUiText(
+        viewName +
+          " view. Drag up for month and week, down for full dates. Keyboard shortcuts: M, W, Y.",
+      ),
     );
     $("monthTitle").textContent = fmtDate(cursor, {
       month: "long",
@@ -1417,7 +1426,7 @@
       terms: "Terms of service",
     };
     if ($("workspaceTitle"))
-      $("workspaceTitle").textContent = titles[name] || "Calex";
+      $("workspaceTitle").textContent = translateUiText(titles[name] || "Calex");
     document.querySelectorAll(".nav-btn").forEach((b) => {
       if (b.dataset.screen === name) b.setAttribute("aria-current", "page");
       else b.removeAttribute("aria-current");
@@ -3114,6 +3123,7 @@
   window.addEventListener("calex:language", () => {
     appSettings.language = window.CalexI18n?.preference() || appSettings.language || "auto";
     renderAll();
+    renderAuth();
     renderProfile();
     renderTimezone();
     renderLanguage();
