@@ -2527,7 +2527,106 @@
     ["Global","Global","Mondial","Weltweit"],
   );
 
-    const PHRASES = new Map();
+    ROWS.push(
+    ["EMAIL TO CALENDAR","Correo al calendario","E-mail vers le calendrier","E-Mail zu Kalender"],
+    ["Inbox, connected to your calendar","Bandeja de entrada, conectada a tu calendario","Boîte de réception connectée à votre calendrier","Posteingang, mit deinem Kalender verbunden"],
+    ["Find the details that matter, then turn an email into an editable event draft.","Encuentra los detalles importantes y convierte un correo en un borrador de evento editable.","Repérez les détails importants et transformez un e-mail en brouillon d’événement modifiable.","Finde die wichtigen Details und erstelle aus einer E-Mail einen bearbeitbaren Ereignisentwurf."],
+    ["Read-only access","Acceso de solo lectura","Accès en lecture seule","Schreibgeschützter Zugriff"],
+    ["Gmail access is optional. Calex reads messages only after you connect; its text is sent to Puter AI for extraction when you create an event draft. Review every draft before saving.","El acceso a Gmail es opcional. Calex solo lee mensajes después de que te conectes; su texto se envía a Puter AI para extraer los datos al crear un borrador de evento. Revisa cada borrador antes de guardarlo.","L’accès à Gmail est facultatif. Calex ne lit les messages qu’après votre connexion ; leur texte est envoyé à Puter AI pour en extraire les informations lors de la création d’un brouillon d’événement. Vérifiez chaque brouillon avant de l’enregistrer.","Der Gmail-Zugriff ist optional. Calex liest Nachrichten erst nach deiner Verbindung; beim Erstellen eines Ereignisentwurfs wird ihr Text zur Extraktion an Puter AI gesendet. Prüfe jeden Entwurf vor dem Speichern."],
+    ["Email access is read-only. Calex never sends, deletes, or modifies your messages.","El acceso al correo es de solo lectura. Calex nunca envía, elimina ni modifica tus mensajes.","L’accès aux e-mails est en lecture seule. Calex n’envoie, ne supprime et ne modifie jamais vos messages.","Der E-Mail-Zugriff ist schreibgeschützt. Calex sendet, löscht oder ändert deine Nachrichten niemals."],
+    ["Gmail connection needs setup","Es necesario configurar la conexión de Gmail","La connexion Gmail doit être configurée","Die Gmail-Verbindung muss eingerichtet werden"],
+    ["Set a Google OAuth web client ID in gmail-config.js, enable the Gmail API in Google Cloud, and authorize this site’s origin. The app requests read-only Gmail access.","Configura un ID de cliente web de Google OAuth en gmail-config.js, habilita la API de Gmail en Google Cloud y autoriza el origen de este sitio. La aplicación solicita acceso de solo lectura a Gmail.","Configurez un ID client Web Google OAuth dans gmail-config.js, activez l’API Gmail dans Google Cloud et autorisez l’origine de ce site. L’application demande un accès Gmail en lecture seule.","Lege eine Google-OAuth-Webclient-ID in gmail-config.js fest, aktiviere die Gmail API in Google Cloud und autorisiere den Ursprung dieser Website. Die App fordert nur Lesezugriff auf Gmail an."],
+    ["Inbox tools","Herramientas de bandeja de entrada","Outils de boîte de réception","Posteingangswerkzeuge"],
+    ["Inbox","Bandeja de entrada","Boîte de réception","Posteingang"],
+    ["Unread","No leídos","Non lus","Ungelesen"],
+    ["Starred","Destacados","Avec étoile","Markiert"],
+    ["Filter messages","Filtrar mensajes","Filtrer les messages","Nachrichten filtern"],
+    ["Search Gmail inbox","Buscar en la bandeja de Gmail","Rechercher dans la boîte Gmail","Gmail-Posteingang durchsuchen"],
+    ["Search mail by sender, subject, or keyword","Buscar correo por remitente, asunto o palabra clave","Rechercher par expéditeur, objet ou mot-clé","E-Mails nach Absender, Betreff oder Stichwort suchen"],
+    ["Search","Buscar","Rechercher","Suchen"],
+    ["Connect Gmail","Conectar Gmail","Connecter Gmail","Gmail verbinden"],
+    ["Refresh","Actualizar","Actualiser","Aktualisieren"],
+    ["Disconnect","Desconectar","Déconnecter","Trennen"],
+    ["Enable AI extraction","Activar extracción con IA","Activer l’extraction par IA","KI-Extraktion aktivieren"],
+    ["Messages","Mensajes","Messages","Nachrichten"],
+    ["Loads more as you scroll","Carga más al desplazarte","Charge plus de messages en faisant défiler","Lädt beim Scrollen weitere Nachrichten"],
+    ["No matching messages","No hay mensajes coincidentes","Aucun message correspondant","Keine passenden Nachrichten"],
+    ["Connect Gmail to get started","Conecta Gmail para comenzar","Connectez Gmail pour commencer","Verbinde Gmail, um loszulegen"],
+    ["Try another search or choose a different inbox filter.","Prueba otra búsqueda o elige otro filtro de bandeja de entrada.","Essayez une autre recherche ou choisissez un autre filtre de boîte de réception.","Versuche eine andere Suche oder wähle einen anderen Posteingangsfilter."],
+    ["Your inbox will appear here after you grant read-only access.","Tu bandeja de entrada aparecerá aquí después de conceder acceso de solo lectura.","Votre boîte de réception apparaîtra ici après l’octroi de l’accès en lecture seule.","Dein Posteingang wird hier angezeigt, sobald du Lesezugriff gewährst."],
+    ["No preview text is available.","No hay texto de vista previa disponible.","Aucun texte d’aperçu disponible.","Kein Vorschautext verfügbar."],
+    ["Make event","Crear evento","Créer un événement","Ereignis erstellen"],
+    ["Working…","Procesando…","Traitement…","Wird verarbeitet…"],
+    ["Open in Gmail","Abrir en Gmail","Ouvrir dans Gmail","In Gmail öffnen"],
+    ["Gmail is not connected.","Gmail no está conectado.","Gmail n’est pas connecté.","Gmail ist nicht verbunden."],
+    ["Connect Gmail to show your inbox.","Conecta Gmail para ver tu bandeja de entrada.","Connectez Gmail pour afficher votre boîte de réception.","Verbinde Gmail, um deinen Posteingang anzuzeigen."],
+    ["Loading emails…","Cargando correos…","Chargement des e-mails…","E-Mails werden geladen…"],
+    ["Loading more emails…","Cargando más correos…","Chargement d’autres e-mails…","Weitere E-Mails werden geladen…"],
+    ["Scroll to load more","Desplázate para cargar más","Faites défiler pour charger plus","Scrolle, um weitere zu laden"],
+    ["No inbox messages matched that search.","Ningún mensaje de la bandeja coincide con esa búsqueda.","Aucun message de la boîte de réception ne correspond à cette recherche.","Keine Posteingangsnachrichten entsprechen dieser Suche."],
+    ["Could not load Gmail messages.","No se pudieron cargar los mensajes de Gmail.","Impossible de charger les messages Gmail.","Gmail-Nachrichten konnten nicht geladen werden."],
+    ["Connect Gmail to view your inbox.","Conecta Gmail para ver tu bandeja de entrada.","Connectez Gmail pour afficher votre boîte de réception.","Verbinde Gmail, um deinen Posteingang zu sehen."],
+    ["Gmail is not configured for this deployment yet. The OAuth client ID must be added before connecting.","Gmail aún no está configurado para esta implementación. Debes añadir el ID de cliente OAuth antes de conectarte.","Gmail n’est pas encore configuré pour ce déploiement. L’ID client OAuth doit être ajouté avant la connexion.","Gmail ist für diese Bereitstellung noch nicht eingerichtet. Vor dem Verbinden muss die OAuth-Client-ID hinzugefügt werden."],
+    ["Gmail disconnected. No email access token is stored by Calex.","Gmail desconectado. Calex no almacena ningún token de acceso al correo.","Gmail déconnecté. Calex ne stocke aucun jeton d’accès aux e-mails.","Gmail getrennt. Calex speichert kein E-Mail-Zugriffstoken."],
+    ["That email is no longer in the visible inbox. Refresh and try again.","Ese correo ya no está en la bandeja visible. Actualiza e inténtalo de nuevo.","Cet e-mail n’est plus dans la boîte visible. Actualisez et réessayez.","Diese E-Mail ist nicht mehr im sichtbaren Posteingang. Aktualisiere und versuche es erneut."],
+    ["Reading the selected email and extracting event details with Puter…","Leyendo el correo seleccionado y extrayendo los detalles del evento con Puter…","Lecture de l’e-mail sélectionné et extraction des détails de l’événement avec Puter…","Ausgewählte E-Mail wird gelesen und Ereignisdetails werden mit Puter extrahiert…"],
+    ["This email has no readable message text. Try another email.","Este correo no contiene texto legible. Prueba con otro correo.","Cet e-mail ne contient aucun texte lisible. Essayez un autre e-mail.","Diese E-Mail enthält keinen lesbaren Nachrichtentext. Versuche eine andere E-Mail."],
+    ["Puter could not identify a specific event in this email. Try another message or create the event manually.","Puter no pudo identificar un evento concreto en este correo. Prueba otro mensaje o crea el evento manualmente.","Puter n’a pas pu identifier d’événement précis dans cet e-mail. Essayez un autre message ou créez l’événement manuellement.","Puter konnte in dieser E-Mail kein konkretes Ereignis erkennen. Versuche eine andere Nachricht oder erstelle das Ereignis manuell."],
+    ["Could not convert this email. Check Gmail and Puter access, then retry.","No se pudo convertir este correo. Comprueba el acceso a Gmail y Puter e inténtalo de nuevo.","Impossible de convertir cet e-mail. Vérifiez l’accès à Gmail et Puter, puis réessayez.","Diese E-Mail konnte nicht umgewandelt werden. Prüfe den Gmail- und Puter-Zugriff und versuche es erneut."],
+    ["Connect Puter in the assistant first. This email will be processed after Puter is enabled.","Primero conecta Puter en el asistente. Este correo se procesará cuando Puter esté activado.","Connectez d’abord Puter dans l’assistant. Cet e-mail sera traité une fois Puter activé.","Verbinde zuerst Puter im Assistenten. Diese E-Mail wird verarbeitet, sobald Puter aktiviert ist."],
+    ["Gmail is not configured for this deployment yet. The OAuth client ID must be added before connecting.","Gmail aún no está configurado para esta implementación. Debes añadir el ID de cliente OAuth antes de conectarte.","Gmail n’est pas encore configuré pour ce déploiement. L’ID client OAuth doit être ajouté avant la connexion.","Gmail ist für diese Bereitstellung noch nicht eingerichtet. Vor dem Verbinden muss die OAuth-Client-ID hinzugefügt werden."],
+  );
+  Object.assign(ASIAN_TRANSLATIONS, {
+    "EMAIL TO CALENDAR": ["DEL CORREO AL CALENDARIO", "メールからカレンダーへ", "이메일에서 캘린더로"],
+    "Inbox, connected to your calendar": ["收件箱，已连接到日历", "カレンダーに接続された受信トレイ", "캘린더에 연결된 받은편지함"],
+    "Find the details that matter, then turn an email into an editable event draft.": ["提取重要信息，并将邮件转换为可编辑的日程草稿。", "必要な詳細を見つけ、メールを編集可能な予定の下書きに変換します。", "중요한 정보를 찾아 이메일을 수정 가능한 일정 초안으로 바꾸세요."],
+    "Read-only access": ["只读访问", "読み取り専用アクセス", "읽기 전용 액세스"],
+    "Gmail access is optional. Calex reads messages only after you connect; its text is sent to Puter AI for extraction when you create an event draft. Review every draft before saving.": ["Gmail 访问为可选。连接后 Calex 才会读取邮件；创建日程草稿时，邮件文本会发送给 Puter AI 提取信息。保存前请检查每份草稿。", "Gmail への接続は任意です。接続後にのみ Calex がメールを読み取り、予定の下書き作成時に本文を Puter AI に送信して情報を抽出します。保存前に下書きを確認してください。", "Gmail 연결은 선택 사항입니다. 연결한 후에만 Calex가 이메일을 읽으며, 일정 초안을 만들 때 텍스트를 Puter AI로 보내 정보를 추출합니다. 저장하기 전에 초안을 확인하세요."],
+    "Email access is read-only. Calex never sends, deletes, or modifies your messages.": ["电子邮件仅可读取。Calex 不会发送、删除或修改你的邮件。", "メールへのアクセスは読み取り専用です。Calex がメールを送信、削除、変更することはありません。", "이메일 액세스는 읽기 전용입니다. Calex는 이메일을 보내거나 삭제하거나 수정하지 않습니다."],
+    "Gmail connection needs setup": ["需要设置 Gmail 连接", "Gmail 接続の設定が必要です", "Gmail 연결 설정이 필요합니다"],
+    "Inbox tools": ["收件箱工具", "受信トレイのツール", "받은편지함 도구"],
+    "Inbox": ["收件箱", "受信トレイ", "받은편지함"],
+    "Unread": ["未读", "未読", "읽지 않음"],
+    "Starred": ["已加星标", "スター付き", "별표 표시"],
+    "Filter messages": ["筛选邮件", "メールを絞り込む", "이메일 필터"],
+    "Search Gmail inbox": ["搜索 Gmail 收件箱", "Gmail 受信トレイを検索", "Gmail 받은편지함 검색"],
+    "Search mail by sender, subject, or keyword": ["按发件人、主题或关键词搜索邮件", "差出人、件名、キーワードでメールを検索", "보낸 사람, 제목 또는 키워드로 이메일 검색"],
+    "Search": ["搜索", "検索", "검색"],
+    "Connect Gmail": ["连接 Gmail", "Gmail を接続", "Gmail 연결"],
+    "Refresh": ["刷新", "更新", "새로고침"],
+    "Disconnect": ["断开连接", "接続を解除", "연결 해제"],
+    "Enable AI extraction": ["启用 AI 提取", "AI 抽出を有効にする", "AI 추출 사용"],
+    "Messages": ["邮件", "メッセージ", "메시지"],
+    "Loads more as you scroll": ["滚动时加载更多", "スクロールするとさらに読み込み", "스크롤하면 더 불러옵니다"],
+    "No matching messages": ["没有匹配的邮件", "一致するメールはありません", "일치하는 이메일이 없습니다"],
+    "Connect Gmail to get started": ["连接 Gmail 以开始", "Gmail を接続して開始", "Gmail을 연결하여 시작"],
+    "Try another search or choose a different inbox filter.": ["尝试其他搜索词或选择其他收件箱筛选条件。", "別のキーワードで検索するか、別の受信トレイフィルターを選択してください。", "다른 검색어를 입력하거나 다른 받은편지함 필터를 선택하세요."],
+    "Your inbox will appear here after you grant read-only access.": ["授予只读访问权限后，收件箱会显示在这里。", "読み取り専用アクセスを許可すると、ここに受信トレイが表示されます。", "읽기 전용 액세스를 허용하면 받은편지함이 여기에 표시됩니다."],
+    "No preview text is available.": ["没有可用的预览文本。", "プレビューできるテキストはありません。", "미리보기 텍스트가 없습니다."],
+    "Make event": ["创建日程", "予定を作成", "일정 만들기"],
+    "Working…": ["处理中…", "処理中…", "처리 중…"],
+    "Open in Gmail": ["在 Gmail 中打开", "Gmail で開く", "Gmail에서 열기"],
+    "Gmail is not connected.": ["Gmail 未连接。", "Gmail は接続されていません。", "Gmail이 연결되지 않았습니다."],
+    "Connect Gmail to show your inbox.": ["连接 Gmail 以显示收件箱。", "受信トレイを表示するには Gmail を接続してください。", "받은편지함을 보려면 Gmail을 연결하세요."],
+    "Loading emails…": ["正在加载邮件…", "メールを読み込み中…", "이메일을 불러오는 중…"],
+    "Loading more emails…": ["正在加载更多邮件…", "さらにメールを読み込み中…", "이메일을 더 불러오는 중…"],
+    "Scroll to load more": ["滚动以加载更多", "スクロールしてさらに読み込む", "스크롤하여 더 불러오기"],
+    "No inbox messages matched that search.": ["收件箱中没有符合搜索条件的邮件。", "検索条件に一致する受信トレイのメールはありません。", "검색어와 일치하는 받은편지함 이메일이 없습니다."],
+    "Connect Gmail to view your inbox.": ["连接 Gmail 以查看收件箱。", "受信トレイを表示するには Gmail を接続してください。", "받은편지함을 보려면 Gmail을 연결하세요."],
+    "Gmail disconnected. No email access token is stored by Calex.": ["Gmail 已断开连接。Calex 不会存储电子邮件访问令牌。", "Gmail の接続を解除しました。Calex はメールのアクセストークンを保存しません。", "Gmail 연결이 해제되었습니다. Calex는 이메일 액세스 토큰을 저장하지 않습니다."],
+    "Make event": ["创建日程", "予定を作成", "일정 만들기"],
+    "Gmail is not configured for this deployment yet. The OAuth client ID must be added before connecting.": ["此部署尚未配置 Gmail。连接前必须添加 OAuth 客户端 ID。", "この環境では Gmail がまだ設定されていません。接続前に OAuth クライアント ID を追加してください。", "이 배포 환경에는 Gmail이 아직 설정되지 않았습니다. 연결하기 전에 OAuth 클라이언트 ID를 추가해야 합니다."],
+    "Set a Google OAuth web client ID in gmail-config.js, enable the Gmail API in Google Cloud, and authorize this site’s origin. The app requests read-only Gmail access.": ["在 gmail-config.js 中设置 Google OAuth Web 客户端 ID，在 Google Cloud 中启用 Gmail API，并授权此网站的来源。本应用仅请求 Gmail 只读访问权限。", "gmail-config.js に Google OAuth ウェブクライアント ID を設定し、Google Cloud で Gmail API を有効にして、このサイトのオリジンを承認してください。アプリは Gmail の読み取り専用アクセスのみを要求します。", "gmail-config.js에 Google OAuth 웹 클라이언트 ID를 설정하고 Google Cloud에서 Gmail API를 사용 설정한 뒤 이 사이트의 출처를 승인하세요. 앱은 Gmail 읽기 전용 액세스만 요청합니다."],
+    "Could not load Gmail messages.": ["无法加载 Gmail 邮件。", "Gmail メールを読み込めませんでした。", "Gmail 이메일을 불러올 수 없습니다."],
+    "That email is no longer in the visible inbox. Refresh and try again.": ["该邮件已不在当前收件箱中。请刷新后重试。", "そのメールは表示中の受信トレイにありません。更新してもう一度お試しください。", "해당 이메일은 현재 받은편지함에 없습니다. 새로고침한 후 다시 시도하세요."],
+    "Reading the selected email and extracting event details with Puter…": ["正在读取所选邮件并使用 Puter 提取日程详情…", "選択したメールを読み取り、Puter で予定の詳細を抽出しています…", "선택한 이메일을 읽고 Puter로 일정 세부 정보를 추출하는 중…"],
+    "This email has no readable message text. Try another email.": ["此邮件没有可读取的正文。请尝试其他邮件。", "このメールには読み取り可能な本文がありません。別のメールをお試しください。", "이 이메일에는 읽을 수 있는 본문이 없습니다. 다른 이메일을 시도하세요."],
+    "Puter could not identify a specific event in this email. Try another message or create the event manually.": ["Puter 无法识别此邮件中的具体日程。请尝试其他邮件或手动创建日程。", "Puter はこのメールから具体的な予定を特定できませんでした。別のメールを試すか、予定を手動で作成してください。", "Puter가 이 이메일에서 구체적인 일정을 찾지 못했습니다. 다른 이메일을 시도하거나 일정을 직접 만드세요."],
+    "Could not convert this email. Check Gmail and Puter access, then retry.": ["无法转换此邮件。请检查 Gmail 和 Puter 访问权限后重试。", "このメールを変換できませんでした。Gmail と Puter のアクセスを確認して再試行してください。", "이 이메일을 변환할 수 없습니다. Gmail 및 Puter 액세스를 확인한 후 다시 시도하세요."],
+    "Connect Puter in the assistant first. This email will be processed after Puter is enabled.": ["请先在助手中连接 Puter。启用 Puter 后将处理此邮件。", "先にアシスタントで Puter を接続してください。Puter が有効になると、このメールが処理されます。", "먼저 어시스턴트에서 Puter를 연결하세요. Puter가 활성화되면 이 이메일을 처리합니다."]
+  });
+
+  const PHRASES = new Map();
     const REVERSE = new Map();
     const ORIGINAL_TEXT = new WeakMap();
     ROWS.forEach((row) => {
@@ -2600,6 +2699,27 @@
       const entry = PHRASES.get(normalise(key));
       return entry ? entry[code] : key;
     };
+    match = source.match(/^Showing (\\d+) emails?(?:\\. (Scroll down to load more|All matching messages loaded)\\.)?$/);
+    if (match) {
+      const count = Number(match[1]);
+      const suffix = match[2];
+      const endings = {
+        es: suffix === "Scroll down to load more" ? ". Desplázate para cargar más." : suffix ? ". Se han cargado todos los mensajes." : "",
+        fr: suffix === "Scroll down to load more" ? ". Faites défiler pour charger plus." : suffix ? ". Tous les messages correspondants sont chargés." : "",
+        de: suffix === "Scroll down to load more" ? ". Scrolle, um weitere zu laden." : suffix ? ". Alle passenden Nachrichten wurden geladen." : "",
+        zh: suffix === "Scroll down to load more" ? "。滚动以加载更多。" : suffix ? "。所有匹配的邮件均已加载。" : "",
+        ja: suffix === "Scroll down to load more" ? "。スクロールしてさらに読み込みます。" : suffix ? "。一致するメールをすべて読み込みました。" : "",
+        ko: suffix === "Scroll down to load more" ? ". 스크롤하여 더 불러오세요." : suffix ? ". 일치하는 이메일을 모두 불러왔습니다." : ""
+      };
+      if (code === "en") return source;
+      if (code === "es") return "Mostrando " + count + (count === 1 ? " correo" : " correos") + (endings[code] || "");
+      if (code === "fr") return "Affichage de " + count + " e-mail" + (count === 1 ? "" : "s") + (endings[code] || "");
+      if (code === "de") return count + " E-Mail" + (count === 1 ? "" : "s") + " werden angezeigt" + (endings[code] || "");
+      if (code === "zh") return "正在显示 " + count + " 封邮件" + (endings[code] || "");
+      if (code === "ja") return count + " 件のメールを表示中" + (endings[code] || "");
+      if (code === "ko") return count + "개 이메일 표시 중" + (endings[code] || "");
+    }
+
     match = source.match(/^Until (.+)$/);
     if (match) return t("Until") + " " + match[1];
 

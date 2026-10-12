@@ -1420,6 +1420,7 @@
       home: "Your day, at a glance",
       calendar: "A little space for everything",
       agenda: "What's on the horizon",
+      email: "Email workspace",
       settings: "Make yourself at home",
       auth: "Your Calex account",
       about: "About Calex",
@@ -3373,6 +3374,9 @@
       $("eventStart").value = draft.start || "";
       $("eventEnd").value = draft.end || "";
       $("eventLocation").value = draft.location || "";
+      $("eventDescription").value = draft.description || "";
+      $("eventPeople").value = draft.people || "";
+      $("eventNotes").value = draft.notes || "";
       $("eventCategory").value = ["personal", "work", "wellbeing"].includes(
         draft.category,
       )
@@ -3388,6 +3392,7 @@
       ].includes(draft.repeat)
         ? draft.repeat
         : "none";
+      window.CalexI18n?.refresh();
     },
     showToast,
     validEventDate,

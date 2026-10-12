@@ -42,9 +42,25 @@ Calendar sharing is off by default. When opted in, only the next 14 days of titl
 
 ## Hosting and updates
 
-GitHub Pages serves `main` from the repository root. Keep relative asset URLs and bump both HTML asset query versions and `sw.js`'s shell-cache name whenever releasing an update. The current app-shell version is `v38`, including bundled language support. The offline shell includes the app, calendar stylesheet, local icons, and PNG install icons; cloud sync and AI need connectivity.
+GitHub Pages serves `main` from the repository root. Keep relative asset URLs and bump both HTML asset query versions and `sw.js`'s shell-cache name whenever releasing an update. The current app-shell version is `v43`, including bundled language support. The offline shell includes the app, calendar stylesheet, local icons, and PNG install icons; cloud sync and AI need connectivity.
 
 Existing guest/user event storage keys and Supabase configuration are retained. New calendars start empty rather than receiving unlabelled demo appointments. Browser storage is used by the original app for backwards compatibility and offline persistence; opaque sandbox previews can block it and may also block service workers and popup authentication. Test installation and live AI from the top-level Pages origin. Always export a calendar backup before major upgrades.
+
+## Gmail inbox and email-to-event drafts
+
+Gmail connection is optional and off until the user clicks **Connect Gmail**. To enable it for a deployment:
+
+1. In a Google Cloud project, enable the [Gmail API](https://developers.google.com/workspace/gmail/api/quickstart/js).
+2. Configure the Google Auth Platform consent screen and create an OAuth 2.0 client ID for a **Web application**.
+3. Add every deployment origin to the client's **Authorized JavaScript origins** (for example, the production Pages origin and any local development origin).
+4. Put the client ID in `gmail-config.js` as `window.CALEX_GMAIL_CLIENT_ID`. The client ID is public; never add a client secret to browser code.
+5. Add/authorize the `https://www.googleapis.com/auth/gmail.readonly` scope in the consent configuration and add permitted test users while testing.
+
+Google categorizes `gmail.readonly` as a **restricted scope**. Google may require OAuth verification before an external/public app can provide this access to general users; check the current [Gmail scope and verification requirements](https://developers.google.com/workspace/gmail/api/auth/scopes) before release.
+
+The app requests Gmail access only after a user initiates the connection, reads messages without changing or sending mail, and keeps the access token in memory only (it is not saved to local or cloud storage). The dedicated Email tab initially loads up to 20 recent matching messages and their snippets, with inbox, unread, and starred filters, plus links to open the original message in Gmail. Full message text is fetched only when the user chooses **Make event** or drops an email onto a calendar date. Up to 12,000 characters of the selected message are sent to Puter AI for extraction. The prompt treats email content as untrusted input, and Calex opens an editable event draft; the user must review and save it. Disconnecting revokes the current access token where possible and clears the local token.
+
+Email conversion requires the Puter assistant to be enabled and signed in as well as Gmail access. Event extraction can be wrong; always verify the date, time, title, and location before saving. Email data is not intentionally persisted by the Gmail integration, but a draft the user saves can contain extracted event details.
 
 ## Keyboard shortcuts
 

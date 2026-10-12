@@ -278,8 +278,11 @@ body .app .nav-btn:hover {
 .nav-btn[data-screen="agenda"] {
   order: 0;
 }
-.nav-btn[data-screen="settings"] {
+.nav-btn[data-screen="email"] {
   order: 1;
+}
+.nav-btn[data-screen="settings"] {
+  order: 2;
 }
 .sidebar-tools {
   order: 2;
@@ -1496,7 +1499,7 @@ body .app .legal-content p {
     width: 100%;
     height: calc(72px + env(safe-area-inset-bottom));
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     background: var(--paper);
     padding: var(--space-2) var(--space-3)
       max(var(--space-2), env(safe-area-inset-bottom));
