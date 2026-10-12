@@ -382,7 +382,6 @@
   const PHRASES = new Map();
   const REVERSE = new Map();
   const ORIGINAL_TEXT = new WeakMap();
-  let lastTranslationStats = { calls: 0, elements: 0, textNodes: 0, userContentSkips: 0, translatedNodes: 0, errors: [] };
   ROWS.forEach((row) => {
     const english = row[0];
     const values = {};
@@ -618,37 +617,21 @@
 
   function translateElement(element) {
     if (!element || element.nodeType !== 1) return;
-    if (element.matches("[data-user-content='true']")) {
-      lastTranslationStats.userContentSkips += 1;
-      return;
-    }
+    if (element.matches("[data-user-content='true']")) return;
 
     // Walk each element's direct text nodes to keep updates deterministic.
     const elements = [element, ...element.querySelectorAll("*")];
-    lastTranslationStats.elements += elements.length;
     elements.forEach((current) => {
-      if (current.matches("[data-user-content='true']")) {
-        lastTranslationStats.userContentSkips += 1;
-        return;
-      }
+      if (current.matches("[data-user-content='true']")) return;
 
       Array.from(current.childNodes).forEach((node) => {
-        if (node.nodeType !== 3) return;
-        lastTranslationStats.textNodes += 1;
-        if (isUserContent(node)) {
-          lastTranslationStats.userContentSkips += 1;
-          return;
-        }
+        if (node.nodeType !== 3 || isUserContent(node)) return;
         try {
           if (!ORIGINAL_TEXT.has(node)) ORIGINAL_TEXT.set(node, node.nodeValue);
           const source = ORIGINAL_TEXT.get(node);
           const translated = translate(source);
-          if (translated !== node.nodeValue) {
-            node.nodeValue = translated;
-            lastTranslationStats.translatedNodes += 1;
-          }
+          if (translated !== node.nodeValue) node.nodeValue = translated;
         } catch (error) {
-          lastTranslationStats.errors.push(String(error));
           console.error("Calex translation skipped a text node", error);
         }
       });
@@ -677,7 +660,6 @@
   }
 
   function translateDocument() {
-    lastTranslationStats.calls += 1;
     document.documentElement.lang = currentLanguage;
     translateElement(document.body);
     updateWeekdayLabels();
@@ -756,10 +738,6 @@
     translate,
     setLanguage,
     refresh: translateDocument,
-    debugTranslation: () => ({
-      ...lastTranslationStats,
-      language: currentLanguage,
-    }),
   };
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", observe, { once: true });
