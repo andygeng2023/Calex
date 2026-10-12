@@ -1420,6 +1420,7 @@
       home: "Your day, at a glance",
       calendar: "A little space for everything",
       agenda: "What's on the horizon",
+      email: "Email workspace",
       settings: "Make yourself at home",
       auth: "Your Calex account",
       about: "About Calex",
