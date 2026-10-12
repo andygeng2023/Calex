@@ -617,19 +617,28 @@
   function translateElement(element) {
     if (!element || element.nodeType !== 1) return;
     if (element.matches("[data-user-content='true']")) return;
-    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
-    const nodes = [];
-    while (walker.nextNode()) nodes.push(walker.currentNode);
-    nodes.forEach((node) => {
-      if (isUserContent(node)) return;
-      if (!ORIGINAL_TEXT.has(node)) ORIGINAL_TEXT.set(node, node.nodeValue);
-      const source = ORIGINAL_TEXT.get(node);
-      const translated = translate(source);
-      if (translated !== node.nodeValue) node.nodeValue = translated;
-    });
-    ATTRS.forEach((attribute) => translateAttribute(element, attribute));
-    element.querySelectorAll("*").forEach((child) => {
-      ATTRS.forEach((attribute) => translateAttribute(child, attribute));
+
+    // Walk direct text children element-by-element. This makes translation
+    // deterministic for both visible and hidden screens and handles nested
+    // markup without rewriting or translating user-owned content.
+    const elements = [element, ...element.querySelectorAll("*")];
+    elements.forEach((current) => {
+      if (current.matches("[data-user-content='true']")) return;
+
+      Array.from(current.childNodes).forEach((node) => {
+        if (node.nodeType !== 3 || isUserContent(node)) return;
+        try {
+          if (!ORIGINAL_TEXT.has(node)) ORIGINAL_TEXT.set(node, node.nodeValue);
+          const translated = translate(ORIGINAL_TEXT.get(node));
+          if (translated !== node.nodeValue) node.nodeValue = translated;
+        } catch (error) {
+          // One unusual text node must not prevent translation of the rest
+          // of the interface.
+          console.error("Calex translation skipped a text node", error);
+        }
+      });
+
+      ATTRS.forEach((attribute) => translateAttribute(current, attribute));
     });
   }
 
