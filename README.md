@@ -20,7 +20,7 @@ A responsive, offline-capable calendar PWA built with plain HTML, CSS and JavaSc
 - Daily event, committed-time, and completion summaries.
 - Works offline; follows your system dark mode on first run; persistent offline and storage-unavailable warnings.
 - Installable PWA with PNG/maskable icons, app shortcuts, and a versioned service-worker cache.
-- Bundled interface language selection for English, Spanish, French, and German. Translations work offline, and user-created event titles and notes remain as entered.
+- Bundled interface language selection for English, Spanish, French, German, Chinese, Japanese, and Korean, plus Auto to follow the device language. Translations work offline, and user-created event titles and notes remain as entered.
 - Optional Puter.js assistant: plan the day, find focus time, and review an event draft before saving.
 
 ## Run
