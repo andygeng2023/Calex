@@ -849,8 +849,13 @@ test("Gmail connects read-only, wraps message cards, and loads additional pages 
   await expect(page.locator('[data-gmail-filter="unread"]')).toHaveAttribute("aria-pressed", "true");
 
   await page.evaluate(() => window.CalexI18n.setLanguage("zh"));
-  await expect(page.locator(".gmail-email-subject")).toHaveText("Planning session");
-  await expect(page.locator(".gmail-email-snippet")).toHaveText(
+  const planningEmail = page.locator(".gmail-email").filter({
+    has: page.locator(".gmail-email-subject", { hasText: "Planning session" }),
+  });
+  await expect(planningEmail.locator(".gmail-email-subject")).toHaveText(
+    "Planning session",
+  );
+  await expect(planningEmail.locator(".gmail-email-snippet")).toHaveText(
     "Let's meet to plan the project timeline.",
   );
 });
