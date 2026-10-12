@@ -1815,6 +1815,317 @@
     ]
   });
 
+  // Additional static labels and runtime messages discovered by the localization audit.
+  Object.assign(ASIAN_TRANSLATIONS, {
+    "Search dates or events…": [
+      "Buscar fechas o eventos…",
+      "Rechercher des dates ou des événements…",
+      "Daten oder Termine suchen…",
+      "搜索日期或日程…",
+      "日付や予定を検索…",
+      "날짜 또는 일정 검색…"
+    ],
+    "At least 6 characters": [
+      "Al menos 6 caracteres",
+      "Au moins 6 caractères",
+      "Mindestens 6 Zeichen",
+      "至少 6 个字符",
+      "6文字以上",
+      "6자 이상"
+    ],
+    "e.g. Dentist tomorrow at 10:07 to 11am, repeat weekly": [
+      "p. ej., dentista mañana de 10:07 a 11:00, repetir cada semana",
+      "ex. : dentiste demain de 10 h 07 à 11 h, chaque semaine",
+      "z. B. morgen Zahnarzt von 10:07 bis 11:00, wöchentlich",
+      "例如：明天 10:07 至 11:00 牙医，每周重复",
+      "例：明日10:07〜11:00 歯科、毎週繰り返し",
+      "예: 내일 10:07~11:00 치과, 매주 반복"
+    ],
+    "Event name": [
+      "Nombre del evento",
+      "Nom de l’événement",
+      "Terminname",
+      "日程名称",
+      "予定名",
+      "일정 이름"
+    ],
+    "A short description...": [
+      "Una breve descripción…",
+      "Une courte description…",
+      "Eine kurze Beschreibung…",
+      "简短描述…",
+      "短い説明…",
+      "간단한 설명…"
+    ],
+    "Add a place": [
+      "Añadir un lugar",
+      "Ajouter un lieu",
+      "Ort hinzufügen",
+      "添加地点",
+      "場所を追加",
+      "장소 추가"
+    ],
+    "Names, separated by commas": [
+      "Nombres, separados por comas",
+      "Noms, séparés par des virgules",
+      "Namen, durch Kommas getrennt",
+      "姓名，使用逗号分隔",
+      "名前をカンマで区切って入力",
+      "이름을 쉼표로 구분"
+    ],
+    "Anything else to remember": [
+      "Algo más que recordar",
+      "Autre chose à retenir",
+      "Sonst noch etwas zu beachten",
+      "其他需要记住的事项",
+      "ほかに覚えておくこと",
+      "기억할 다른 사항"
+    ],
+    "What would you like to make time for?": [
+      "¿A qué te gustaría dedicar tiempo?",
+      "À quoi aimeriez-vous consacrer du temps ?",
+      "Wofür möchtest du dir Zeit nehmen?",
+      "你想为哪些事情留出时间？",
+      "何のために時間を作りたいですか？",
+      "어떤 일에 시간을 내고 싶으세요?"
+    ],
+    "Filter calendars": [
+      "Filtrar calendarios",
+      "Filtrer les calendriers",
+      "Kalender filtern",
+      "筛选日历",
+      "カレンダーを絞り込む",
+      "캘린더 필터"
+    ],
+    "Previous year": [
+      "Año anterior",
+      "Année précédente",
+      "Vorheriges Jahr",
+      "上一年",
+      "前年",
+      "이전 연도"
+    ],
+    "Previous month": [
+      "Mes anterior",
+      "Mois précédent",
+      "Vorheriger Monat",
+      "上个月",
+      "前の月",
+      "이전 달"
+    ],
+    "Next month": [
+      "Mes siguiente",
+      "Mois suivant",
+      "Nächster Monat",
+      "下个月",
+      "次の月",
+      "다음 달"
+    ],
+    "Next year": [
+      "Año siguiente",
+      "Année suivante",
+      "Nächstes Jahr",
+      "下一年",
+      "翌年",
+      "다음 연도"
+    ],
+    "Drag to change view": [
+      "Arrastra para cambiar la vista",
+      "Faites glisser pour changer de vue",
+      "Ziehen, um die Ansicht zu ändern",
+      "拖动以切换视图",
+      "ドラッグして表示を切り替え",
+      "드래그하여 보기 변경"
+    ],
+    "Keyboard shortcuts": [
+      "Atajos de teclado",
+      "Raccourcis clavier",
+      "Tastenkürzel",
+      "键盘快捷键",
+      "キーボードショートカット",
+      "키보드 단축키"
+    ],
+    "Create event": [
+      "Crear evento",
+      "Créer un événement",
+      "Termin erstellen",
+      "创建日程",
+      "予定を作成",
+      "일정 만들기"
+    ],
+    "Search dates or events": [
+      "Buscar fechas o eventos",
+      "Rechercher des dates ou des événements",
+      "Daten oder Termine suchen",
+      "搜索日期或日程",
+      "日付や予定を検索",
+      "날짜 또는 일정 검색"
+    ],
+    "Change calendar view. Drag up for month and week, down for full dates.": [
+      "Cambiar la vista del calendario. Arrastra hacia arriba para ver el mes o la semana y hacia abajo para ver todas las fechas.",
+      "Changer la vue du calendrier. Faites glisser vers le haut pour afficher le mois ou la semaine, vers le bas pour afficher toutes les dates.",
+      "Kalenderansicht ändern. Nach oben ziehen für Monat und Woche, nach unten für alle Daten.",
+      "更改日历视图。向上拖动可切换到月视图或周视图，向下拖动可查看所有日期。",
+      "カレンダー表示を変更します。上にドラッグすると月・週表示、下にドラッグすると全日付表示になります。",
+      "캘린더 보기를 변경합니다. 위로 드래그하면 월/주 보기, 아래로 드래그하면 전체 날짜 보기가 됩니다."
+    ],
+    "Upcoming agenda": [
+      "Próximas actividades",
+      "Agenda à venir",
+      "Anstehende Termine",
+      "即将到来的日程",
+      "今後の予定",
+      "다가오는 일정"
+    ],
+    "Back to settings": [
+      "Volver a ajustes",
+      "Retour aux paramètres",
+      "Zurück zu den Einstellungen",
+      "返回设置",
+      "設定に戻る",
+      "설정으로 돌아가기"
+    ],
+    "Edit profile": [
+      "Editar perfil",
+      "Modifier le profil",
+      "Profil bearbeiten",
+      "编辑个人资料",
+      "プロフィールを編集",
+      "프로필 수정"
+    ],
+    "Available languages": [
+      "Idiomas disponibles",
+      "Langues disponibles",
+      "Verfügbare Sprachen",
+      "可用语言",
+      "利用可能な言語",
+      "사용 가능한 언어"
+    ],
+    "Main navigation": [
+      "Navegación principal",
+      "Navigation principale",
+      "Hauptnavigation",
+      "主导航",
+      "メインナビゲーション",
+      "기본 탐색"
+    ],
+    "Calex logo": [
+      "Logotipo de Calex",
+      "Logo Calex",
+      "Calex-Logo",
+      "Calex 标志",
+      "Calex ロゴ",
+      "Calex 로고"
+    ],
+    "Home": [
+      "Inicio",
+      "Accueil",
+      "Startseite",
+      "主页",
+      "ホーム",
+      "홈"
+    ],
+    "Previous mini-calendar month": [
+      "Mes anterior del minicalendario",
+      "Mois précédent du mini-calendrier",
+      "Vorheriger Monat im Minikalender",
+      "迷你日历的上个月",
+      "ミニカレンダーの前の月",
+      "미니 캘린더 이전 달"
+    ],
+    "Next mini-calendar month": [
+      "Mes siguiente del minicalendario",
+      "Mois suivant du mini-calendrier",
+      "Nächster Monat im Minikalender",
+      "迷你日历的下个月",
+      "ミニカレンダーの次の月",
+      "미니 캘린더 다음 달"
+    ],
+    "Close": [
+      "Cerrar",
+      "Fermer",
+      "Schließen",
+      "关闭",
+      "閉じる",
+      "닫기"
+    ],
+    "Event title": [
+      "Título del evento",
+      "Titre de l’événement",
+      "Termintitel",
+      "日程标题",
+      "予定のタイトル",
+      "일정 제목"
+    ],
+    "Event description": [
+      "Descripción del evento",
+      "Description de l’événement",
+      "Terminbeschreibung",
+      "日程描述",
+      "予定の説明",
+      "일정 설명"
+    ],
+    "Assistant conversation": [
+      "Conversación con el asistente",
+      "Conversation avec l’assistant",
+      "Assistentenkonversation",
+      "助手对话",
+      "アシスタントとの会話",
+      "어시스턴트 대화"
+    ],
+    "Send message": [
+      "Enviar mensaje",
+      "Envoyer le message",
+      "Nachricht senden",
+      "发送消息",
+      "メッセージを送信",
+      "메시지 보내기"
+    ],
+    "Choose a language or use Auto to follow your device's system language.": [
+      "Elige un idioma o usa Automático para seguir el idioma del sistema de tu dispositivo.",
+      "Choisissez une langue ou utilisez Auto pour suivre la langue système de votre appareil.",
+      "Wähle eine Sprache oder nutze Auto, um der Systemsprache deines Geräts zu folgen.",
+      "选择一种语言，或选择“自动”以跟随设备的系统语言。",
+      "言語を選択するか、「自動」を選んでデバイスのシステム言語に従ってください。",
+      "언어를 선택하거나 ‘자동’을 사용해 기기의 시스템 언어를 따르세요."
+    ],
+    "Email or password was not accepted. If you originally used Google, choose Continue with Google: that account may not have a password. Otherwise use password reset or confirm your email.": [
+      "电子邮件或密码不正确。如果你最初使用 Google 登录，请选择“使用 Google 继续”；该账户可能没有密码。否则，请重置密码或确认电子邮件地址。",
+      "メールアドレスまたはパスワードが正しくありません。最初に Google を利用した場合は「Google で続行」を選択してください。そのアカウントにはパスワードが設定されていない可能性があります。それ以外の場合は、パスワードをリセットするかメールアドレスを確認してください。",
+      "이메일 또는 비밀번호가 올바르지 않습니다. 처음에 Google을 사용했다면 ‘Google로 계속’을 선택하세요. 해당 계정에는 비밀번호가 없을 수 있습니다. 그렇지 않으면 비밀번호를 재설정하거나 이메일을 확인하세요."
+    ],
+    "The authentication service has reached its sending limit. Wait before retrying. The app maintainer may need to configure custom SMTP; Google sign-in is another option.": [
+      "身份验证服务已达到邮件发送上限。请稍后重试。应用维护者可能需要配置自定义 SMTP；也可以尝试使用 Google 登录。",
+      "認証サービスのメール送信上限に達しました。時間をおいて再試行してください。アプリ管理者がカスタム SMTP を設定する必要がある場合があります。Google サインインも利用できます。",
+      "인증 서비스의 이메일 전송 한도에 도달했습니다. 잠시 후 다시 시도하세요. 앱 관리자가 사용자 지정 SMTP를 설정해야 할 수 있으며 Google 로그인도 사용할 수 있습니다."
+    ],
+    "Confirmation requested. Check your inbox and spam folder. A successful request does not guarantee delivery; if nothing arrives, the maintainer must check Supabase email settings.": [
+      "已请求发送确认邮件。请检查收件箱和垃圾邮件文件夹。请求成功并不保证邮件一定送达；如果没有收到，维护者需要检查 Supabase 邮件设置。",
+      "確認メールをリクエストしました。受信トレイと迷惑メールフォルダーを確認してください。リクエストが成功しても配信されるとは限りません。届かない場合は、管理者が Supabase のメール設定を確認する必要があります。",
+      "확인 이메일을 요청했습니다. 받은편지함과 스팸 폴더를 확인하세요. 요청이 성공해도 이메일이 전달된다는 보장은 없습니다. 이메일이 도착하지 않으면 관리자가 Supabase 이메일 설정을 확인해야 합니다."
+    ],
+    "Signup request accepted. If this address needs confirmation, check your inbox and spam folder. If you already used Google, choose Continue with Google instead: creating the account again does not set a password or require another confirmation.": [
+      "已接受注册请求。如果此地址需要确认，请检查收件箱和垃圾邮件文件夹。如果你之前使用过 Google，请改选“使用 Google 继续”：重新创建账户不会设置密码，也不会要求再次确认。",
+      "登録リクエストを受け付けました。このアドレスの確認が必要な場合は、受信トレイと迷惑メールフォルダーを確認してください。以前に Google を利用した場合は「Google で続行」を選択してください。アカウントを再作成してもパスワードは設定されず、再確認も必要ありません。",
+      "가입 요청이 접수되었습니다. 이 주소의 확인이 필요하면 받은편지함과 스팸 폴더를 확인하세요. 이미 Google을 사용했다면 ‘Google로 계속’을 선택하세요. 계정을 다시 만들어도 비밀번호가 설정되거나 추가 확인이 필요해지는 것은 아닙니다."
+    ],
+    "That file is too large to import (5 MB max).": [
+      "文件过大，无法导入（最大 5 MB）。",
+      "ファイルが大きすぎるためインポートできません（最大5 MB）。",
+      "파일이 너무 커서 가져올 수 없습니다(최대 5MB)."
+    ],
+    "You're offline. Your calendar still works, and changes are saved on this device.": [
+      "你当前处于离线状态。日历仍可使用，更改已保存在此设备上。",
+      "オフラインです。カレンダーは引き続き使用でき、変更はこのデバイスに保存されています。",
+      "오프라인 상태입니다. 캘린더는 계속 사용할 수 있으며 변경 사항은 이 기기에 저장됩니다."
+    ],
+    "The assistant is taking too long. The request may still incur usage; retry only if needed.": [
+      "助手响应时间过长。该请求仍可能产生使用费用；仅在需要时重试。",
+      "アシスタントの応答に時間がかかっています。リクエストに利用料金が発生する可能性があるため、必要な場合のみ再試行してください。",
+      "어시스턴트 응답이 지연되고 있습니다. 요청에 사용 요금이 발생할 수 있으므로 필요한 경우에만 다시 시도하세요."
+    ]
+  });
+
     const ROWS = [
       ["Skip to calendar", "Saltar al calendario", "Passer au calendrier", "Zum Kalender springen"],
       ["YOUR TIME, WELL SPENT", "TU TIEMPO, BIEN APROVECHADO", "VOTRE TEMPS, BIEN UTILISÉ", "DEINE ZEIT, GUT GENUTZT"],
@@ -2189,6 +2500,50 @@
       ["Search languages", "Buscar idiomas", "Rechercher des langues", "Sprachen suchen"],
       ["No matching languages.", "No hay idiomas coincidentes.", "Aucune langue correspondante.", "Keine passenden Sprachen."],
     );
+
+  ROWS.push(
+    ["Search dates or events…","Buscar fechas o eventos…","Rechercher des dates ou des événements…","Daten oder Termine suchen…"],
+    ["At least 6 characters","Al menos 6 caracteres","Au moins 6 caractères","Mindestens 6 Zeichen"],
+    ["e.g. Dentist tomorrow at 10:07 to 11am, repeat weekly","p. ej., dentista mañana de 10:07 a 11:00, repetir cada semana","ex. : dentiste demain de 10 h 07 à 11 h, chaque semaine","z. B. morgen Zahnarzt von 10:07 bis 11:00, wöchentlich"],
+    ["Event name","Nombre del evento","Nom de l’événement","Terminname"],
+    ["A short description...","Una breve descripción…","Une courte description…","Eine kurze Beschreibung…"],
+    ["Add a place","Añadir un lugar","Ajouter un lieu","Ort hinzufügen"],
+    ["Names, separated by commas","Nombres, separados por comas","Noms, séparés par des virgules","Namen, durch Kommas getrennt"],
+    ["Anything else to remember","Algo más que recordar","Autre chose à retenir","Sonst noch etwas zu beachten"],
+    ["What would you like to make time for?","¿A qué te gustaría dedicar tiempo?","À quoi aimeriez-vous consacrer du temps ?","Wofür möchtest du dir Zeit nehmen?"],
+    ["Filter calendars","Filtrar calendarios","Filtrer les calendriers","Kalender filtern"],
+    ["Previous year","Año anterior","Année précédente","Vorheriges Jahr"],
+    ["Previous month","Mes anterior","Mois précédent","Vorheriger Monat"],
+    ["Next month","Mes siguiente","Mois suivant","Nächster Monat"],
+    ["Next year","Año siguiente","Année suivante","Nächstes Jahr"],
+    ["Drag to change view","Arrastra para cambiar la vista","Faites glisser pour changer de vue","Ziehen, um die Ansicht zu ändern"],
+    ["Keyboard shortcuts","Atajos de teclado","Raccourcis clavier","Tastenkürzel"],
+    ["Create event","Crear evento","Créer un événement","Termin erstellen"],
+    ["Search dates or events","Buscar fechas o eventos","Rechercher des dates ou des événements","Daten oder Termine suchen"],
+    ["Change calendar view. Drag up for month and week, down for full dates.","Cambiar la vista del calendario. Arrastra hacia arriba para ver el mes o la semana y hacia abajo para ver todas las fechas.","Changer la vue du calendrier. Faites glisser vers le haut pour afficher le mois ou la semaine, vers le bas pour afficher toutes les dates.","Kalenderansicht ändern. Nach oben ziehen für Monat und Woche, nach unten für alle Daten."],
+    ["Upcoming agenda","Próximas actividades","Agenda à venir","Anstehende Termine"],
+    ["Back to settings","Volver a ajustes","Retour aux paramètres","Zurück zu den Einstellungen"],
+    ["Edit profile","Editar perfil","Modifier le profil","Profil bearbeiten"],
+    ["Available languages","Idiomas disponibles","Langues disponibles","Verfügbare Sprachen"],
+    ["Main navigation","Navegación principal","Navigation principale","Hauptnavigation"],
+    ["Calex logo","Logotipo de Calex","Logo Calex","Calex-Logo"],
+    ["Home","Inicio","Accueil","Startseite"],
+    ["Previous mini-calendar month","Mes anterior del minicalendario","Mois précédent du mini-calendrier","Vorheriger Monat im Minikalender"],
+    ["Next mini-calendar month","Mes siguiente del minicalendario","Mois suivant du mini-calendrier","Nächster Monat im Minikalender"],
+    ["Close","Cerrar","Fermer","Schließen"],
+    ["Event title","Título del evento","Titre de l’événement","Termintitel"],
+    ["Event description","Descripción del evento","Description de l’événement","Terminbeschreibung"],
+    ["Assistant conversation","Conversación con el asistente","Conversation avec l’assistant","Assistentenkonversation"],
+    ["Send message","Enviar mensaje","Envoyer le message","Nachricht senden"],
+    ["Choose a language or use Auto to follow your device's system language.","Elige un idioma o usa Automático para seguir el idioma del sistema de tu dispositivo.","Choisissez une langue ou utilisez Auto pour suivre la langue système de votre appareil.","Wähle eine Sprache oder nutze Auto, um der Systemsprache deines Geräts zu folgen."],
+    ["Email or password was not accepted. If you originally used Google, choose Continue with Google: that account may not have a password. Otherwise use password reset or confirm your email.","No se aceptó el correo electrónico o la contraseña. Si usaste Google al principio, elige Continuar con Google: esa cuenta puede no tener contraseña. De lo contrario, restablece la contraseña o confirma tu correo.","L’adresse e-mail ou le mot de passe n’a pas été accepté. Si vous avez utilisé Google à l’origine, choisissez Continuer avec Google : ce compte peut ne pas avoir de mot de passe. Sinon, réinitialisez le mot de passe ou confirmez votre adresse e-mail.","E-Mail-Adresse oder Passwort wurde nicht akzeptiert. Wenn du ursprünglich Google verwendet hast, wähle Mit Google fortfahren: Für dieses Konto ist möglicherweise kein Passwort festgelegt. Andernfalls setze das Passwort zurück oder bestätige deine E-Mail-Adresse."],
+    ["The authentication service has reached its sending limit. Wait before retrying. The app maintainer may need to configure custom SMTP; Google sign-in is another option.","El servicio de autenticación ha alcanzado el límite de envíos. Espera antes de volver a intentarlo. Es posible que la persona responsable deba configurar SMTP personalizado; también puedes iniciar sesión con Google.","Le service d’authentification a atteint sa limite d’envoi. Attendez avant de réessayer. Le responsable de l’application devra peut-être configurer un SMTP personnalisé ; la connexion Google est une autre option.","Der Authentifizierungsdienst hat sein Sendelimit erreicht. Warte vor einem erneuten Versuch. Die betreuende Person muss möglicherweise benutzerdefiniertes SMTP konfigurieren; die Google-Anmeldung ist eine weitere Option."],
+    ["Confirmation requested. Check your inbox and spam folder. A successful request does not guarantee delivery; if nothing arrives, the maintainer must check Supabase email settings.","Se solicitó la confirmación. Revisa la bandeja de entrada y el correo no deseado. Una solicitud correcta no garantiza la entrega; si no llega nada, la persona responsable debe revisar los ajustes de correo de Supabase.","La confirmation a été demandée. Vérifiez votre boîte de réception et les courriers indésirables. Une demande réussie ne garantit pas la livraison ; si rien n’arrive, le responsable doit vérifier les paramètres e-mail de Supabase.","Bestätigung angefordert. Prüfe Posteingang und Spam-Ordner. Eine erfolgreiche Anfrage garantiert keine Zustellung; wenn nichts eintrifft, muss die betreuende Person die E-Mail-Einstellungen von Supabase prüfen."],
+    ["Signup request accepted. If this address needs confirmation, check your inbox and spam folder. If you already used Google, choose Continue with Google instead: creating the account again does not set a password or require another confirmation.","Se aceptó la solicitud de registro. Si esta dirección necesita confirmación, revisa la bandeja de entrada y el correo no deseado. Si ya usaste Google, elige Continuar con Google: volver a crear la cuenta no establece una contraseña ni requiere otra confirmación.","La demande d’inscription a été acceptée. Si cette adresse doit être confirmée, vérifiez votre boîte de réception et les courriers indésirables. Si vous avez déjà utilisé Google, choisissez Continuer avec Google : recréer le compte ne définit pas de mot de passe et ne nécessite pas une nouvelle confirmation.","Die Registrierungsanfrage wurde angenommen. Wenn diese Adresse bestätigt werden muss, prüfe Posteingang und Spam-Ordner. Wenn du Google bereits verwendet hast, wähle Mit Google fortfahren: Das erneute Erstellen des Kontos legt kein Passwort fest und erfordert keine erneute Bestätigung."],
+    ["That file is too large to import (5 MB max).","El archivo es demasiado grande para importarlo (máximo 5 MB).","Ce fichier est trop volumineux pour être importé (5 Mo maximum).","Diese Datei ist zu groß für den Import (maximal 5 MB)."],
+    ["You're offline. Your calendar still works, and changes are saved on this device.","Estás sin conexión. El calendario sigue funcionando y los cambios se guardan en este dispositivo.","Vous êtes hors ligne. Le calendrier reste utilisable et les modifications sont enregistrées sur cet appareil.","Du bist offline. Dein Kalender funktioniert weiterhin, und Änderungen werden auf diesem Gerät gespeichert."],
+    ["The assistant is taking too long. The request may still incur usage; retry only if needed.","El asistente está tardando demasiado. La solicitud aún puede generar consumo; vuelve a intentarlo solo si es necesario.","L’assistant met trop de temps à répondre. La requête peut tout de même entraîner une consommation ; ne réessayez que si nécessaire.","Der Assistent braucht zu lange. Für die Anfrage können weiterhin Nutzungskosten anfallen; versuche es nur bei Bedarf erneut."],
+  );
 
     const PHRASES = new Map();
     const REVERSE = new Map();
