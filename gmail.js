@@ -10,6 +10,10 @@
   let accessToken = "";
   let tokenExpiresAt = 0;
   let tokenClient = null;
+  let linkedEmail = "";
+  let restoringConnection = false;
+  const GMAIL_AUTH_FUNCTION = "https://fwcijtjahtwpyaqedyhq.supabase.co/functions/v1/calex-gmail-auth";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_oWpplxsSIvn3KfinwmlLjg_3No69nPW";
   let messages = [];
   let pendingConversion = null;
   let loading = false;
@@ -47,7 +51,7 @@
     connectButton.disabled = !configured;
     connectButton.textContent = hasToken() ? "Gmail connected" : "Connect Gmail";
     connectButton.hidden = hasToken();
-    disconnectButton.hidden = !hasToken();
+    disconnectButton.hidden = !hasToken() && !linkedEmail;
     refreshButton.disabled = !hasToken() || loading;
     searchInput.disabled = !hasToken() || loading;
     searchButton.disabled = !hasToken() || loading;
@@ -88,27 +92,91 @@
     });
   }
 
-  function requestAccessToken(prompt) {
+  async function serverAction(action, payload = {}) {
+    const sessionToken = await window.Calex?.getAuthAccessToken?.();
+    if (!sessionToken) throw new Error("Sign in to your Calex account first. Gmail connections are saved to your account.");
+    let response;
+    try {
+      response = await fetch(GMAIL_AUTH_FUNCTION, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_PUBLISHABLE_KEY,
+          Authorization: "Bearer " + sessionToken,
+          "X-Requested-With": "XmlHttpRequest",
+        },
+        body: JSON.stringify({ action, ...payload }),
+        cache: "no-store",
+      });
+    } catch (_) {
+      throw new Error("Could not reach Calex's secure Gmail connection service.");
+    }
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error || "Gmail account operation failed.");
+    return result;
+  }
+
+  function requestAuthorizationCode() {
     return new Promise((resolve, reject) => {
-      tokenClient = window.google.accounts.oauth2.initTokenClient({
+      tokenClient = window.google.accounts.oauth2.initCodeClient({
         client_id: clientId(),
         scope: GMAIL_SCOPE,
         include_granted_scopes: true,
+        ux_mode: "popup",
+        select_account: true,
         callback: (response) => {
-          if (response.error || !response.access_token) {
+          if (response.error || !response.code) {
             reject(new Error(response.error_description || response.error || "Gmail access was not granted."));
             return;
           }
-          accessToken = response.access_token;
-          tokenExpiresAt = Date.now() + (Number(response.expires_in) || 3600) * 1000;
-          resolve(response);
+          resolve(response.code);
         },
         error_callback: (error) => {
           reject(new Error(error && error.message ? error.message : "Google's authorization window was closed."));
         },
       });
-      tokenClient.requestAccessToken({ prompt: prompt || "consent" });
+      tokenClient.requestCode();
     });
+  }
+
+  async function refreshAccessToken() {
+    const result = await serverAction("refresh");
+    accessToken = result.accessToken || "";
+    tokenExpiresAt = Date.now() + (Number(result.expiresIn) || 3600) * 1000;
+    linkedEmail = result.email || linkedEmail;
+    renderControls();
+    return result;
+  }
+
+  async function restoreConnection() {
+    if (restoringConnection) return;
+    restoringConnection = true;
+    try {
+      if (!window.Calex?.isSignedIn?.()) {
+        disconnectLocalState();
+        linkedEmail = "";
+        setStatus("Sign in to Calex to restore your linked Gmail account.");
+        return;
+      }
+      const statusResult = await serverAction("status");
+      linkedEmail = statusResult.connected ? statusResult.email || "" : "";
+      if (!statusResult.connected) {
+        disconnectLocalState();
+        setStatus("Connect Gmail to link an account to your Calex profile.");
+        return;
+      }
+      await refreshAccessToken();
+      setStatus("Gmail restored for " + linkedEmail + ". Loading your inbox…");
+      if (emailScreen.classList.contains("active")) await loadMessages();
+    } catch (error) {
+      accessToken = "";
+      tokenExpiresAt = 0;
+      renderControls();
+      setStatus(error?.message || "Could not restore Gmail. Reconnect to continue.", true);
+    } finally {
+      restoringConnection = false;
+      renderControls();
+    }
   }
 
   function disconnectLocalState() {
@@ -127,13 +195,21 @@
       renderControls();
       return;
     }
+    if (!window.Calex?.isSignedIn?.()) {
+      setStatus("Sign in to your Calex account first so this Gmail connection can be remembered.", true);
+      return;
+    }
     connectButton.disabled = true;
     setStatus("Opening Google consent…");
     try {
       await loadIdentityLibrary();
-      await requestAccessToken("consent");
+      const code = await requestAuthorizationCode();
+      const result = await serverAction("exchange", { code, redirectUri: location.origin });
+      accessToken = result.accessToken || "";
+      tokenExpiresAt = Date.now() + (Number(result.expiresIn) || 3600) * 1000;
+      linkedEmail = result.email || "";
       renderControls();
-      setStatus("Connected to Gmail. Loading your inbox…");
+      setStatus("Gmail connected and saved to your Calex account. Loading your inbox…");
       await loadMessages();
     } catch (error) {
       disconnectLocalState();
@@ -145,8 +221,12 @@
 
   async function gmailApi(path) {
     if (!hasToken()) {
-      disconnectLocalState();
-      throw new Error("Gmail access has expired. Connect Gmail again to continue.");
+      try {
+        await refreshAccessToken();
+      } catch (_) {
+        disconnectLocalState();
+        throw new Error("Gmail access could not be restored. Reconnect Gmail to continue.");
+      }
     }
     let response;
     try {
@@ -470,11 +550,12 @@
   }
 
   $("openGmail").addEventListener("click", () => window.Calex.switchScreen("email"));
+  window.addEventListener("calex:auth", () => restoreConnection());
   window.addEventListener("calex:screen", (event) => {
     if (event.detail !== "email") return;
     renderControls();
     if (hasToken() && !loading) loadMessages();
-    else if (!hasToken() && clientId()) setStatus("Connect Gmail to view your inbox.");
+    else if (!hasToken() && clientId()) restoreConnection();
   });
   document.querySelectorAll("[data-gmail-filter]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -492,14 +573,21 @@
       loadMessages();
     }
   });
-  disconnectButton.addEventListener("click", () => {
-    if (accessToken && window.google && window.google.accounts && window.google.accounts.oauth2) {
-      try {
-        window.google.accounts.oauth2.revoke(accessToken, () => {});
-      } catch (_) {}
+  disconnectButton.addEventListener("click", async () => {
+    disconnectButton.disabled = true;
+    try {
+      await serverAction("disconnect");
+      if (accessToken && window.google && window.google.accounts && window.google.accounts.oauth2) {
+        try { window.google.accounts.oauth2.revoke(accessToken, () => {}); } catch (_) {}
+      }
+      disconnectLocalState();
+      linkedEmail = "";
+      setStatus("Gmail disconnected from your Calex account.");
+    } catch (error) {
+      setStatus(error?.message || "Could not disconnect Gmail. Try again.", true);
+    } finally {
+      renderControls();
     }
-    disconnectLocalState();
-    setStatus("Gmail disconnected. No email access token is stored by Calex.");
   });
   $("gmailEnablePuter").addEventListener("click", () => {
     $("openAssistant").click();
@@ -526,6 +614,7 @@
   });
 
   renderControls();
+  if (window.Calex?.isSignedIn?.()) restoreConnection();
   if (!clientId()) setStatus("Gmail is not configured for this deployment yet. The OAuth client ID must be added before connecting.");
   window.CalexGmail = {
     isConnected: hasToken,

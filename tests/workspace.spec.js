@@ -761,14 +761,39 @@ test("Gmail panel explains setup and does not request mailbox access until confi
 test("Gmail connects read-only, wraps message cards, and loads additional pages on scroll", async ({ page }) => {
   await page.addInitScript(() => {
     window.CALEX_GMAIL_CLIENT_ID = "calex-test-client.apps.googleusercontent.com";
+    window.addEventListener("load", () => {
+      if (window.Calex) {
+        window.Calex.isSignedIn = () => true;
+        window.Calex.getAuthAccessToken = async () => "test-supabase-session";
+      }
+    });
   });
   await page.route("https://accounts.google.com/gsi/client", (route) =>
     route.fulfill({
       status: 200,
       contentType: "application/javascript",
-      body: "window.google={accounts:{oauth2:{initTokenClient:function(c){window.__requestedGmailScope=c.scope;return {requestAccessToken:function(){c.callback({access_token:'test-access-token',expires_in:3600});}};},revoke:function(t,cb){if(cb)cb();}}}};",
+      body: "window.google={accounts:{oauth2:{initCodeClient:function(c){window.__requestedGmailScope=c.scope;return {requestCode:function(){c.callback({code:'test-auth-code'});}};},revoke:function(t,cb){if(cb)cb();}}}};",
     }),
   );
+  await page.route("https://fwcijtjahtwpyaqedyhq.supabase.co/functions/v1/calex-gmail-auth", async (route) => {
+    const request = route.request();
+    const body = request.postDataJSON();
+    if (body.action === "status") {
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ connected: false }) });
+      return;
+    }
+    if (body.action === "exchange") {
+      expect(body.code).toBe("test-auth-code");
+      expect(body.redirectUri).toBe("http://127.0.0.1:4173");
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ connected: true, email: "sam@example.com", accessToken: "test-access-token", expiresIn: 3600 }) });
+      return;
+    }
+    if (body.action === "refresh") {
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ connected: true, email: "sam@example.com", accessToken: "test-access-token", expiresIn: 3600 }) });
+      return;
+    }
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ connected: false }) });
+  });
   const gmailQueries = [];
   let releaseNextPage;
   let nextPageRequested = false;
@@ -822,6 +847,7 @@ test("Gmail connects read-only, wraps message cards, and loads additional pages 
   await page.goto("/");
   await page.locator("#openGmail").click();
   await expect(page.locator("#gmailSetupHelp")).toBeHidden();
+  await expect(page.locator("#gmailStatus")).toContainText("Connect Gmail to link an account");
   await page.locator("#gmailConnect").click();
   expect(await page.evaluate(() => window.__requestedGmailScope)).toBe(
     "https://www.googleapis.com/auth/gmail.readonly",

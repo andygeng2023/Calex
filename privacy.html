@@ -94,12 +94,14 @@
               characters of the selected email are sent to Puter and its AI
               provider to extract event details. Do not submit emails containing
               information you do not want processed by those services. The
-              access token is held in memory and is not saved by the Gmail
-              integration to local or cloud storage. Calex does not intentionally
-              persist email content; if you review and save a resulting event,
-              the event details you save may be stored with your calendar data.
-              You can disconnect Gmail to clear the in-memory access token and
-              stop further requests.
+              short-lived access token is held in memory. If you sign in to a
+              Calex account and choose to link Gmail, a long-lived Google refresh
+              token is encrypted on the server using AES-GCM and stored in a
+              server-only Supabase table; it is never sent back to the browser.
+              Calex does not intentionally persist email content; if you review
+              and save a resulting event, the event details you save may be
+              stored with your calendar data. You can disconnect Gmail to remove
+              the saved connection and ask Google to revoke the refresh token.
             </p>
             <h2>Optional AI assistant</h2>
             <p>
