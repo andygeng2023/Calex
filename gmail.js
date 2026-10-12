@@ -204,6 +204,7 @@
     if (!reset && (!hasMoreMessages || !nextPageToken)) return;
     loading = true;
     renderControls();
+    updateLoadMoreHint();
     if (reset) {
       messages = [];
       nextPageToken = "";
@@ -268,7 +269,12 @@
     const hint = $("gmailLoadMore");
     if (!hint) return;
     hint.hidden = !hasToken() || (!loading && !hasMoreMessages);
-    hint.textContent = loading && messages.length ? "Loading more emails…" : hasMoreMessages ? "Scroll to load more" : "";
+    if (loading) {
+      hint.innerHTML = '<span class="gmail-spinner" aria-hidden="true"></span><span>' +
+        (messages.length ? "Loading more emails…" : "Loading emails…") + "</span>";
+    } else {
+      hint.textContent = hasMoreMessages ? "Scroll to load more" : "";
+    }
   }
 
   function renderMessages() {
@@ -312,6 +318,7 @@
         const unread = document.createElement("span");
         unread.className = "gmail-message-badge";
         unread.textContent = "Unread";
+        unread.dataset.i18n = "Unread";
         unread.setAttribute("aria-label", "Unread message");
         subject.append(" ", unread);
       }
@@ -319,6 +326,7 @@
         const starred = document.createElement("span");
         starred.className = "gmail-message-badge is-starred";
         starred.textContent = "Starred";
+        starred.dataset.i18n = "Starred";
         subject.append(" ", starred);
       }
       const snippet = document.createElement("p");
@@ -332,6 +340,7 @@
       makeEvent.className = "secondary";
       makeEvent.type = "button";
       makeEvent.textContent = activeConversions.has(email.id) ? "Working…" : "Make event";
+      makeEvent.dataset.i18n = activeConversions.has(email.id) ? "Working…" : "Make event";
       makeEvent.disabled = activeConversions.has(email.id);
       makeEvent.addEventListener("click", () => {
         convertMessage(email.id);
@@ -342,6 +351,7 @@
       openMessage.target = "_blank";
       openMessage.rel = "noopener noreferrer";
       openMessage.textContent = "Open in Gmail";
+      openMessage.dataset.i18n = "Open in Gmail";
       actions.append(openMessage, makeEvent);
       card.append(top, subject, snippet, actions);
       results.append(card);
