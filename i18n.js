@@ -100,6 +100,8 @@
     ["Schedule a 30-minute weekly planning session tomorrow at 9am.", "Programa mañana a las 9 una sesión semanal de planificación de 30 minutos.", "Planifie demain à 9 h une séance hebdomadaire de planification de 30 minutes.", "Plane morgen um 9 Uhr eine wöchentliche Planungssitzung von 30 Minuten."],
     ["YOU", "TÚ", "VOUS", "DU"],
     ["event today", "evento hoy", "événement aujourd’hui", "Termin heute"],
+    ["Timed", "Con hora", "Avec horaire", "Mit Uhrzeit"],
+    ["Repeating", "Recurrente", "Récurrent", "Wiederkehrend"],
     ["Display language", "Idioma de la interfaz", "Langue de l’interface", "Anzeigesprache"],
     ["Your interface language is saved with your preferences.", "El idioma de la interfaz se guarda con tus preferencias.", "La langue de l’interface est enregistrée avec vos préférences.", "Die Anzeigesprache wird zusammen mit deinen Einstellungen gespeichert."],
     ["Your data", "Tus datos", "Vos données", "Deine Daten"],
@@ -423,6 +425,9 @@
       const entry = PHRASES.get(normalise(key));
       return entry ? entry[code] : key;
     };
+    match = source.match(/^Until (.+)$/);
+    if (match) return t("Until") + " " + match[1];
+
     match = source.match(/^Signed in as (.+)$/);
     if (match) {
       if (code === "es") return "Sesión iniciada como " + match[1];
