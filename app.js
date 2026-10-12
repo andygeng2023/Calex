@@ -2533,7 +2533,6 @@
     "touchstart",
     (event) => {
       if (
-        event.pointerType === "touch" ||
         view === "all" ||
         !calendarScreen.classList.contains("active") ||
         calendarScreen.classList.contains("is-view-settling") ||
@@ -2625,6 +2624,7 @@
     "pointerdown",
     (event) => {
       if (
+        event.pointerType === "touch" ||
         view === "all" ||
         !calendarScreen.classList.contains("active") ||
         calendarScreen.classList.contains("is-calendar-swiping") ||
