@@ -540,9 +540,7 @@
         const text = extractResponse(response);
         let parsed;
         try {
-          parsed = JSON.parse(
-            text.replace(/^\\x60{3}(?:json)?\\s*/i, "").replace(/\\s*\\x60{3}$/, ""),
-          );
+          parsed = JSON.parse(text.trim());
         } catch (_) {
           const first = text.indexOf("{");
           const last = text.lastIndexOf("}");
@@ -575,7 +573,7 @@
         const start = typeof candidate.start === "string" && candidate.start ? candidate.start : "";
         const end = typeof candidate.end === "string" && candidate.end ? candidate.end : "";
         if (
-          [start, end].some((value) => value && !/^([01]\\d|2[0-3]):[0-5]\\d$/.test(value)) ||
+          [start, end].some((value) => value && !new RegExp("^(?:[01][0-9]|2[0-3]):[0-5][0-9]$").test(value)) ||
           !C.validEventTimes(start, end)
         ) {
           throw new Error("Puter returned an invalid event time. Review the email and retry.");
