@@ -20,6 +20,7 @@ A responsive, offline-capable calendar PWA built with plain HTML, CSS and JavaSc
 - Daily event, committed-time, and completion summaries.
 - Works offline; follows your system dark mode on first run; persistent offline and storage-unavailable warnings.
 - Installable PWA with PNG/maskable icons, app shortcuts, and a versioned service-worker cache.
+- Bundled interface language selection for English, Spanish, French, and German. Translations work offline, and user-created event titles and notes remain as entered.
 - Optional Puter.js assistant: plan the day, find focus time, and review an event draft before saving.
 
 ## Run
@@ -41,7 +42,7 @@ Calendar sharing is off by default. When opted in, only the next 14 days of titl
 
 ## Hosting and updates
 
-GitHub Pages serves `main` from the repository root. Keep relative asset URLs and bump both HTML asset query versions and `sw.js`'s shell-cache name whenever releasing an update. The current home-layout and Quick Add update uses `v31`. The offline shell includes the app, calendar stylesheet, local icons, and PNG install icons; cloud sync and AI need connectivity.
+GitHub Pages serves `main` from the repository root. Keep relative asset URLs and bump both HTML asset query versions and `sw.js`'s shell-cache name whenever releasing an update. The current app-shell version is `v36`, including bundled language support. The offline shell includes the app, calendar stylesheet, local icons, and PNG install icons; cloud sync and AI need connectivity.
 
 Existing guest/user event storage keys and Supabase configuration are retained. New calendars start empty rather than receiving unlabelled demo appointments. Browser storage is used by the original app for backwards compatibility and offline persistence; opaque sandbox previews can block it and may also block service workers and popup authentication. Test installation and live AI from the top-level Pages origin. Always export a calendar backup before major upgrades.
 
