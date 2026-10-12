@@ -65,6 +65,7 @@ test("language setting translates the interface and persists the choice", async 
   await page.locator("#languageSelect").selectOption("es");
 
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
+  expect(await page.evaluate(() => window.CalexI18n.translate("Settings", "es"))).toBe("Ajustes");
   await expect(page.locator(".settings-title")).toHaveText("Ajustes");
   await expect(page.locator('[data-screen="calendar"]')).toContainText("Calendario");
   await expect(page.locator("#languageSummary")).toHaveText("Español");
