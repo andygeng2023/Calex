@@ -3012,11 +3012,11 @@
         : item.detail;
       button.append(name, detail);
       button.addEventListener("click", () => {
+        $("languageSearch").value = "";
         if (!window.CalexI18n?.setLanguage(item.code)) return;
         appSettings.language = window.CalexI18n.preference();
         renderLanguage();
         if (!saveAppSettings()) showToast("Could not save settings in this browser.");
-        $("languageSearch").value = "";
         $("languageSearch").focus();
       });
       results.append(button);
