@@ -821,6 +821,7 @@ test("Gmail connects with read-only OAuth and displays inbox cards that can be d
   await expect(email).toContainText("sam@example.com");
   await expect(email).toContainText("Let's meet to plan the project timeline.");
   await expect(email).toHaveAttribute("draggable", "true");
+  await expect(email.locator(".gmail-open-message")).toHaveAttribute("href", /mail\.google\.com/);
   await expect(page.locator("#gmailStatus")).toContainText("Showing 1 recent message");
   await page.locator('[data-gmail-filter="unread"]').click();
   await expect.poll(() => gmailQueries[gmailQueries.length - 1]).toContain("is:unread");
