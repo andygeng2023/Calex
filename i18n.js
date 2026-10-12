@@ -2,16 +2,909 @@
   "use strict";
 
   const STORAGE_KEY = "calex-language-v1";
-  const LANGUAGE_ORDER = ["en", "es", "fr", "de"];
+  const LANGUAGE_ORDER = ["en", "es", "fr", "de", "zh", "ja", "ko"];
   const LANGUAGES = {
     en: { label: "English", locale: "en-GB" },
     es: { label: "Español", locale: "es-ES" },
     fr: { label: "Français", locale: "fr-FR" },
     de: { label: "Deutsch", locale: "de-DE" },
+    zh: { label: "中文", locale: "zh-CN" },
+    ja: { label: "日本語", locale: "ja-JP" },
+    ko: { label: "한국어", locale: "ko-KR" },
   };
 
+  // Locally bundled phrase translations for Chinese, Japanese, and Korean.
+  // No interface text is sent to a translation service.
+  const ASIAN_TRANSLATIONS = {
+  "Skip to calendar": [
+    "跳转到日历",
+    "カレンダーに移動",
+    "캘린더로 이동"
+  ],
+  "YOUR TIME, WELL SPENT": [
+    "善用你的时间",
+    "時間を有効に",
+    "시간을 알차게"
+  ],
+  "Your day, at a glance": [
+    "一览你的一天",
+    "今日の予定をひと目で",
+    "한눈에 보는 하루"
+  ],
+  "On this device": [
+    "在此设备上",
+    "このデバイス上",
+    "이 기기에서"
+  ],
+  "Ask assistant": [
+    "询问助手",
+    "アシスタントに質問",
+    "어시스턴트에게 질문"
+  ],
+  "New event": [
+    "新建事件",
+    "新しい予定",
+    "새 일정"
+  ],
+  "MAKE ROOM FOR WHAT MATTERS": [
+    "为重要的事留出时间",
+    "大切なことのために時間を",
+    "중요한 일에 시간을"
+  ],
+  "Monday": [
+    "星期一",
+    "月曜日",
+    "월요일"
+  ],
+  "Quick add": [
+    "快速添加",
+    "クイック追加",
+    "빠른 추가"
+  ],
+  "Today": [
+    "今天",
+    "今日",
+    "오늘"
+  ],
+  "Tomorrow": [
+    "明天",
+    "明日",
+    "내일"
+  ],
+  "Coming up": [
+    "即将到来",
+    "近日の予定",
+    "다가오는 일정"
+  ],
+  "Mon": [
+    "周一",
+    "月",
+    "월"
+  ],
+  "Tue": [
+    "周二",
+    "火",
+    "화"
+  ],
+  "Wed": [
+    "周三",
+    "水",
+    "수"
+  ],
+  "Thu": [
+    "周四",
+    "木",
+    "목"
+  ],
+  "Fri": [
+    "周五",
+    "金",
+    "금"
+  ],
+  "Sat": [
+    "周六",
+    "土",
+    "토"
+  ],
+  "Sun": [
+    "周日",
+    "日",
+    "일"
+  ],
+  "Selected day": [
+    "所选日期",
+    "選択した日",
+    "선택한 날짜"
+  ],
+  "Quick event": [
+    "快速事件",
+    "クイック予定",
+    "빠른 일정"
+  ],
+  "Add event": [
+    "添加事件",
+    "予定を追加",
+    "일정 추가"
+  ],
+  "LOOKING AHEAD": [
+    "提前规划",
+    "これからの予定",
+    "미리 보기"
+  ],
+  "Your next 30 days": [
+    "未来30天",
+    "今後30日間",
+    "앞으로 30일"
+  ],
+  "A little perspective for everything on your calendar.": [
+    "一览日历中的所有安排。",
+    "カレンダーの予定を見渡しましょう。",
+    "캘린더의 모든 일정을 한눈에 확인하세요."
+  ],
+  "Back to today": [
+    "返回今天",
+    "今日に戻る",
+    "오늘로 돌아가기"
+  ],
+  "Settings": [
+    "设置",
+    "設定",
+    "설정"
+  ],
+  "Your Calex account": [
+    "你的 Calex 账户",
+    "Calex アカウント",
+    "Calex 계정"
+  ],
+  "Sign in or create an account to securely sync your calendar across devices.": [
+    "登录或创建账户，以便在不同设备间安全同步日历。",
+    "サインインまたはアカウントを作成して、デバイス間でカレンダーを安全に同期します。",
+    "로그인하거나 계정을 만들어 여러 기기에서 캘린더를 안전하게 동기화하세요."
+  ],
+  "Not signed in · using this device": [
+    "未登录 · 正在使用此设备",
+    "未サインイン · このデバイスを使用中",
+    "로그아웃 상태 · 이 기기 사용 중"
+  ],
+  "Open live Calex to sign in": [
+    "打开 Calex 网站以登录",
+    "Calex のウェブサイトを開いてサインイン",
+    "로그인하려면 Calex 웹사이트 열기"
+  ],
+  "Continue with Google": [
+    "使用 Google 继续",
+    "Google で続行",
+    "Google로 계속"
+  ],
+  "Email": [
+    "电子邮件",
+    "メールアドレス",
+    "이메일"
+  ],
+  "Password": [
+    "密码",
+    "パスワード",
+    "비밀번호"
+  ],
+  "Sign in": [
+    "登录",
+    "サインイン",
+    "로그인"
+  ],
+  "Create account": [
+    "创建账户",
+    "アカウントを作成",
+    "계정 만들기"
+  ],
+  "Forgot password?": [
+    "忘记密码？",
+    "パスワードをお忘れですか？",
+    "비밀번호를 잊으셨나요?"
+  ],
+  "Resend confirmation email": [
+    "重新发送确认邮件",
+    "確認メールを再送信",
+    "확인 이메일 다시 보내기"
+  ],
+  "Sign out": [
+    "退出登录",
+    "サインアウト",
+    "로그아웃"
+  ],
+  "New password": [
+    "新密码",
+    "新しいパスワード",
+    "새 비밀번호"
+  ],
+  "Confirm password": [
+    "确认密码",
+    "パスワードを確認",
+    "비밀번호 확인"
+  ],
+  "Set password": [
+    "设置密码",
+    "パスワードを設定",
+    "비밀번호 설정"
+  ],
+  "CALEX PREFERENCES": [
+    "CALEX 偏好设置",
+    "CALEX の設定",
+    "CALEX 환경설정"
+  ],
+  "Make Calex work the way you do.": [
+    "按你的习惯使用 Calex。",
+    "自分に合った Calex にしましょう。",
+    "내 방식에 맞게 Calex를 설정하세요."
+  ],
+  "Your profile": [
+    "个人资料",
+    "プロフィール",
+    "프로필"
+  ],
+  "Your name": [
+    "你的姓名",
+    "名前",
+    "이름"
+  ],
+  "Add your location": [
+    "添加所在地",
+    "場所を追加",
+    "위치 추가"
+  ],
+  "Edit profile details": [
+    "编辑个人资料",
+    "プロフィールを編集",
+    "프로필 정보 수정"
+  ],
+  "Display name": [
+    "显示名称",
+    "表示名",
+    "표시 이름"
+  ],
+  "Location": [
+    "位置",
+    "場所",
+    "위치"
+  ],
+  "City or region": [
+    "城市或地区",
+    "都市または地域",
+    "도시 또는 지역"
+  ],
+  "Save profile": [
+    "保存个人资料",
+    "プロフィールを保存",
+    "프로필 저장"
+  ],
+  "Account & sync": [
+    "账户与同步",
+    "アカウントと同期",
+    "계정 및 동기화"
+  ],
+  "Preferences": [
+    "偏好设置",
+    "環境設定",
+    "환경설정"
+  ],
+  "Time zone": [
+    "时区",
+    "タイムゾーン",
+    "시간대"
+  ],
+  "Automatic · device time zone": [
+    "自动 · 设备时区",
+    "自動 · デバイスのタイムゾーン",
+    "자동 · 기기 시간대"
+  ],
+  "Automatic": [
+    "自动",
+    "自動",
+    "자동"
+  ],
+  "Choose time zone": [
+    "选择时区",
+    "タイムゾーンを選択",
+    "시간대 선택"
+  ],
+  "Search by city or region": [
+    "按城市或地区搜索",
+    "都市または地域で検索",
+    "도시 또는 지역 검색"
+  ],
+  "Matching time zones": [
+    "匹配的时区",
+    "一致するタイムゾーン",
+    "일치하는 시간대"
+  ],
+  "Time zone mode": [
+    "时区模式",
+    "タイムゾーン設定",
+    "시간대 모드"
+  ],
+  "Automatic mode follows the time zone configured on this device.": [
+    "自动模式会使用此设备设置的时区。",
+    "自動モードでは、このデバイスに設定されたタイムゾーンを使用します。",
+    "자동 모드는 이 기기에 설정된 시간대를 따릅니다."
+  ],
+  "Save time zone": [
+    "保存时区",
+    "タイムゾーンを保存",
+    "시간대 저장"
+  ],
+  "Dark appearance": [
+    "深色外观",
+    "ダーク表示",
+    "어두운 화면"
+  ],
+  "Adjust the interface for low-light environments": [
+    "调整界面以适应低光环境",
+    "暗い場所に合わせて画面を調整します",
+    "어두운 환경에 맞게 화면을 조정합니다"
+  ],
+  "Language": [
+    "语言",
+    "言語",
+    "언어"
+  ],
+  "Choose your language": [
+    "选择语言",
+    "言語を選択",
+    "언어 선택"
+  ],
+  "Display language": [
+    "显示语言",
+    "表示言語",
+    "표시 언어"
+  ],
+  "Your interface language is saved with your preferences.": [
+    "界面语言会与偏好设置一起保存。",
+    "表示言語は設定とともに保存されます。",
+    "인터페이스 언어는 환경설정과 함께 저장됩니다."
+  ],
+  "Auto · System settings": [
+    "自动 · 系统设置",
+    "自動 · システム設定",
+    "자동 · 시스템 설정"
+  ],
+  "System language": [
+    "系统语言",
+    "システム言語",
+    "시스템 언어"
+  ],
+  "Search languages": [
+    "搜索语言",
+    "言語を検索",
+    "언어 검색"
+  ],
+  "No matching languages.": [
+    "没有匹配的语言。",
+    "一致する言語がありません。",
+    "일치하는 언어가 없습니다."
+  ],
+  "Using": [
+    "正在使用",
+    "使用中",
+    "사용 중"
+  ],
+  "on": [
+    "开启",
+    "オン",
+    "켜짐"
+  ],
+  "off": [
+    "关闭",
+    "オフ",
+    "꺼짐"
+  ],
+  "Your data": [
+    "你的数据",
+    "データ",
+    "데이터"
+  ],
+  "Export calendar": [
+    "导出日历",
+    "カレンダーをエクスポート",
+    "캘린더 내보내기"
+  ],
+  "Download a portable .ics calendar file": [
+    "下载可移植的 .ics 日历文件",
+    "持ち運び可能な .ics カレンダーファイルをダウンロード",
+    "이동 가능한 .ics 캘린더 파일 다운로드"
+  ],
+  "Import calendar": [
+    "导入日历",
+    "カレンダーをインポート",
+    "캘린더 가져오기"
+  ],
+  "About & legal": [
+    "关于与法律信息",
+    "情報と法的事項",
+    "정보 및 법적 고지"
+  ],
+  "About Calex": [
+    "关于 Calex",
+    "Calex について",
+    "Calex 정보"
+  ],
+  "What Calex does and how to get help": [
+    "Calex 的功能及获取帮助的方式",
+    "Calex の機能とヘルプの利用方法",
+    "Calex 기능 및 도움말"
+  ],
+  "Overview": [
+    "概览",
+    "概要",
+    "개요"
+  ],
+  "Calendar": [
+    "日历",
+    "カレンダー",
+    "캘린더"
+  ],
+  "Agenda": [
+    "日程",
+    "予定一覧",
+    "일정"
+  ],
+  "MY CALENDARS": [
+    "我的日历",
+    "マイカレンダー",
+    "내 캘린더"
+  ],
+  "Personal": [
+    "个人",
+    "個人",
+    "개인"
+  ],
+  "Work & study": [
+    "工作与学习",
+    "仕事と学習",
+    "업무 및 학습"
+  ],
+  "Wellbeing": [
+    "身心健康",
+    "ウェルビーイング",
+    "웰빙"
+  ],
+  "Install Calex": [
+    "安装 Calex",
+    "Calex をインストール",
+    "Calex 설치"
+  ],
+  "Saved on this device": [
+    "已保存在此设备",
+    "このデバイスに保存済み",
+    "이 기기에 저장됨"
+  ],
+  "Describe your event": [
+    "描述你的事件",
+    "予定を入力",
+    "일정 설명"
+  ],
+  "Start typing to see the preview...": [
+    "开始输入以查看预览…",
+    "入力するとプレビューが表示されます…",
+    "입력을 시작하면 미리보기가 표시됩니다…"
+  ],
+  "Date *": [
+    "日期 *",
+    "日付 *",
+    "날짜 *"
+  ],
+  "Start time": [
+    "开始时间",
+    "開始時刻",
+    "시작 시간"
+  ],
+  "End time": [
+    "结束时间",
+    "終了時刻",
+    "종료 시간"
+  ],
+  "Repeat": [
+    "重复",
+    "繰り返し",
+    "반복"
+  ],
+  "Never": [
+    "从不",
+    "なし",
+    "안 함"
+  ],
+  "Every day": [
+    "每天",
+    "毎日",
+    "매일"
+  ],
+  "Every week": [
+    "每周",
+    "毎週",
+    "매주"
+  ],
+  "Every fortnight": [
+    "每两周",
+    "隔週",
+    "격주"
+  ],
+  "Every month": [
+    "每月",
+    "毎月",
+    "매월"
+  ],
+  "Every year": [
+    "每年",
+    "毎年",
+    "매년"
+  ],
+  "People": [
+    "人员",
+    "参加者",
+    "참여자"
+  ],
+  "Notes": [
+    "备注",
+    "メモ",
+    "메모"
+  ],
+  "Save event": [
+    "保存事件",
+    "予定を保存",
+    "일정 저장"
+  ],
+  "Calex assistant": [
+    "Calex 助手",
+    "Calex アシスタント",
+    "Calex 어시스턴트"
+  ],
+  "Plan my day": [
+    "规划我的一天",
+    "今日の予定を立てる",
+    "하루 계획 세우기"
+  ],
+  "Find focus time": [
+    "寻找专注时间",
+    "集中できる時間を探す",
+    "집중 시간 찾기"
+  ],
+  "Create an event": [
+    "创建事件",
+    "予定を作成",
+    "일정 만들기"
+  ],
+  "Message the assistant": [
+    "给助手发消息",
+    "アシスタントにメッセージ",
+    "어시스턴트에게 메시지"
+  ],
+  "Search calendar": [
+    "搜索日历",
+    "カレンダーを検索",
+    "캘린더 검색"
+  ],
+  "Go to today": [
+    "转到今天",
+    "今日へ移動",
+    "오늘로 이동"
+  ],
+  "Month / week / year": [
+    "月 / 周 / 年",
+    "月 / 週 / 年",
+    "월 / 주 / 년"
+  ],
+  "Close dialog": [
+    "关闭对话框",
+    "ダイアログを閉じる",
+    "대화상자 닫기"
+  ],
+  "My calendars": [
+    "我的日历",
+    "マイカレンダー",
+    "내 캘린더"
+  ],
+  "Full dates": [
+    "完整日期",
+    "全日付",
+    "전체 날짜"
+  ],
+  "Month": [
+    "月",
+    "月",
+    "월"
+  ],
+  "Week": [
+    "周",
+    "週",
+    "주"
+  ],
+  "View": [
+    "视图",
+    "表示",
+    "보기"
+  ],
+  "view": [
+    "视图",
+    "表示",
+    "보기"
+  ],
+  "Events": [
+    "事件",
+    "予定",
+    "일정"
+  ],
+  "event": [
+    "事件",
+    "予定",
+    "일정"
+  ],
+  "events": [
+    "个事件",
+    "件の予定",
+    "개 일정"
+  ],
+  "To do": [
+    "待办",
+    "未完了",
+    "할 일"
+  ],
+  "Completed": [
+    "已完成",
+    "完了",
+    "완료"
+  ],
+  "Nothing planned for this day.": [
+    "这一天没有安排。",
+    "この日の予定はありません。",
+    "이 날짜에 예정된 일정이 없습니다."
+  ],
+  "Completed events will appear here.": [
+    "已完成的事件会显示在这里。",
+    "完了した予定がここに表示されます。",
+    "완료한 일정이 여기에 표시됩니다."
+  ],
+  "No events planned for this day.": [
+    "这一天没有计划。",
+    "この日の予定はありません。",
+    "이 날짜에 계획된 일정이 없습니다."
+  ],
+  "All day": [
+    "全天",
+    "終日",
+    "하루 종일"
+  ],
+  "Until": [
+    "直到",
+    "まで",
+    "까지"
+  ],
+  "With": [
+    "与",
+    "と",
+    "함께"
+  ],
+  "Repeat daily": [
+    "每天重复",
+    "毎日繰り返す",
+    "매일 반복"
+  ],
+  "Repeats daily": [
+    "每天重复",
+    "毎日繰り返し",
+    "매일 반복"
+  ],
+  "Repeats weekly": [
+    "每周重复",
+    "毎週繰り返し",
+    "매주 반복"
+  ],
+  "Repeats monthly": [
+    "每月重复",
+    "毎月繰り返し",
+    "매월 반복"
+  ],
+  "Repeats yearly": [
+    "每年重复",
+    "毎年繰り返し",
+    "매년 반복"
+  ],
+  "Delete event": [
+    "删除事件",
+    "予定を削除",
+    "일정 삭제"
+  ],
+  "Edit event": [
+    "编辑事件",
+    "予定を編集",
+    "일정 수정"
+  ],
+  "No matching events or dates.": [
+    "没有匹配的事件或日期。",
+    "一致する予定や日付がありません。",
+    "일치하는 일정이나 날짜가 없습니다."
+  ],
+  "No matching time zones. Try a city or region name.": [
+    "没有匹配的时区。请尝试城市或地区名称。",
+    "一致するタイムゾーンがありません。都市名や地域名をお試しください。",
+    "일치하는 시간대가 없습니다. 도시 또는 지역 이름을 입력하세요."
+  ],
+  "Choose a time zone from the search results.": [
+    "请从搜索结果中选择时区。",
+    "検索結果からタイムゾーンを選択してください。",
+    "검색 결과에서 시간대를 선택하세요."
+  ],
+  "Time zone preference saved": [
+    "时区偏好已保存",
+    "タイムゾーン設定を保存しました",
+    "시간대 설정이 저장됨"
+  ],
+  "Profile saved": [
+    "个人资料已保存",
+    "プロフィールを保存しました",
+    "프로필 저장됨"
+  ],
+  "Could not save settings in this browser.": [
+    "无法在此浏览器中保存设置。",
+    "このブラウザーでは設定を保存できませんでした。",
+    "이 브라우저에서 설정을 저장할 수 없습니다."
+  ],
+  "End time must be later than start time.": [
+    "结束时间必须晚于开始时间。",
+    "終了時刻は開始時刻より後にしてください。",
+    "종료 시간은 시작 시간보다 늦어야 합니다."
+  ],
+  "Add an event title.": [
+    "请填写事件标题。",
+    "予定のタイトルを入力してください。",
+    "일정 제목을 입력하세요."
+  ],
+  "Add a valid event name and date.": [
+    "请输入有效的事件名称和日期。",
+    "有効な予定名と日付を入力してください。",
+    "유효한 일정 이름과 날짜를 입력하세요."
+  ],
+  "Describe your event first.": [
+    "请先描述事件。",
+    "先に予定の内容を入力してください。",
+    "먼저 일정 내용을 입력하세요."
+  ],
+  "Choose a valid event date.": [
+    "请选择有效的事件日期。",
+    "有効な日付を選択してください。",
+    "유효한 날짜를 선택하세요."
+  ],
+  "Event added": [
+    "事件已添加",
+    "予定を追加しました",
+    "일정 추가됨"
+  ],
+  "Event updated": [
+    "事件已更新",
+    "予定を更新しました",
+    "일정 업데이트됨"
+  ],
+  "Event deleted": [
+    "事件已删除",
+    "予定を削除しました",
+    "일정 삭제됨"
+  ],
+  "Event restored": [
+    "事件已恢复",
+    "予定を復元しました",
+    "일정 복원됨"
+  ],
+  "Nothing new to import.": [
+    "没有新内容可导入。",
+    "インポートする新しい項目はありません。",
+    "가져올 새 항목이 없습니다."
+  ],
+  "Your calendar is up to date across devices.": [
+    "你的日历已在所有设备间保持同步。",
+    "カレンダーはすべてのデバイスで最新です。",
+    "캘린더가 모든 기기에서 최신 상태입니다."
+  ],
+  "You’re offline. Changes are saved here and will sync when you’re back online.": [
+    "你当前处于离线状态。更改已保存在此处，联网后会同步。",
+    "オフラインです。変更はここに保存され、再接続時に同期されます。",
+    "오프라인 상태입니다. 변경 사항은 여기에 저장되며 다시 연결되면 동기화됩니다."
+  ],
+  "Browser storage is unavailable. Changes may not persist after closing this page.": [
+    "浏览器存储不可用。关闭此页面后，更改可能无法保留。",
+    "ブラウザーのストレージを利用できません。このページを閉じると変更が失われる可能性があります。",
+    "브라우저 저장소를 사용할 수 없습니다. 페이지를 닫으면 변경 사항이 유지되지 않을 수 있습니다."
+  ],
+  "Authentication could not load. Check your connection, then refresh Calex.": [
+    "无法加载身份验证。请检查网络连接后刷新 Calex。",
+    "認証を読み込めませんでした。接続を確認して Calex を再読み込みしてください。",
+    "인증을 불러올 수 없습니다. 연결을 확인한 후 Calex를 새로고침하세요."
+  ],
+  "Switch to dark appearance": [
+    "切换为深色外观",
+    "ダーク表示に切り替え",
+    "어두운 화면으로 전환"
+  ],
+  "Switch to light appearance": [
+    "切换为浅色外观",
+    "ライト表示に切り替え",
+    "밝은 화면으로 전환"
+  ],
+  "Close assistant": [
+    "关闭助手",
+    "アシスタントを閉じる",
+    "어시스턴트 닫기"
+  ],
+  "Hide details": [
+    "隐藏详情",
+    "詳細を非表示",
+    "세부 정보 숨기기"
+  ],
+  "Show details": [
+    "显示详情",
+    "詳細を表示",
+    "세부 정보 표시"
+  ],
+  "Mark": [
+    "标记",
+    "マーク",
+    "표시"
+  ],
+  "completed": [
+    "已完成",
+    "完了",
+    "완료"
+  ],
+  "Edit": [
+    "编辑",
+    "編集",
+    "수정"
+  ],
+  "until": [
+    "直到",
+    "まで",
+    "까지"
+  ],
+  "of your day": [
+    "你的一天",
+    "今日の",
+    "하루의"
+  ],
+  "events today": [
+    "今天的事件",
+    "今日の予定",
+    "오늘의 일정"
+  ],
+  "ON THE CALENDAR": [
+    "日历安排",
+    "カレンダー上の予定",
+    "캘린더 일정"
+  ],
+  "TIME COMMITTED": [
+    "已安排时间",
+    "予定に使う時間",
+    "일정에 사용한 시간"
+  ],
+  "A LITTLE PROGRESS": [
+    "一点进展",
+    "少しずつ前進",
+    "작은 진전"
+  ],
+  "Manage your account and sign-out options": [
+    "管理账户和退出选项",
+    "アカウントとサインアウトの設定を管理",
+    "계정 및 로그아웃 옵션 관리"
+  ],
+  "Auto": [
+    "自动",
+    "自動",
+    "자동"
+  ],
+  "System settings": [
+    "系统设置",
+    "システム設定",
+    "시스템 설정"
+  ]
+};
+
   // Bundled translations are deliberately local: no page text is sent to a
-  // translation API. Each row is English, Spanish, French, and German.
+  // translation API. Existing rows contain English, Spanish, French, and German.
   const ROWS = [
     ["Skip to calendar", "Saltar al calendario", "Passer au calendrier", "Zum Kalender springen"],
     ["YOUR TIME, WELL SPENT", "TU TIEMPO, BIEN APROVECHADO", "VOTRE TEMPS, BIEN UTILISÉ", "DEINE ZEIT, GUT GENUTZT"],
@@ -385,9 +1278,11 @@
   ROWS.forEach((row) => {
     const english = row[0];
     const values = {};
+    const asian = ASIAN_TRANSLATIONS[english] || [];
     LANGUAGE_ORDER.forEach((code, index) => {
-      values[code] = row[index] || english;
-      const translated = normalise(row[index] || english);
+      const translatedValue = row[index] || (index >= 4 ? asian[index - 4] : "") || english;
+      values[code] = translatedValue;
+      const translated = normalise(translatedValue);
       if (translated && !REVERSE.has(translated)) REVERSE.set(translated, english);
     });
     PHRASES.set(normalise(english), values);
@@ -397,17 +1292,31 @@
     return String(value == null ? "" : value).replace(/\s+/g, " ").trim();
   }
 
-  function readSavedLanguage() {
+  function resolveSystemLanguage() {
+    const candidates = [];
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved && LANGUAGES[saved]) return saved;
-      const settings = JSON.parse(localStorage.getItem("calex-guest-settings-v1") || "{}");
-      if (settings && LANGUAGES[settings.language]) return settings.language;
+      if (Array.isArray(navigator.languages)) candidates.push(...navigator.languages);
+      if (navigator.language) candidates.push(navigator.language);
     } catch (_) {}
+    for (const candidate of candidates) {
+      const base = String(candidate).toLowerCase().split(/[-_]/)[0];
+      if (LANGUAGES[base]) return base;
+    }
     return "en";
   }
 
-  let currentLanguage = readSavedLanguage();
+  function readSavedLanguage() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved === "auto" || LANGUAGES[saved]) return saved;
+      const settings = JSON.parse(localStorage.getItem("calex-guest-settings-v1") || "{}");
+      if (settings.language === "auto" || LANGUAGES[settings.language]) return settings.language;
+    } catch (_) {}
+    return "auto";
+  }
+
+  let currentPreference = readSavedLanguage();
+  let currentLanguage = currentPreference === "auto" ? resolveSystemLanguage() : currentPreference;
 
   function locale() {
     return LANGUAGES[currentLanguage].locale;
@@ -417,8 +1326,17 @@
     return currentLanguage;
   }
 
+  function preference() {
+    return currentPreference;
+  }
+
   function languageLabel(code) {
+    if (code === "auto") return translate("Auto · System settings", currentLanguage);
     return (LANGUAGES[code] || LANGUAGES.en).label;
+  }
+
+  function isPreference(code) {
+    return code === "auto" || !!LANGUAGES[code];
   }
 
   function translatePattern(source, code) {
@@ -669,24 +1587,26 @@
 
   function setLanguage(code, options) {
     const opts = options || {};
-    if (!LANGUAGES[code]) return false;
-    if (currentLanguage === code) {
-      if (opts.persist !== false) {
-        try { localStorage.setItem(STORAGE_KEY, code); } catch (_) {}
-      }
-      translateDocument();
-      return true;
-    }
-    currentLanguage = code;
+    if (!isPreference(code)) return false;
+    const nextLanguage = code === "auto" ? resolveSystemLanguage() : code;
+    const changed = currentLanguage !== nextLanguage || currentPreference !== code;
+    currentPreference = code;
+    currentLanguage = nextLanguage;
     if (opts.persist !== false) {
       try { localStorage.setItem(STORAGE_KEY, code); } catch (_) {}
     }
     translateDocument();
-    window.dispatchEvent(new CustomEvent("calex:language", { detail: code }));
-    // App listeners may replace dynamic content while responding to the event.
-    translateDocument();
+    if (changed) {
+      window.dispatchEvent(new CustomEvent("calex:language", { detail: code }));
+      // App listeners may replace dynamic content while responding to the event.
+      translateDocument();
+    }
     return true;
   }
+
+  window.addEventListener("languagechange", () => {
+    if (currentPreference === "auto") setLanguage("auto", { persist: false });
+  });
 
   function observe() {
     if (!document.body || window.__calexI18nObserver) return;
@@ -733,6 +1653,8 @@
   window.CalexI18n = {
     languages: LANGUAGES,
     language,
+    preference,
+    isPreference,
     languageLabel,
     locale,
     translate,
