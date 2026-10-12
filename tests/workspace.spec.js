@@ -631,6 +631,7 @@ test("East Asian languages translate sidebar, empty states, event forms, preview
     await expect(page.locator("#settingsSyncNote")).toHaveText(lang.syncNote);
 
     await page.locator("#timezoneToggle").click();
+    await page.locator("#timezoneAuto").click();
     await expect(page.locator("#timezoneHelp")).toContainText(lang.using);
     await page.locator("#timezoneManual").click();
     await page.locator("#timezoneSearch").fill("Asia/Tokyo");
@@ -638,6 +639,14 @@ test("East Asian languages translate sidebar, empty states, event forms, preview
     await expect(page.locator("#timezoneResults .timezone-result-region")).toHaveText(lang.timezoneRegion);
     await page.locator("#timezoneResults .timezone-result").click();
     await expect(page.locator("#timezoneHelp")).toContainText(lang.saveTimezone);
+    await page.locator("#timezoneSearch").fill("no-such-time-zone");
+    await expect(page.locator("#timezoneResults .timezone-no-results")).toContainText(
+      lang.code === "zh"
+        ? "没有匹配的时区。请尝试城市或地区名称。"
+        : lang.code === "ja"
+          ? "一致するタイムゾーンがありません。都市名や地域名をお試しください。"
+          : "일치하는 시간대가 없습니다. 도시 또는 지역 이름을 입력하세요.",
+    );
   }
 });
 
