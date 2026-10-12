@@ -2755,8 +2755,8 @@
     if (!node) return;
     if (!ORIGINAL_TEXT.has(node)) ORIGINAL_TEXT.set(node, node.nodeValue);
     const original = ORIGINAL_TEXT.get(node);
-    const start = original.match(/^\\s*/)[0];
-    const end = original.match(/\\s*$/)[0];
+    const start = original.match(/^\s*/)[0];
+    const end = original.match(/\s*$/)[0];
     const next = start + translate(source) + end;
     if (node.nodeValue !== next) node.nodeValue = next;
   }
