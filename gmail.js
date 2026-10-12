@@ -367,6 +367,7 @@
         return;
       }
       const draft = extracted.event;
+      if ($("assistantDialog").open) $("assistantDialog").close();
       $("gmailDialog").close();
       window.Calex.draftEvent(draft);
       window.Calex.showToast("Event draft ready. Review the details and save to add it to your calendar.");
