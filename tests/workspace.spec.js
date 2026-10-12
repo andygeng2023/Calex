@@ -1,3 +1,4 @@
+const { test, expect } = require("@playwright/test");
 
 test("desktop top bar is slimmer and left sidebar is wider", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
@@ -33,8 +34,6 @@ test("mobile top bar remains compact with bottom navigation", async ({ page }) =
   expect(layout.topbarHeight).toBe(78);
   expect(layout.sidebarPosition).toBe("absolute");
 });
-
-const { test, expect } = require("@playwright/test");
 
 const isoToday = () => {
   const d = new Date();
