@@ -322,7 +322,9 @@
   }
 
   async function getMessageBody(email) {
-    const data = await gmailApi("/messages/" + encodeURIComponent(email.id) + "?format=full&fields=id,internalDate,snippet,payload(mimeType,filename,headers(name,value),body(data),parts(mimeType,filename,body(data),parts(mimeType,filename,body(data),parts(mimeType,filename,body(data)))))");
+    const data = await gmailApi(
+      "/messages/" + encodeURIComponent(email.id) + "?format=full",
+    );
     const body = extractBody(data.payload).slice(0, MAX_BODY_CHARS);
     return {
       subject: email.subject,
