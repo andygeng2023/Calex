@@ -1781,7 +1781,8 @@
     }
 
     // Keep translatable labels separate from the user's title, description, and location.
-    addPreviewPart(translateUiText(prefix) + ": ");
+    addPreviewPart(translateUiText(prefix));
+    addPreviewPart(": ");
     addPreviewPart(p.title, true);
     addSeparator();
     addPreviewPart(
@@ -1817,7 +1818,9 @@
     const raw = $("quickText").value.trim();
     clearTimeout(quickParseTimer);
     if (!raw) {
-      $("quickPreview").textContent = "Start typing to see the preview...";
+      $("quickPreview").textContent = translateUiText(
+        "Start typing to see the preview...",
+      );
       $("quickPreview").classList.add("is-empty");
       return;
     }
@@ -3114,6 +3117,15 @@
     renderProfile();
     renderTimezone();
     renderLanguage();
+    if ($("modalBackdrop").classList.contains("open") && $("modalBackdrop").dataset.mode === "quick") {
+      const raw = $("quickText").value.trim();
+      if (raw) {
+        showQuickPreview(parseNatural(raw), "Rule-based preview");
+      } else {
+        $("quickPreview").textContent = translateUiText("Start typing to see the preview...");
+        $("quickPreview").classList.add("is-empty");
+      }
+    }
   });
   $("timezoneAuto").addEventListener("click", () => {
     appSettings.timezoneMode = "auto";
