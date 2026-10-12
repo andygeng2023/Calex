@@ -831,9 +831,9 @@ test("Gmail connects read-only, wraps message cards, and loads additional pages 
   await expect(email.locator(".gmail-open-message")).toHaveText("在 Gmail 中打开");
   await page.evaluate(() => window.CalexI18n.setLanguage("en"));
   await expect(page.locator("#gmailStatus")).toContainText("Showing 1 email");
+  await page.locator("#emailScreen").evaluate((element) => { element.scrollTop = element.scrollHeight; });
   await expect(page.locator("#gmailLoadMore .gmail-spinner")).toBeVisible();
   await expect(page.locator("#gmailLoadMore")).toContainText("Loading more emails");
-  await page.locator("#emailScreen").evaluate((element) => { element.scrollTop = element.scrollHeight; });
   await expect(page.locator(".gmail-email").filter({ hasText: "Follow-up meeting" })).toBeVisible();
   await expect(page.locator("#gmailStatus")).toContainText("Showing 2 emails");
   await page.locator('[data-gmail-filter="unread"]').click();
