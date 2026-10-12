@@ -809,6 +809,30 @@ test("Gmail connects with read-only OAuth and displays inbox cards that can be d
   await expect(email).toContainText("Let's meet to plan the project timeline.");
   await expect(email).toHaveAttribute("draggable", "true");
   await expect(page.locator("#gmailStatus")).toContainText("Showing 1 recent message");
+
+  const dropTarget = await page.evaluate(() => {
+    const cell = document.querySelector("#dateGrid .date-cell[data-date]");
+    const transfer = new DataTransfer();
+    transfer.setData("application/x-calex-gmail-message", "mail-planning-1");
+    const event = new DragEvent("dragover", {
+      bubbles: true,
+      cancelable: true,
+      dataTransfer: transfer,
+    });
+    cell.dispatchEvent(event);
+    return {
+      highlighted: cell.classList.contains("gmail-drop-target"),
+      prevented: event.defaultPrevented,
+    };
+  });
+  expect(dropTarget.highlighted).toBeTruthy();
+  expect(dropTarget.prevented).toBeTruthy();
+
+  await page.evaluate(() => window.CalexI18n.setLanguage("zh"));
+  await expect(page.locator(".gmail-email-subject")).toHaveText("Planning session");
+  await expect(page.locator(".gmail-email-snippet")).toHaveText(
+    "Let's meet to plan the project timeline.",
+  );
 });
 
 test("Puter converts email content into a validated event draft without saving it", async ({ page }) => {
