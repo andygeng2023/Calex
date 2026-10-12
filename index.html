@@ -23,9 +23,9 @@
       href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=38" />
-    <link rel="stylesheet" href="workspace.css?v=38" />
-    <link rel="stylesheet" href="calendar.css?v=38" />
+    <link rel="stylesheet" href="styles.css?v=39" />
+    <link rel="stylesheet" href="workspace.css?v=39" />
+    <link rel="stylesheet" href="calendar.css?v=39" />
   </head>
 
   <body>
@@ -50,6 +50,15 @@
           </button>
           <button id="openAssistant" class="secondary assistant-trigger">
             <i data-lucide="sparkles"></i><span>Ask assistant</span>
+          </button>
+          <button
+            id="openGmail"
+            class="secondary"
+            type="button"
+            aria-haspopup="dialog"
+            aria-controls="gmailDialog"
+          >
+            <i data-lucide="mail"></i><span>Gmail</span>
           </button>
           <button id="globalAdd" class="primary">
             <i data-lucide="plus"></i><span>New event</span><kbd>N</kbd>
@@ -1328,15 +1337,56 @@
       </div>
     </dialog>
 
+    <dialog
+      id="gmailDialog"
+      class="gmail-dialog"
+      aria-labelledby="gmailTitle"
+    >
+      <header class="gmail-head">
+        <div>
+          <span class="header-eyebrow">EMAIL TO CALENDAR</span>
+          <h2 id="gmailTitle"><i data-lucide="mail"></i> Gmail inbox</h2>
+        </div>
+        <button id="closeGmail" class="icon-btn" type="button" aria-label="Close Gmail panel" title="Close">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <p class="gmail-privacy-note">
+        Connect Gmail to view recent inbox messages. When you turn a message into an event, its text is sent to Puter AI for extraction. Review the draft before saving.
+      </p>
+      <div id="gmailSetupHelp" class="gmail-setup-help" hidden>
+        <strong>Gmail connection needs setup</strong>
+        <p>Set a Google OAuth web client ID in <code>gmail-config.js</code>, enable the Gmail API in Google Cloud, and authorize this site’s origin. The app requests read-only Gmail access.</p>
+      </div>
+      <div class="gmail-controls">
+        <label class="sr-only" for="gmailSearch">Search Gmail inbox</label>
+        <input id="gmailSearch" type="search" placeholder="Search Gmail inbox" />
+        <button id="gmailSearchButton" type="button" class="secondary">Search</button>
+      </div>
+      <div class="gmail-actions">
+        <button id="gmailConnect" type="button" class="primary">Connect Gmail</button>
+        <button id="gmailRefresh" type="button" class="secondary" disabled>Refresh</button>
+        <button id="gmailDisconnect" type="button" class="secondary" hidden>Disconnect</button>
+        <button id="gmailEnablePuter" type="button" class="secondary">Enable Puter</button>
+      </div>
+      <p id="gmailStatus" class="gmail-status" role="status" aria-live="polite">
+        Gmail is not connected.
+      </p>
+      <div id="gmailEmails" class="gmail-emails" aria-label="Gmail messages" aria-live="polite"></div>
+      <p class="gmail-drag-help">Drag an email onto a calendar date, or select “Make event”.</p>
+    </dialog>
+
     <script
       src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3"
       defer
     ></script>
-    <script src="icons.js?v=38" defer></script>
-    <script src="sync.js?v=38" defer></script>
-    <script src="ics.js?v=38" defer></script>
-    <script src="i18n.js?v=38" defer></script>
-    <script src="app.js?v=38" defer></script>
-    <script src="workspace.js?v=38" defer></script>
+    <script src="icons.js?v=39" defer></script>
+    <script src="sync.js?v=39" defer></script>
+    <script src="ics.js?v=39" defer></script>
+    <script src="i18n.js?v=39" defer></script>
+    <script src="app.js?v=39" defer></script>
+    <script src="workspace.js?v=39" defer></script>
+    <script src="gmail-config.js?v=39" defer></script>
+    <script src="gmail.js?v=39" defer></script>
   </body>
 </html>
