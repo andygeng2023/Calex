@@ -458,6 +458,8 @@
       persist();
       saveAppSettings();
     }
+    if (window.CalexI18n?.languages[appSettings.language])
+      window.CalexI18n.setLanguage(appSettings.language);
     renderAuth();
     renderProfile();
     renderTimezone();
