@@ -734,6 +734,14 @@ test("Quick Add preview labels update with language changes while keeping event 
 });
 
 test("Gmail panel explains setup and does not request mailbox access until configured", async ({ page }) => {
+  await page.route("**/gmail-config.js", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/javascript",
+      body: 'window.CALEX_GMAIL_CLIENT_ID = "";',
+    });
+  });
+
   await page.goto("/");
   await page.locator("#openGmail").click();
 
