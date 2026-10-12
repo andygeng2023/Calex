@@ -383,18 +383,27 @@ test("language picker supports Auto and East Asian languages without a native se
   await expect(page.locator("html")).toHaveAttribute("lang", "ko");
   await expect(page.locator(".settings-title")).toHaveText("설정");
   await expect(page.locator("#languageSummary")).toHaveText("한국어");
+  await expect(page.locator("#languageHelp")).toHaveText(
+    "언어를 선택하거나 ‘자동’을 사용해 기기의 시스템 언어를 따르세요.",
+  );
   await expect(page.locator("#languageResults [data-language='en']")).toBeVisible();
 
   await page.locator("#languageSearch").fill("中文");
   await page.locator('#languageResults [data-language="zh"]').click();
   await expect(page.locator("html")).toHaveAttribute("lang", "zh");
   await expect(page.locator(".settings-title")).toHaveText("设置");
+  await expect(page.locator("#languageHelp")).toHaveText(
+    "选择一种语言，或选择“自动”以跟随设备的系统语言。",
+  );
   expect(await page.evaluate(() => window.CalexI18n.translate("Repeats every 2 weeks", "zh"))).toBe("每2周重复");
 
   await page.locator("#languageSearch").fill("日本語");
   await page.locator('#languageResults [data-language="ja"]').click();
   await expect(page.locator("html")).toHaveAttribute("lang", "ja");
   await expect(page.locator(".settings-title")).toHaveText("設定");
+  await expect(page.locator("#languageHelp")).toHaveText(
+    "言語を選択するか、「自動」を選んでデバイスのシステム言語に従ってください。",
+  );
   expect(await page.evaluate(() => window.CalexI18n.translate("Repeats every 2 weeks", "ja"))).toBe("毎2週間繰り返し");
 });
 
@@ -427,6 +436,16 @@ test("Chinese, Japanese, and Korean cover every bundled phrase", async ({ page }
       ja: window.CalexI18n.translate("Privacy policy", "ja"),
       ko: window.CalexI18n.translate("Privacy policy", "ko"),
     },
+    placeholders: {
+      zh: window.CalexI18n.translate("At least 6 characters", "zh"),
+      ja: window.CalexI18n.translate("At least 6 characters", "ja"),
+      ko: window.CalexI18n.translate("At least 6 characters", "ko"),
+    },
+    runtime: {
+      zh: window.CalexI18n.translate("That file is too large to import (5 MB max).", "zh"),
+      ja: window.CalexI18n.translate("That file is too large to import (5 MB max).", "ja"),
+      ko: window.CalexI18n.translate("That file is too large to import (5 MB max).", "ko"),
+    },
   }));
 
   expect(audit.zh).toEqual([]);
@@ -441,6 +460,16 @@ test("Chinese, Japanese, and Korean cover every bundled phrase", async ({ page }
     zh: "隐私政策",
     ja: "プライバシーポリシー",
     ko: "개인정보 처리방침",
+  });
+  expect(audit.placeholders).toEqual({
+    zh: "至少 6 个字符",
+    ja: "6文字以上",
+    ko: "6자 이상",
+  });
+  expect(audit.runtime).toEqual({
+    zh: "文件过大，无法导入（最大 5 MB）。",
+    ja: "ファイルが大きすぎるためインポートできません（最大5 MB）。",
+    ko: "파일이 너무 커서 가져올 수 없습니다(최대 5MB).",
   });
 });
 
