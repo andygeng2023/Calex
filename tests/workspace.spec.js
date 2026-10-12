@@ -747,7 +747,7 @@ test("Gmail panel explains setup and does not request mailbox access until confi
 
   await expect(page.locator("#emailScreen")).toBeVisible();
   await expect(page.locator('[data-screen="email"]')).toHaveAttribute("aria-current", "page");
-  await expect(page.locator("#gmailDateTargets .gmail-date-target")).toHaveCount(7);
+  await expect(page.locator(".gmail-date-panel")).toHaveCount(0);
   await expect(page.locator("#gmailSetupHelp")).toBeVisible();
   await expect(page.locator("#gmailConnect")).toBeDisabled();
   await expect(page.locator(".gmail-privacy-note")).toContainText(
@@ -758,7 +758,7 @@ test("Gmail panel explains setup and does not request mailbox access until confi
   );
 });
 
-test("Gmail connects with read-only OAuth and displays inbox cards that can be dragged", async ({ page }) => {
+test("Gmail connects read-only, wraps message cards, and loads additional pages on scroll", async ({ page }) => {
   await page.addInitScript(() => {
     window.CALEX_GMAIL_CLIENT_ID = "calex-test-client.apps.googleusercontent.com";
   });
@@ -775,29 +775,33 @@ test("Gmail connects with read-only OAuth and displays inbox cards that can be d
     const query = new URL(url).searchParams.get("q");
     if (query) gmailQueries.push(query);
     if (url.includes("/messages?")) {
+      const pageToken = new URL(url).searchParams.get("pageToken");
       await route.fulfill({
         status: 200,
         contentType: "application/json",
-        body: JSON.stringify({
-          messages: [{ id: "mail-planning-1", threadId: "thread-planning-1" }],
-        }),
+        body: JSON.stringify(pageToken
+          ? { messages: [{ id: "mail-planning-2", threadId: "thread-planning-2" }] }
+          : { messages: [{ id: "mail-planning-1", threadId: "thread-planning-1" }], nextPageToken: "page-2" }),
       });
       return;
     }
-    if (url.includes("/messages/mail-planning-1?") && url.includes("format=metadata")) {
+    const messageMatch = url.match(/\/messages\/(mail-planning-[12])\?/);
+    if (messageMatch && url.includes("format=metadata")) {
+      const second = messageMatch[1] === "mail-planning-2";
+      const id = messageMatch[1];
       await route.fulfill({
         status: 200,
         contentType: "application/json",
         body: JSON.stringify({
-          id: "mail-planning-1",
-          threadId: "thread-planning-1",
-          internalDate: "1793601000000",
-          snippet: "Let's meet to plan the project timeline.",
+          id,
+          threadId: second ? "thread-planning-2" : "thread-planning-1",
+          internalDate: second ? "1793602000000" : "1793601000000",
+          snippet: second ? "Follow-up on the meeting." : "Let's meet to plan the project timeline.",
           payload: {
             mimeType: "text/plain",
             headers: [
-              { name: "From", value: "Sam Example <sam@example.com>" },
-              { name: "Subject", value: "Planning session" },
+              { name: "From", value: second ? "Alex Example <alex@example.com>" : "Sam Example <sam@example.com>" },
+              { name: "Subject", value: second ? "Follow-up meeting" : "Planning session" },
               { name: "Date", value: "Mon, 2 Nov 2026 09:30:00 +0000" },
             ],
           },
@@ -820,30 +824,15 @@ test("Gmail connects with read-only OAuth and displays inbox cards that can be d
   await expect(email).toBeVisible();
   await expect(email).toContainText("sam@example.com");
   await expect(email).toContainText("Let's meet to plan the project timeline.");
-  await expect(email).toHaveAttribute("draggable", "true");
+  await expect(email).not.toHaveAttribute("draggable", "true");
   await expect(email.locator(".gmail-open-message")).toHaveAttribute("href", /mail\.google\.com/);
-  await expect(page.locator("#gmailStatus")).toContainText("Showing 1 recent message");
+  await expect(page.locator("#gmailStatus")).toContainText("Showing 1 email");
+  await page.locator("#emailScreen").evaluate((element) => { element.scrollTop = element.scrollHeight; });
+  await expect(page.locator(".gmail-email").filter({ hasText: "Follow-up meeting" })).toBeVisible();
+  await expect(page.locator("#gmailStatus")).toContainText("Showing 2 emails");
   await page.locator('[data-gmail-filter="unread"]').click();
   await expect.poll(() => gmailQueries[gmailQueries.length - 1]).toContain("is:unread");
   await expect(page.locator('[data-gmail-filter="unread"]')).toHaveAttribute("aria-pressed", "true");
-
-  const dropTarget = await page.evaluate(() => {
-    const cell = document.querySelector("#gmailDateTargets .gmail-date-target[data-date]");
-    const transfer = new DataTransfer();
-    transfer.setData("application/x-calex-gmail-message", "mail-planning-1");
-    const event = new DragEvent("dragover", {
-      bubbles: true,
-      cancelable: true,
-      dataTransfer: transfer,
-    });
-    cell.dispatchEvent(event);
-    return {
-      highlighted: cell.classList.contains("gmail-drop-target"),
-      prevented: event.defaultPrevented,
-    };
-  });
-  expect(dropTarget.highlighted).toBeTruthy();
-  expect(dropTarget.prevented).toBeTruthy();
 
   await page.evaluate(() => window.CalexI18n.setLanguage("zh"));
   await expect(page.locator(".gmail-email-subject")).toHaveText("Planning session");
