@@ -3439,3 +3439,10 @@ body.settings-dark .modal #quickPreview {
   background: var(--surface-inset);
   border-color: var(--line);
 }
+
+
+/* Horizontal calendar gestures track the pointer without altering the layout. */
+#calendarScreen.is-calendar-swiping .calendar-scroller {
+  will-change: transform;
+  transition: none !important;
+}
