@@ -3452,3 +3452,17 @@ body.settings-dark .modal #quickPreview {
 #calendarScreen.panel-open {
   touch-action: pan-y;
 }
+
+
+/* Language picker follows the searchable time-zone selector pattern. */
+#languageSearch {
+  margin-bottom: 8px;
+}
+.language-result .timezone-result-region {
+  max-width: 48%;
+  overflow-wrap: anywhere;
+}
+.language-result:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: -2px;
+}

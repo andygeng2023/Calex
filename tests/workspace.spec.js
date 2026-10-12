@@ -56,6 +56,59 @@ async function addEvent(
   await expect(page.locator("#modalBackdrop")).not.toHaveClass(/open/);
 }
 
+
+test("language setting translates the interface and persists the choice", async ({ page }) => {
+  await page.goto("/");
+  await page.locator('[data-screen="settings"]').click();
+  await page.locator("#languageToggle").click();
+  await expect(page.locator("#languageDetail")).toBeVisible();
+  await page.locator('#languageResults [data-language="es"]').click();
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
+  expect(
+    await page.evaluate(() => window.CalexI18n.translate("Settings", "es")),
+  ).toBe("Ajustes");
+  await expect(page.locator(".settings-title")).toHaveText("Ajustes");
+  await expect(page.locator('[data-screen="calendar"]')).toContainText("Calendario");
+  await expect(page.locator("#languageSummary")).toHaveText("Español");
+
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
+  await expect(page.locator(".settings-title")).toHaveText("Ajustes");
+  await page.locator('[data-screen="settings"]').click();
+  await page.locator("#languageToggle").click();
+  await expect(page.locator('#languageResults [data-language="es"]')).toHaveAttribute("aria-selected", "true");
+
+  await page.locator('#languageResults [data-language="fr"]').click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "fr");
+  await expect(page.locator(".settings-title")).toHaveText("Paramètres");
+  await expect(page.locator("#languageSummary")).toHaveText("Français");
+
+  await page.locator('#languageResults [data-language="de"]').click();
+  await expect(page.locator(".settings-title")).toHaveText("Einstellungen");
+  await expect(page.locator("#preferencesSectionTitle")).toHaveText("Einstellungen");
+
+  await page.locator('#languageResults [data-language="en"]').click();
+  await expect(page.locator(".settings-title")).toHaveText("Settings");
+  await expect(page.locator("#preferencesSectionTitle")).toHaveText("Preferences");
+});
+
+test("language switching leaves event titles unchanged", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#globalAdd").click();
+  await page.locator("#eventTitle").fill("Dentist");
+  await page.locator("#eventDate").fill("2026-10-12");
+  await page.locator('#eventForm button[type="submit"]').click();
+  await page.locator('[data-screen="calendar"]').click();
+  await expect(page.locator("#panelEvents")).toContainText("Dentist");
+
+  await page.locator('[data-screen="settings"]').click();
+  await page.locator("#languageToggle").click();
+  await page.locator('#languageResults [data-language="es"]').click();
+  await page.locator('[data-screen="calendar"]').click();
+  await expect(page.locator("#panelEvents")).toContainText("Dentist");
+});
+
 test("categorized events persist and appear in month, week, and agenda", async ({
   page,
 }) => {
@@ -314,3 +367,369 @@ test("invalid AI event dates never expose a saveable draft", async ({
   );
   await expect(page.locator(".assistant-draft")).toHaveCount(0);
 });
+
+test("language picker supports Auto and East Asian languages without a native select", async ({ page }) => {
+  await page.goto("/");
+  await page.locator('[data-screen="settings"]').click();
+  await page.locator("#languageToggle").click();
+  await expect(page.locator("#languageSelect")).toHaveCount(0);
+  for (const code of ["auto", "zh", "ja", "ko"]) {
+    await expect(page.locator(`#languageResults [data-language="${code}"]`)).toBeVisible();
+  }
+  await page.locator("#languageSearch").fill("한국어");
+  await expect(page.locator('#languageResults [data-language="ko"]')).toBeVisible();
+  await expect(page.locator('#languageResults [data-language="zh"]')).toHaveCount(0);
+  await page.locator('#languageResults [data-language="ko"]').click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "ko");
+  await expect(page.locator(".settings-title")).toHaveText("설정");
+  await expect(page.locator("#languageSummary")).toHaveText("한국어");
+  await expect(page.locator("#languageHelp")).toHaveText(
+    "언어를 선택하거나 ‘자동’을 사용해 기기의 시스템 언어를 따르세요.",
+  );
+  await expect(page.locator("#languageResults [data-language='en']")).toBeVisible();
+
+  await page.locator("#languageSearch").fill("中文");
+  await page.locator('#languageResults [data-language="zh"]').click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "zh");
+  await expect(page.locator(".settings-title")).toHaveText("设置");
+  await expect(page.locator("#languageHelp")).toHaveText(
+    "选择一种语言，或选择“自动”以跟随设备的系统语言。",
+  );
+  expect(await page.evaluate(() => window.CalexI18n.translate("Repeats every 2 weeks", "zh"))).toBe("每2周重复");
+
+  await page.locator("#languageSearch").fill("日本語");
+  await page.locator('#languageResults [data-language="ja"]').click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "ja");
+  await expect(page.locator(".settings-title")).toHaveText("設定");
+  await expect(page.locator("#languageHelp")).toHaveText(
+    "言語を選択するか、「自動」を選んでデバイスのシステム言語に従ってください。",
+  );
+  expect(await page.evaluate(() => window.CalexI18n.translate("Repeats every 2 weeks", "ja"))).toBe("毎2週間繰り返し");
+});
+
+test("Auto language follows the device system language", async ({ page }) => {
+  await page.goto("/");
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "languages", { configurable: true, get: () => ["ja-JP"] });
+    Object.defineProperty(navigator, "language", { configurable: true, get: () => "ja-JP" });
+    localStorage.setItem("calex-language-v1", "auto");
+  });
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("lang", "ja");
+  await expect(page.locator(".settings-title")).toHaveText("設定");
+});
+
+test("Chinese, Japanese, and Korean cover every bundled phrase", async ({ page }) => {
+  await page.goto("/");
+
+  const audit = await page.evaluate(() => ({
+    zh: window.CalexI18n.missingTranslations("zh"),
+    ja: window.CalexI18n.missingTranslations("ja"),
+    ko: window.CalexI18n.missingTranslations("ko"),
+    more: {
+      zh: window.CalexI18n.translate("3 more", "zh"),
+      ja: window.CalexI18n.translate("3 more", "ja"),
+      ko: window.CalexI18n.translate("3 more", "ko"),
+    },
+    policy: {
+      zh: window.CalexI18n.translate("Privacy policy", "zh"),
+      ja: window.CalexI18n.translate("Privacy policy", "ja"),
+      ko: window.CalexI18n.translate("Privacy policy", "ko"),
+    },
+    placeholders: {
+      zh: window.CalexI18n.translate("At least 6 characters", "zh"),
+      ja: window.CalexI18n.translate("At least 6 characters", "ja"),
+      ko: window.CalexI18n.translate("At least 6 characters", "ko"),
+    },
+    runtime: {
+      zh: window.CalexI18n.translate("That file is too large to import (5 MB max).", "zh"),
+      ja: window.CalexI18n.translate("That file is too large to import (5 MB max).", "ja"),
+      ko: window.CalexI18n.translate("That file is too large to import (5 MB max).", "ko"),
+    },
+  }));
+
+  expect(audit.zh).toEqual([]);
+  expect(audit.ja).toEqual([]);
+  expect(audit.ko).toEqual([]);
+  expect(audit.more).toEqual({
+    zh: "+3 更多",
+    ja: "ほか3件",
+    ko: "외 3개",
+  });
+  expect(audit.policy).toEqual({
+    zh: "隐私政策",
+    ja: "プライバシーポリシー",
+    ko: "개인정보 처리방침",
+  });
+  expect(audit.placeholders).toEqual({
+    zh: "至少 6 个字符",
+    ja: "6文字以上",
+    ko: "6자 이상",
+  });
+  expect(audit.runtime).toEqual({
+    zh: "文件过大，无法导入（最大 5 MB）。",
+    ja: "ファイルが大きすぎるためインポートできません（最大5 MB）。",
+    ko: "파일이 너무 커서 가져올 수 없습니다(최대 5MB).",
+  });
+});
+
+const eastAsianLanguages = [
+    {
+      code: "zh",
+      workspace: "工作区",
+      assistantPrompt: "规划小帮手",
+      assistantSubtitle: "认识 Calex 助手",
+      footer: "为日常生活而设计",
+      homeTitle: "留一点喘息空间。",
+      homeBody: "你可以安排属于自己的一天。添加一件值得为之留出时间的事吧。",
+      homeButton: "添加你的第一个日程",
+      agendaTitle: "下一篇章尚待书写。",
+      agendaBody: "添加一个日程，开始规划接下来的日子。",
+      accountTitle: "登录或创建账户",
+      accountSubtitle: "在不同设备间安全地同步日历",
+      syncNote: "登录之前，你的日程会保存在此设备上。",
+      accountDescription: "让你在不同设备上都能使用日历和偏好设置。",
+      quickHint: "开始输入以查看预览…",
+      quickExample: "试试输入",
+      quickPrefix: "基于规则的预览",
+      repeat: "每周重复",
+      eventName: "日程名称",
+      never: "从不",
+      descriptionPlaceholder: "简短描述…",
+      descriptionLabel: "日程描述",
+      locationLabel: "位置",
+      locationPlaceholder: "添加地点",
+      startTimeLabel: "开始时间",
+      endTimeLabel: "结束时间",
+      repeatLabel: "重复",
+      peopleLabel: "人员",
+      categoryLabel: "日历",
+      personalCategory: "个人",
+      workCategory: "工作与学习",
+      wellbeingCategory: "身心健康",
+      notesLabel: "备注",
+      notesPlaceholder: "其他需要记住的事项",
+      saveEvent: "保存事件",
+      timezoneRegion: "亚洲",
+      using: "正在使用",
+      saveTimezone: "保存以应用更改。",
+    },
+    {
+      code: "ja",
+      workspace: "ワークスペース",
+      assistantPrompt: "計画を少しお手伝い",
+      assistantSubtitle: "Calex アシスタントの紹介",
+      footer: "毎日のために",
+      homeTitle: "少しゆとりを。",
+      homeBody: "一日の過ごし方はあなた次第です。時間をかけたいことを追加しましょう。",
+      homeButton: "最初の予定を追加",
+      agendaTitle: "次の章はまだ白紙です。",
+      agendaBody: "予定を追加して、これからの日々を形にしましょう。",
+      accountTitle: "サインインまたはアカウントを作成",
+      accountSubtitle: "デバイス間でカレンダーを安全に同期",
+      syncNote: "サインインするまで、予定はこのデバイスに保存されます。",
+      accountDescription: "複数のデバイスでカレンダーと設定を利用できるようにします。",
+      quickHint: "入力するとプレビューが表示されます…",
+      quickExample: "などを試してください",
+      quickPrefix: "ルールベースのプレビュー",
+      repeat: "毎週繰り返し",
+      eventName: "予定名",
+      never: "なし",
+      descriptionPlaceholder: "短い説明…",
+      descriptionLabel: "予定の説明",
+      locationLabel: "場所",
+      locationPlaceholder: "場所を追加",
+      startTimeLabel: "開始時刻",
+      endTimeLabel: "終了時刻",
+      repeatLabel: "繰り返し",
+      peopleLabel: "参加者",
+      categoryLabel: "カレンダー",
+      personalCategory: "個人",
+      workCategory: "仕事と学習",
+      wellbeingCategory: "ウェルビーイング",
+      notesLabel: "メモ",
+      notesPlaceholder: "ほかに覚えておくこと",
+      saveEvent: "予定を保存",
+      timezoneRegion: "アジア",
+      using: "使用中",
+      saveTimezone: "適用するには保存してください。",
+    },
+    {
+      code: "ko",
+      workspace: "워크스페이스",
+      assistantPrompt: "계획 도우미",
+      assistantSubtitle: "Calex 어시스턴트 만나기",
+      footer: "일상을 위해 만들었습니다",
+      homeTitle: "조금의 여유.",
+      homeBody: "하루는 스스로 만들어 가세요. 시간을 쓸 가치가 있는 일을 추가하세요.",
+      homeButton: "첫 일정 추가",
+      agendaTitle: "다음 장은 아직 쓰이지 않았습니다.",
+      agendaBody: "일정을 추가해 앞으로의 날들을 계획해 보세요.",
+      accountTitle: "로그인 또는 계정 만들기",
+      accountSubtitle: "여러 기기에서 캘린더를 안전하게 동기화",
+      syncNote: "로그인할 때까지 일정은 이 기기에 저장됩니다.",
+      accountDescription: "여러 기기에서 캘린더와 환경설정을 사용할 수 있습니다.",
+      quickHint: "입력을 시작하면 미리보기가 표시됩니다…",
+      quickExample: "등을 입력해 보세요",
+      quickPrefix: "규칙 기반 미리보기",
+      repeat: "매주 반복",
+      eventName: "일정 이름",
+      never: "안 함",
+      descriptionPlaceholder: "간단한 설명…",
+      descriptionLabel: "일정 설명",
+      locationLabel: "위치",
+      locationPlaceholder: "장소 추가",
+      startTimeLabel: "시작 시간",
+      endTimeLabel: "종료 시간",
+      repeatLabel: "반복",
+      peopleLabel: "참여자",
+      categoryLabel: "캘린더",
+      personalCategory: "개인",
+      workCategory: "업무 및 학습",
+      wellbeingCategory: "웰빙",
+      notesLabel: "메모",
+      notesPlaceholder: "기억할 다른 사항",
+      saveEvent: "일정 저장",
+      timezoneRegion: "아시아",
+      using: "사용 중",
+      saveTimezone: "적용하려면 저장하세요.",
+    },
+  ];
+
+for (const lang of eastAsianLanguages) {
+  test(`${lang.code} translates sidebar, empty states, event forms, previews, and time zones`, async ({ page }) => {
+    page.setDefaultTimeout(5000);
+    await page.goto("/");
+    await page.locator('[data-screen="settings"]').click();
+    await page.locator("#languageToggle").click();
+    await page.locator(`#languageResults [data-language="${lang.code}"]`).click();
+    await page.locator("#languageToggle").click();
+
+    await expect(page.locator(".sidebar-caption").first()).toHaveText(lang.workspace);
+    await expect(page.locator("#sidebarAssistant > span > span")).toHaveText(lang.assistantSubtitle);
+    const assistantPrompt = await page.locator("#sidebarAssistant > span").evaluate((el) =>
+      Array.from(el.childNodes).find((node) => node.nodeType === 3 && node.textContent.trim())?.textContent.trim(),
+    );
+    expect(assistantPrompt).toBe(lang.assistantPrompt);
+    const footerText = await page.locator(".sidebar-footer > span").nth(1).evaluate((el) =>
+      Array.from(el.childNodes).find((node) => node.nodeType === 3 && node.textContent.trim())?.textContent.trim(),
+    );
+    expect(footerText).toBe(lang.footer);
+
+    await page.locator('[data-screen="home"]').click();
+    await expect(page.locator("#todayEvents .empty h3")).toHaveText(lang.homeTitle);
+    await expect(page.locator("#todayEvents .empty p")).toHaveText(lang.homeBody);
+    await expect(page.locator("#todayEvents .empty button")).toHaveText(lang.homeButton);
+
+    await page.locator("#homeQuickAdd").click();
+    await expect(page.locator("#quickText")).toHaveAttribute("placeholder", lang.code === "zh"
+      ? "例如：明天 10:07 至 11:00 牙医，每周重复"
+      : lang.code === "ja"
+        ? "例：明日10:07〜11:00 歯科、毎週繰り返し"
+        : "예: 내일 10:07~11:00 치과, 매주 반복",
+    );
+    await expect(page.locator("#quickForm .nlp-help").first()).toContainText(lang.quickExample);
+    await expect(page.locator("#quickPreview")).toHaveText(lang.quickHint);
+    await page.locator("#quickText").fill("Team meeting tomorrow every week");
+    await expect(page.locator("#quickPreview")).toContainText(lang.quickPrefix);
+    await expect(page.locator("#quickPreview")).toContainText(lang.repeat);
+    await expect(page.locator("#quickPreview")).toContainText("Team meeting");
+    await page.locator("#closeModal").click();
+
+    await page.locator('[data-screen="calendar"]').click();
+    await expect(page.locator("#workspaceTitle")).toHaveText(
+      lang.code === "zh"
+        ? "为每件事留出一点空间"
+        : lang.code === "ja"
+          ? "すべてに少しずつ余裕を"
+          : "모든 일을 위한 작은 여유",
+    );
+    await expect(page.locator("#viewHandle")).toHaveAttribute(
+      "aria-label",
+      new RegExp(lang.code === "zh" ? "拖动" : lang.code === "ja" ? "ドラッグ" : "드래그"),
+    );
+    await page.locator("#globalAdd").click();
+    await expect(page.locator("#modalTitle")).toHaveText(
+      lang.code === "zh" ? "新建事件" : lang.code === "ja" ? "新しい予定" : "새 일정",
+    );
+    await expect(page.locator("#eventTitle")).toHaveAttribute("placeholder", lang.eventName);
+    await expect(page.locator('#eventRepeat option[value="none"]')).toHaveText(lang.never);
+    await expect(page.locator("#eventForm label[for='eventDate']")).toHaveText(
+      lang.code === "zh" ? "日期 *" : lang.code === "ja" ? "日付 *" : "날짜 *",
+    );
+    await expect(page.locator("#eventDescription")).toHaveAttribute("placeholder", lang.descriptionPlaceholder);
+    await expect(page.locator("#eventDescription")).toHaveAttribute("aria-label", lang.descriptionLabel);
+    await expect(page.locator("#eventForm label[for='eventLocation']")).toHaveText(lang.locationLabel);
+    await expect(page.locator("#eventLocation")).toHaveAttribute("placeholder", lang.locationPlaceholder);
+    await expect(page.locator("#eventForm label[for='eventStart']")).toHaveText(lang.startTimeLabel);
+    await expect(page.locator("#eventForm label[for='eventEnd']")).toHaveText(lang.endTimeLabel);
+    await expect(page.locator("#eventForm label[for='eventRepeat']")).toHaveText(lang.repeatLabel);
+    await expect(page.locator("#eventForm label[for='eventPeople']")).toHaveText(lang.peopleLabel);
+    await expect(page.locator("#eventForm label[for='eventCategory']")).toHaveText(lang.categoryLabel);
+    await expect(page.locator('#eventCategory option[value="personal"]')).toHaveText(lang.personalCategory);
+    await expect(page.locator('#eventCategory option[value="work"]')).toHaveText(lang.workCategory);
+    await expect(page.locator('#eventCategory option[value="wellbeing"]')).toHaveText(lang.wellbeingCategory);
+    await expect(page.locator("#eventForm label[for='eventNotes']")).toHaveText(lang.notesLabel);
+    await expect(page.locator("#eventNotes")).toHaveAttribute("placeholder", lang.notesPlaceholder);
+    await expect(page.locator('#eventForm button[type="submit"]')).toHaveText(lang.saveEvent);
+    await page.locator("#closeModal").click();
+
+    await page.locator('[data-screen="agenda"]').click();
+    await expect(page.locator(".agenda-empty h3")).toHaveText(lang.agendaTitle);
+    await expect(page.locator(".agenda-empty p")).toHaveText(lang.agendaBody);
+
+    await page.locator('[data-screen="settings"]').click();
+    await expect(page.locator(".settings-row-title[data-i18n='Import calendar']")).toHaveText(
+      lang.code === "zh" ? "导入日历" : lang.code === "ja" ? "カレンダーをインポート" : "캘린더 가져오기",
+    );
+    await expect(page.locator(".settings-row-sub[data-i18n*='.ics file']")).toHaveText(
+      lang.code === "zh"
+        ? "从 .ics 文件添加日程（Google、Outlook、Apple）"
+        : lang.code === "ja"
+          ? ".ics ファイル（Google、Outlook、Apple）から予定を追加"
+          : ".ics 파일(Google, Outlook, Apple)에서 일정 추가",
+    );
+    await expect(page.locator(".settings-section-description")).toHaveText(lang.accountDescription);
+    await expect(page.locator("#settingsSignInTitle")).toHaveText(lang.accountTitle);
+    await expect(page.locator("#settingsSignInSubtitle")).toHaveText(lang.accountSubtitle);
+    await expect(page.locator("#settingsSyncNote")).toHaveText(lang.syncNote);
+
+    await page.locator("#timezoneToggle").click();
+    await page.locator("#timezoneAuto").click();
+    await expect(page.locator("#timezoneHelp")).toContainText(lang.using);
+    await page.locator("#timezoneManual").click();
+    await page.locator("#timezoneSearch").fill("Asia/Tokyo");
+    await expect(page.locator("#timezoneResults .timezone-result")).toHaveCount(1);
+    await expect(page.locator("#timezoneResults .timezone-result-region")).toHaveText(lang.timezoneRegion);
+    await page.locator("#timezoneResults .timezone-result").click();
+    await expect(page.locator("#timezoneHelp")).toContainText(lang.saveTimezone);
+    await page.locator("#timezoneSearch").fill("no-such-time-zone");
+    await expect(page.locator("#timezoneResults .timezone-no-results")).toContainText(
+      lang.code === "zh"
+        ? "没有匹配的时区。请尝试城市或地区名称。"
+        : lang.code === "ja"
+          ? "一致するタイムゾーンがありません。都市名や地域名をお試しください。"
+          : "일치하는 시간대가 없습니다. 도시 또는 지역 이름을 입력하세요.",
+    );
+  });
+}
+
+test("Quick Add preview labels update with language changes while keeping event text intact", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => window.CalexI18n.setLanguage("zh"));
+  await page.locator("#homeQuickAdd").click();
+  await page.locator("#quickText").fill("Team meeting tomorrow every week");
+
+  await expect(page.locator("#quickPreview")).toContainText("基于规则的预览");
+  await expect(page.locator("#quickPreview")).toContainText("每周重复");
+  await expect(page.locator("#quickPreview")).toContainText("Team meeting");
+
+  await page.evaluate(() => window.CalexI18n.setLanguage("ja"));
+  await expect(page.locator("#quickPreview")).toContainText("ルールベースのプレビュー");
+  await expect(page.locator("#quickPreview")).toContainText("毎週繰り返し");
+  await expect(page.locator("#quickPreview")).toContainText("Team meeting");
+
+  await page.locator("#quickText").fill("");
+  await expect(page.locator("#quickPreview")).toHaveText("入力するとプレビューが表示されます…");
+});
+

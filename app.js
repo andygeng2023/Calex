@@ -25,6 +25,9 @@
     view = "all",
     modalMode = "normal",
     toastTimer;
+  function translateUiText(value) {
+    return window.CalexI18n?.translate(value) || value;
+  }
   const SUPABASE_URL = "https://fwcijtjahtwpyaqedyhq.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_oWpplxsSIvn3KfinwmlLjg_3No69nPW";
@@ -349,20 +352,24 @@
   }
   function renderAuth() {
     const signedIn = !!authUser;
-    $("authStatus").textContent = signedIn
-      ? "Signed in as " + authUser.email
-      : "Not signed in · using this device";
+    $("authStatus").textContent = translateUiText(
+      signedIn
+        ? "Signed in as " + authUser.email
+        : "Not signed in · using this device",
+    );
     $("authForm").hidden = signedIn;
     $("authSignout").hidden = !signedIn || recoveringPassword;
     $("authRecovery").hidden = !signedIn || !recoveringPassword;
     if ($("settingsSignInTitle")) {
-      $("settingsSignInTitle").textContent = signedIn
-        ? "Account connected"
-        : "Sign in or create account";
-      $("settingsSignInSubtitle").textContent = signedIn
-        ? "Manage your account and sign-out options"
-        : "Securely sync your calendar across devices";
-      $("settingsSyncNote").textContent = syncText();
+      $("settingsSignInTitle").textContent = translateUiText(
+        signedIn ? "Account connected" : "Sign in or create account",
+      );
+      $("settingsSignInSubtitle").textContent = translateUiText(
+        signedIn
+          ? "Manage your account and sign-out options"
+          : "Securely sync your calendar across devices",
+      );
+      $("settingsSyncNote").textContent = translateUiText(syncText());
       $("syncNow").hidden = !signedIn;
       $("syncNow").disabled = syncState === "syncing";
     }
@@ -407,10 +414,13 @@
     const t = lsGet(metaKey(authUser.id), {}).lastSyncAt;
     return t
       ? "Synced at " +
-          new Date(t).toLocaleTimeString("en-GB", {
-            hour: "2-digit",
-            minute: "2-digit",
-          }) +
+          new Date(t).toLocaleTimeString(
+            window.CalexI18n?.locale() || "en-GB",
+            {
+              hour: "2-digit",
+              minute: "2-digit",
+            },
+          ) +
           ". Your calendar is up to date across devices."
       : "You’re signed in. Your calendar syncs with your account.";
   }
@@ -455,6 +465,8 @@
       persist();
       saveAppSettings();
     }
+    if (window.CalexI18n?.isPreference(appSettings.language))
+      window.CalexI18n.setLanguage(appSettings.language);
     renderAuth();
     renderProfile();
     renderTimezone();
@@ -572,6 +584,8 @@
     if (m.adopt) {
       appSettings = { ...defaultSettings, ...m.adopt };
       lsSet(activeSettingsKey(), appSettings);
+      if (window.CalexI18n && appSettings.language)
+        window.CalexI18n.setLanguage(appSettings.language);
       renderProfile();
       renderTimezone();
       applyAppearance();
@@ -658,7 +672,10 @@
       year: "numeric",
     },
   ) {
-    return new Intl.DateTimeFormat("en-GB", opts).format(d);
+    return new Intl.DateTimeFormat(
+      window.CalexI18n?.locale() || "en-GB",
+      opts,
+    ).format(d);
   }
 
   function eventOccurs(e, d) {
@@ -778,7 +795,11 @@
       (e.location ? " · " + esc(e.location) : "") +
       (repeatText(e) ? "<br>" + repeatText(e) : "") +
       (e.description ? "<br>" + esc(e.description) : "") +
-      (e.people ? "<br>With " + esc(e.people) : "") +
+      (e.people
+        ? '<br><span class="event-people-label">With</span> <span data-user-content="true">' +
+          esc(e.people) +
+          "</span>"
+        : "") +
       "</div>" +
       (e.tag ? '<span class="tag">' + esc(e.tag) + "</span>" : "") +
       '</div><button class="icon-btn edit-btn" data-edit="' +
@@ -1270,12 +1291,18 @@
     screen.dataset.view = view;
     const viewName =
       view === "all" ? "Full dates" : view === "month" ? "Month" : "Week";
-    screen.setAttribute("aria-label", "Calendar: " + viewName + " view");
+    screen.setAttribute(
+      "aria-label",
+      translateUiText("Calendar: " + viewName + " view"),
+    );
     $("viewHandle").setAttribute(
       "aria-label",
-      viewName +
-        " view. Drag up for month and week, down for full dates. Keyboard shortcuts: M, W, Y.",
+      translateUiText(
+        viewName +
+          " view. Drag up for month and week, down for full dates. Keyboard shortcuts: M, W, Y.",
+      ),
     );
+    $("viewHandle").title = translateUiText("Drag to change view");
     $("monthTitle").textContent = fmtDate(cursor, {
       month: "long",
       year: "numeric",
@@ -1400,7 +1427,7 @@
       terms: "Terms of service",
     };
     if ($("workspaceTitle"))
-      $("workspaceTitle").textContent = titles[name] || "Calex";
+      $("workspaceTitle").textContent = translateUiText(titles[name] || "Calex");
     document.querySelectorAll(".nav-btn").forEach((b) => {
       if (b.dataset.screen === name) b.setAttribute("aria-current", "page");
       else b.removeAttribute("aria-current");
@@ -1454,7 +1481,9 @@
   function openModal(mode) {
     modalMode = mode;
     $("modalBackdrop").dataset.mode = mode;
-    $("modalTitle").textContent = mode === "quick" ? "Quick add" : "New event";
+    $("modalTitle").textContent = translateUiText(
+      mode === "quick" ? "Quick add" : "New event",
+    );
     $("quickForm").hidden = mode !== "quick";
     $("eventForm").hidden = mode === "quick";
     $("modalBackdrop").classList.add("open");
@@ -1462,10 +1491,10 @@
     if ($("eventFeedback")) $("eventFeedback").textContent = "";
     if (mode === "quick") {
       $("quickText").value = "";
-      $("quickPreview").textContent = "Start typing to see the preview...";
-      $("quickPreview").classList.add("is-empty");
+      setQuickPreviewEmpty();
       setTimeout(() => $("quickText").focus(), 100);
     } else if (!$("eventTitle").value) setNormalDefaults();
+    window.CalexI18n?.refresh();
   }
 
   function closeModal() {
@@ -1492,7 +1521,9 @@
     openModal("normal");
     setNormalDefaults(e);
     setTimeout(() => $("eventTitle").focus(), 0);
-    $("modalTitle").textContent = e ? "Edit event" : "New event";
+    $("modalTitle").textContent = translateUiText(
+      e ? "Edit event" : "New event",
+    );
     if (e) {
       const old = $("eventForm").querySelector(".delete-event");
       if (old) old.remove();
@@ -1535,6 +1566,7 @@
     } else {
       $("eventForm").querySelector(".delete-event")?.remove();
     }
+    window.CalexI18n?.refresh();
   }
   $("panelQuick").addEventListener("click", () => openModal("quick"));
   $("panelAdd").addEventListener("click", () => openNormal());
@@ -1741,30 +1773,77 @@
     return description ? " · " + description : "";
   }
 
+  function setQuickPreviewEmpty() {
+    const preview = $("quickPreview");
+    preview.replaceChildren();
+    preview.setAttribute("data-i18n", "Start typing to see the preview...");
+    preview.textContent = "Start typing to see the preview...";
+    preview.classList.add("is-empty");
+    window.CalexI18n?.refresh();
+  }
+
   function showQuickPreview(p, prefix = "Preview") {
-    $("quickPreview").textContent =
-      prefix +
-      ": " +
-      p.title +
-      " · " +
+    const preview = $("quickPreview");
+    preview.removeAttribute("data-i18n");
+    preview.replaceChildren();
+
+    function addPreviewPart(value, userContent = false, translationKey = "") {
+      const part = document.createElement("span");
+      if (userContent) part.setAttribute("data-user-content", "true");
+      if (translationKey) {
+        part.setAttribute("data-i18n", translationKey);
+        part.textContent = translationKey;
+      } else {
+        part.textContent = value;
+      }
+      preview.appendChild(part);
+    }
+    function addSeparator() {
+      addPreviewPart(" · ");
+    }
+
+    // Keep translatable labels separate from the user's title, description, and location.
+    addPreviewPart(prefix, false, prefix);
+    addPreviewPart(": ");
+    addPreviewPart(p.title, true);
+    addSeparator();
+    addPreviewPart(
       fmtDate(parseDate(p.date), {
         weekday: "short",
         day: "numeric",
         month: "short",
         year: "numeric",
-      }) +
-      " · " +
-      (p.start ? p.start + (p.end ? "–" + p.end : "") : "All day") +
-      quickPreviewRepeatText(p) +
-      (p.description ? " · " + p.description : "") +
-      (p.location ? " · " + p.location : "");
+      }),
+    );
+    addSeparator();
+    addPreviewPart(
+      p.start
+        ? p.start + (p.end ? "–" + p.end : "")
+        : "All day",
+      false,
+      p.start ? "" : "All day",
+    );
+
+    const repeat = repeatDescription(p);
+    if (repeat) {
+      addSeparator();
+      addPreviewPart(repeat, false, repeat);
+    }
+    if (p.description) {
+      addSeparator();
+      addPreviewPart(p.description, true);
+    }
+    if (p.location) {
+      addSeparator();
+      addPreviewPart(p.location, true);
+    }
+    window.CalexI18n?.refresh();
   }
   $("quickText").addEventListener("input", () => {
     const raw = $("quickText").value.trim();
     clearTimeout(quickParseTimer);
     if (!raw) {
-      $("quickPreview").textContent = "Start typing to see the preview...";
-      $("quickPreview").classList.add("is-empty");
+      setQuickPreviewEmpty();
       return;
     }
     $("quickPreview").classList.remove("is-empty");
@@ -2725,6 +2804,7 @@
   const defaultSettings = {
     name: "",
     location: "",
+    language: window.CalexI18n?.preference() || "auto",
     timezoneMode: "auto",
     timezone: deviceTimezone(),
     dark: !!(
@@ -2743,6 +2823,9 @@
         ...saved,
       };
   } catch (_) {}
+  // Account-specific preferences may override a device's guest language.
+  if (window.CalexI18n?.isPreference(appSettings.language))
+    window.CalexI18n.setLanguage(appSettings.language);
 
   function saveAppSettings() {
     try {
@@ -2790,8 +2873,9 @@
   let allTimezones = timezoneNames();
 
   function renderProfile() {
-    const name = appSettings.name.trim() || "Your name",
-      location = appSettings.location.trim() || "Add your location";
+    const t = (text) => window.CalexI18n?.translate(text) || text;
+    const name = appSettings.name.trim() || t("Your name"),
+      location = appSettings.location.trim() || t("Add your location");
     $("profileName").textContent = name;
     $("profileLocation").textContent = location;
     $("profileAvatar").textContent = appSettings.name.trim()
@@ -2820,10 +2904,13 @@
     let longName = tz,
       offset = "";
     try {
-      const parts = new Intl.DateTimeFormat(undefined, {
-        timeZone: tz,
-        timeZoneName: "long",
-      }).formatToParts(new Date());
+      const parts = new Intl.DateTimeFormat(
+        window.CalexI18n?.locale() || undefined,
+        {
+          timeZone: tz,
+          timeZoneName: "long",
+        },
+      ).formatToParts(new Date());
       longName = parts.find((p) => p.type === "timeZoneName")?.value || tz;
       const offsetParts = new Intl.DateTimeFormat("en", {
         timeZone: tz,
@@ -2840,8 +2927,10 @@
   function renderTimezone() {
     const tz = currentTimezone();
     const zoneInfo = timezoneDescription(tz);
+    const t = (text) => window.CalexI18n?.translate(text) || text;
     $("timezoneSummary").textContent =
-      (appSettings.timezoneMode === "auto" ? "Automatic · " : "Manual · ") +
+      t(appSettings.timezoneMode === "auto" ? "Automatic" : "Manual") +
+      " · " +
       zoneInfo.city +
       " · " +
       (zoneInfo.offset || zoneInfo.longName);
@@ -2856,18 +2945,24 @@
     $("timezoneSearchWrap").hidden = appSettings.timezoneMode !== "manual";
     $("timezoneHelp").textContent =
       appSettings.timezoneMode === "auto"
-        ? "Using " +
+        ? t("Using") +
+          " " +
           tz +
           " (" +
           zoneInfo.longName +
           (zoneInfo.offset ? ", " + zoneInfo.offset : "") +
-          "). This follows your device setting automatically."
-        : "Selected: " +
+          "). " +
+          t("This follows your device setting automatically.")
+        : t("Selected:") +
+          " " +
           tz +
           " (" +
           zoneInfo.longName +
           (zoneInfo.offset ? ", " + zoneInfo.offset : "") +
-          "). Save to apply. Existing event dates and times are not converted.";
+          "). " +
+          t("Save to apply.") +
+          " " +
+          t("Existing event dates and times are not converted.");
     populateTimezoneOptions($("timezoneSearch").value || "");
   }
 
@@ -2884,8 +2979,15 @@
       .slice(0, 80);
     root.innerHTML = "";
     if (!filtered.length) {
-      root.innerHTML =
-        '<p class="timezone-no-results">No matching time zones. Try a city or region name.</p>';
+      const empty = document.createElement("p");
+      empty.className = "timezone-no-results";
+      empty.setAttribute(
+        "data-i18n",
+        "No matching time zones. Try a city or region name.",
+      );
+      empty.textContent = "No matching time zones. Try a city or region name.";
+      root.replaceChildren(empty);
+      window.CalexI18n?.refresh();
       return;
     }
     filtered.forEach((z) => {
@@ -2898,24 +3000,32 @@
       const name = z.split("/").pop().replace(/_/g, " "),
         region = z.includes("/")
           ? z.slice(0, z.lastIndexOf("/")).replace(/_/g, " ")
-          : "Global";
+          : translateUiText("Global");
+      const localizedRegion = region
+        .split(" ")
+        .map((part) => translateUiText(part))
+        .join(" ");
       b.innerHTML =
         '<span class="timezone-result-name">' +
         esc(name) +
         '</span><span class="timezone-result-region">' +
-        esc(region) +
+        esc(localizedRegion) +
         "</span>";
       b.addEventListener("click", () => {
         appSettings.timezone = z;
         populateTimezoneOptions($("timezoneSearch").value);
         const info = timezoneDescription(z);
         $("timezoneHelp").textContent =
-          "Selected: " +
+          translateUiText("Selected:") +
+          " " +
           z +
           " (" +
           info.longName +
           (info.offset ? ", " + info.offset : "") +
-          "). Save to apply.";
+          "). " +
+          translateUiText("Save to apply.") +
+          " " +
+          translateUiText("Existing event dates and times are not converted.");
       });
       root.appendChild(b);
     });
@@ -2924,17 +3034,83 @@
   function openSettingsDetail(which) {
     const ids = {
       timezone: "timezoneDetail",
+      language: "languageDetail",
       account: "accountDetail",
     };
     Object.entries(ids).forEach(([key, id]) => {
       const open = key === which && $(id).hidden;
       $(id).hidden = !open;
-      const triggerId = key === "timezone" ? "timezoneToggle" : "profileEdit";
+      const triggerId =
+        key === "timezone"
+          ? "timezoneToggle"
+          : key === "language"
+            ? "languageToggle"
+            : "profileEdit";
       $(triggerId).setAttribute("aria-expanded", String(open));
     });
     if (which === "timezone" && !$("timezoneDetail").hidden) {
       renderTimezone();
     }
+    if (which === "language" && !$("languageDetail").hidden) {
+      renderLanguage();
+    }
+  }
+  function populateLanguageOptions(query) {
+    const results = $("languageResults");
+    if (!results) return;
+    const filter = String(query || "").trim().toLocaleLowerCase();
+    const current = window.CalexI18n?.preference() || appSettings.language || "auto";
+    const choices = [
+      { code: "auto", label: window.CalexI18n?.translate("Auto", window.CalexI18n.language()) || "Auto", detail: window.CalexI18n?.translate("System settings", window.CalexI18n.language()) || "System settings" },
+      ...Object.entries(window.CalexI18n?.languages || {}).map(([code, info]) => ({
+        code, label: info.label, detail: info.locale
+      }))
+    ].filter((item) => {
+      const searchable = (item.label + " " + item.detail + " " + item.code).toLocaleLowerCase();
+      return !filter || searchable.includes(filter);
+    });
+
+    results.replaceChildren();
+    if (!choices.length) {
+      const empty = document.createElement("div");
+      empty.className = "timezone-no-results";
+      empty.textContent = window.CalexI18n?.translate("No matching languages.", window.CalexI18n.language()) || "No matching languages.";
+      results.append(empty);
+      return;
+    }
+    choices.forEach((item) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "timezone-result language-result" + (item.code === current ? " selected" : "");
+      button.setAttribute("role", "option");
+      button.setAttribute("aria-selected", String(item.code === current));
+      button.dataset.language = item.code;
+      const name = document.createElement("span");
+      name.className = "timezone-result-name";
+      name.textContent = item.label;
+      const detail = document.createElement("span");
+      detail.className = "timezone-result-region";
+      detail.textContent = item.code === "auto"
+        ? item.detail + " · " + (window.CalexI18n?.languageLabel(window.CalexI18n.language()) || "English")
+        : item.detail;
+      button.append(name, detail);
+      button.addEventListener("click", () => {
+        $("languageSearch").value = "";
+        if (!window.CalexI18n?.setLanguage(item.code)) return;
+        appSettings.language = window.CalexI18n.preference();
+        renderLanguage();
+        if (!saveAppSettings()) showToast("Could not save settings in this browser.");
+        $("languageSearch").focus();
+      });
+      results.append(button);
+    });
+  }
+  function renderLanguage() {
+    const current = window.CalexI18n?.preference() || appSettings.language || "auto";
+    $("languageSummary").textContent =
+      window.CalexI18n?.languageLabel(current) || "Auto · System settings";
+    $("languageToggle").setAttribute("aria-expanded", String(!$("languageDetail").hidden));
+    populateLanguageOptions($("languageSearch")?.value || "");
   }
   $("profileEdit").addEventListener("click", () => {
     openSettingsDetail("account");
@@ -2943,6 +3119,43 @@
   $("timezoneToggle").addEventListener("click", () =>
     openSettingsDetail("timezone"),
   );
+  $("languageToggle").addEventListener("click", () => {
+    openSettingsDetail("language");
+  });
+  $("languageSearch").addEventListener("input", () =>
+    populateLanguageOptions($("languageSearch").value),
+  );
+  $("languageResults").addEventListener("keydown", (event) => {
+    const options = [...$("languageResults").querySelectorAll("button[data-language]")];
+    const currentIndex = options.indexOf(document.activeElement);
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      const delta = event.key === "ArrowDown" ? 1 : -1;
+      options[(currentIndex + delta + options.length) % options.length]?.focus();
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      options[0]?.focus();
+    } else if (event.key === "End") {
+      event.preventDefault();
+      options[options.length - 1]?.focus();
+    }
+  });
+  window.addEventListener("calex:language", () => {
+    appSettings.language = window.CalexI18n?.preference() || appSettings.language || "auto";
+    renderAll();
+    renderAuth();
+    renderProfile();
+    renderTimezone();
+    renderLanguage();
+    if ($("modalBackdrop").classList.contains("open") && $("modalBackdrop").dataset.mode === "quick") {
+      const raw = $("quickText").value.trim();
+      if (raw) {
+        showQuickPreview(parseNatural(raw), "Rule-based preview");
+      } else {
+        setQuickPreviewEmpty();
+      }
+    }
+  });
   $("timezoneAuto").addEventListener("click", () => {
     appSettings.timezoneMode = "auto";
     appSettings.timezone = deviceTimezone();
@@ -2986,9 +3199,12 @@
     document.body.classList.toggle("settings-dark", enabled);
     $("appearanceToggle").setAttribute("aria-checked", String(enabled));
     $("appearanceSwitch").setAttribute("data-enabled", String(enabled));
+    const appearanceText = window.CalexI18n?.translate("Dark appearance") || "Dark appearance";
     $("appearanceToggle").setAttribute(
       "aria-label",
-      "Dark appearance " + (enabled ? "on" : "off"),
+      appearanceText + " " + (enabled
+        ? (window.CalexI18n?.translate("on") || "on")
+        : (window.CalexI18n?.translate("off") || "off")),
     );
     document.documentElement.style.colorScheme = enabled ? "dark" : "light";
     document.documentElement.style.backgroundColor = enabled ? "#101512" : "";
