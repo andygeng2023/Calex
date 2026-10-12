@@ -420,7 +420,7 @@
             <h2 class="settings-section-heading" id="accountSectionTitle">
               Account & sync
             </h2>
-            <p class="settings-section-description">
+            <p class="settings-section-description" data-i18n="Keep your calendar and preferences available across devices.">
               Keep your calendar and preferences available across devices.
             </p>
             <button class="auth-cta-button" id="settingsSignIn" type="button">
@@ -622,8 +622,8 @@
                   </svg>
                 </span>
                 <span class="settings-row-copy">
-                  <span class="settings-row-title">Import calendar</span>
-                  <span class="settings-row-sub"
+                  <span class="settings-row-title" data-i18n="Import calendar">Import calendar</span>
+                  <span class="settings-row-sub" data-i18n="Add events from an .ics file (Google, Outlook, Apple)"
                     >Add events from an .ics file (Google, Outlook, Apple)</span
                   >
                 </span>
@@ -965,7 +965,7 @@
             /></svg
           ><span>calex<span class="brand-dot">.</span></span>
         </div>
-        <div class="sidebar-caption">WORKSPACE</div>
+        <div class="sidebar-caption" data-i18n="WORKSPACE">WORKSPACE</div>
         <button class="nav-btn active" data-screen="home" aria-label="Home">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M3.5 10.5 12 3.7l8.5 6.8" />
@@ -1037,8 +1037,8 @@
             class="assistant-trigger sidebar-assistant"
           >
             <i data-lucide="sparkles"></i
-            ><span
-              >A little help planning<span
+            ><span data-i18n="A little help planning"
+              >A little help planning<span data-i18n="Meet your Calex assistant"
                 >Meet your Calex assistant</span
               ></span
             ><i data-lucide="arrow-up-right"></i>
@@ -1049,7 +1049,7 @@
         </div>
         <div class="sidebar-footer">
           <span class="device-dot"></span
-          ><span
+          ><span data-i18n="Made for your everyday"
             >Made for your everyday<span id="storageStatus"
               >Saved on this device</span
             ></span
@@ -1082,13 +1082,13 @@
         </div>
         <div id="quickForm">
           <div class="field">
-            <label for="quickText">Describe your event</label>
+            <label for="quickText" data-i18n="Describe your event">Describe your event</label>
             <textarea
               id="quickText"
               placeholder="e.g. Dentist tomorrow at 10:07 to 11am, repeat weekly"
             ></textarea>
           </div>
-          <p class="nlp-help">
+          <p class="nlp-help" data-i18n="Try “Team meeting tomorrow 10:07 to 20:00”, “Gym every Monday at 6pm”, or “Lunch on 14 June at noon”. We’ll interpret common dates, times and repeats.">
             Try “Team meeting tomorrow 10:07 to 20:00”, “Gym every Monday at
             6pm”, or “Lunch on 14 June at noon”. We’ll interpret common dates,
             times and repeats.
@@ -1127,41 +1127,41 @@
               ></textarea>
             </div>
             <div class="field">
-              <label for="eventDate">Date *</label>
+              <label for="eventDate" data-i18n="Date *">Date *</label>
               <input id="eventDate" type="date" required />
             </div>
             <div class="field">
-              <label for="eventLocation">Location</label>
+              <label for="eventLocation" data-i18n="Location">Location</label>
               <input id="eventLocation" placeholder="Add a place" />
             </div>
             <div class="field">
-              <label for="eventStart">Start time</label>
+              <label for="eventStart" data-i18n="Start time">Start time</label>
               <input id="eventStart" type="time" />
             </div>
             <div class="field">
-              <label for="eventEnd">End time</label>
+              <label for="eventEnd" data-i18n="End time">End time</label>
               <input id="eventEnd" type="time" />
             </div>
             <div class="field">
-              <label for="eventRepeat">Repeat</label>
+              <label for="eventRepeat" data-i18n="Repeat">Repeat</label>
               <select id="eventRepeat">
-                <option value="none">Never</option>
-                <option value="daily">Every day</option>
-                <option value="weekly">Every week</option>
-                <option value="fortnightly">Every fortnight</option>
-                <option value="monthly">Every month</option>
-                <option value="yearly">Every year</option>
+                <option value="none" data-i18n="Never">Never</option>
+                <option value="daily" data-i18n="Every day">Every day</option>
+                <option value="weekly" data-i18n="Every week">Every week</option>
+                <option value="fortnightly" data-i18n="Every fortnight">Every fortnight</option>
+                <option value="monthly" data-i18n="Every month">Every month</option>
+                <option value="yearly" data-i18n="Every year">Every year</option>
               </select>
             </div>
             <div class="field">
-              <label for="eventPeople">People</label>
+              <label for="eventPeople" data-i18n="People">People</label>
               <input
                 id="eventPeople"
                 placeholder="Names, separated by commas"
               />
             </div>
             <div class="field full">
-              <label for="eventCategory">Calendar</label
+              <label for="eventCategory" data-i18n="Calendar">Calendar</label
               ><select id="eventCategory">
                 <option value="personal">Personal</option>
                 <option value="work">Work & study</option>
@@ -1169,7 +1169,7 @@
               </select>
             </div>
             <div class="field full">
-              <label for="eventNotes">Notes</label>
+              <label for="eventNotes" data-i18n="Notes">Notes</label>
               <textarea
                 id="eventNotes"
                 placeholder="Anything else to remember"
@@ -1183,7 +1183,7 @@
             aria-label="Save event"
             title="Save event"
           >
-            Save event
+            <span data-i18n="Save event">Save event</span>
           </button>
         </form>
       </div>
