@@ -25,6 +25,9 @@
     view = "all",
     modalMode = "normal",
     toastTimer;
+  function translateUiText(value) {
+    return window.CalexI18n?.translate(value) || value;
+  }
   const SUPABASE_URL = "https://fwcijtjahtwpyaqedyhq.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_oWpplxsSIvn3KfinwmlLjg_3No69nPW";
@@ -1468,7 +1471,9 @@
   function openModal(mode) {
     modalMode = mode;
     $("modalBackdrop").dataset.mode = mode;
-    $("modalTitle").textContent = mode === "quick" ? "Quick add" : "New event";
+    $("modalTitle").textContent = translateUiText(
+      mode === "quick" ? "Quick add" : "New event",
+    );
     $("quickForm").hidden = mode !== "quick";
     $("eventForm").hidden = mode === "quick";
     $("modalBackdrop").classList.add("open");
@@ -1476,10 +1481,13 @@
     if ($("eventFeedback")) $("eventFeedback").textContent = "";
     if (mode === "quick") {
       $("quickText").value = "";
-      $("quickPreview").textContent = "Start typing to see the preview...";
+      $("quickPreview").textContent = translateUiText(
+        "Start typing to see the preview...",
+      );
       $("quickPreview").classList.add("is-empty");
       setTimeout(() => $("quickText").focus(), 100);
     } else if (!$("eventTitle").value) setNormalDefaults();
+    window.CalexI18n?.refresh();
   }
 
   function closeModal() {
@@ -1506,7 +1514,9 @@
     openModal("normal");
     setNormalDefaults(e);
     setTimeout(() => $("eventTitle").focus(), 0);
-    $("modalTitle").textContent = e ? "Edit event" : "New event";
+    $("modalTitle").textContent = translateUiText(
+      e ? "Edit event" : "New event",
+    );
     if (e) {
       const old = $("eventForm").querySelector(".delete-event");
       if (old) old.remove();
@@ -1549,6 +1559,7 @@
     } else {
       $("eventForm").querySelector(".delete-event")?.remove();
     }
+    window.CalexI18n?.refresh();
   }
   $("panelQuick").addEventListener("click", () => openModal("quick"));
   $("panelAdd").addEventListener("click", () => openNormal());
@@ -1756,22 +1767,51 @@
   }
 
   function showQuickPreview(p, prefix = "Preview") {
-    $("quickPreview").textContent =
-      prefix +
-      ": " +
-      p.title +
-      " · " +
+    const preview = $("quickPreview");
+    preview.replaceChildren();
+
+    function addPreviewPart(value, userContent = false) {
+      const part = document.createElement("span");
+      if (userContent) part.setAttribute("data-user-content", "true");
+      part.textContent = value;
+      preview.appendChild(part);
+    }
+    function addSeparator() {
+      addPreviewPart(" · ");
+    }
+
+    // Keep translatable labels separate from the user's title, description, and location.
+    addPreviewPart(translateUiText(prefix) + ": ");
+    addPreviewPart(p.title, true);
+    addSeparator();
+    addPreviewPart(
       fmtDate(parseDate(p.date), {
         weekday: "short",
         day: "numeric",
         month: "short",
         year: "numeric",
-      }) +
-      " · " +
-      (p.start ? p.start + (p.end ? "–" + p.end : "") : "All day") +
-      quickPreviewRepeatText(p) +
-      (p.description ? " · " + p.description : "") +
-      (p.location ? " · " + p.location : "");
+      }),
+    );
+    addSeparator();
+    addPreviewPart(
+      p.start
+        ? p.start + (p.end ? "–" + p.end : "")
+        : translateUiText("All day"),
+    );
+
+    const repeat = repeatDescription(p);
+    if (repeat) {
+      addSeparator();
+      addPreviewPart(translateUiText(repeat));
+    }
+    if (p.description) {
+      addSeparator();
+      addPreviewPart(p.description, true);
+    }
+    if (p.location) {
+      addSeparator();
+      addPreviewPart(p.location, true);
+    }
   }
   $("quickText").addEventListener("input", () => {
     const raw = $("quickText").value.trim();
@@ -2839,10 +2879,13 @@
     let longName = tz,
       offset = "";
     try {
-      const parts = new Intl.DateTimeFormat(undefined, {
-        timeZone: tz,
-        timeZoneName: "long",
-      }).formatToParts(new Date());
+      const parts = new Intl.DateTimeFormat(
+        window.CalexI18n?.locale() || undefined,
+        {
+          timeZone: tz,
+          timeZoneName: "long",
+        },
+      ).formatToParts(new Date());
       longName = parts.find((p) => p.type === "timeZoneName")?.value || tz;
       const offsetParts = new Intl.DateTimeFormat("en", {
         timeZone: tz,
@@ -2925,24 +2968,32 @@
       const name = z.split("/").pop().replace(/_/g, " "),
         region = z.includes("/")
           ? z.slice(0, z.lastIndexOf("/")).replace(/_/g, " ")
-          : "Global";
+          : translateUiText("Global");
+      const localizedRegion = region
+        .split(" ")
+        .map((part) => translateUiText(part))
+        .join(" ");
       b.innerHTML =
         '<span class="timezone-result-name">' +
         esc(name) +
         '</span><span class="timezone-result-region">' +
-        esc(region) +
+        esc(localizedRegion) +
         "</span>";
       b.addEventListener("click", () => {
         appSettings.timezone = z;
         populateTimezoneOptions($("timezoneSearch").value);
         const info = timezoneDescription(z);
         $("timezoneHelp").textContent =
-          "Selected: " +
+          translateUiText("Selected:") +
+          " " +
           z +
           " (" +
           info.longName +
           (info.offset ? ", " + info.offset : "") +
-          "). Save to apply.";
+          "). " +
+          translateUiText("Save to apply.") +
+          " " +
+          translateUiText("Existing event dates and times are not converted.");
       });
       root.appendChild(b);
     });
