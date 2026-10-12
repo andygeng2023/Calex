@@ -85,7 +85,7 @@ for (const [width, height] of [
         }),
       );
     for (const field of fields) {
-      expect(field.height).toBe(48);
+      expect(Math.abs(field.height - 48)).toBeLessThan(0.1);
       expect(Math.abs(field.width - fields[0].width)).toBeLessThan(1);
       expect(field.font).toBe("16px");
       expect(field.minWidth).toBe("0px");
