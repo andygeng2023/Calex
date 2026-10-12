@@ -2615,7 +2615,15 @@
     "Connect Gmail to view your inbox.": ["连接 Gmail 以查看收件箱。", "受信トレイを表示するには Gmail を接続してください。", "받은편지함을 보려면 Gmail을 연결하세요."],
     "Gmail disconnected. No email access token is stored by Calex.": ["Gmail 已断开连接。Calex 不会存储电子邮件访问令牌。", "Gmail の接続を解除しました。Calex はメールのアクセストークンを保存しません。", "Gmail 연결이 해제되었습니다. Calex는 이메일 액세스 토큰을 저장하지 않습니다."],
     "Make event": ["创建日程", "予定を作成", "일정 만들기"],
-    "Gmail is not configured for this deployment yet. The OAuth client ID must be added before connecting.": ["此部署尚未配置 Gmail。连接前必须添加 OAuth 客户端 ID。", "この環境では Gmail がまだ設定されていません。接続前に OAuth クライアント ID を追加してください。", "이 배포 환경에는 Gmail이 아직 설정되지 않았습니다. 연결하기 전에 OAuth 클라이언트 ID를 추가해야 합니다."]
+    "Gmail is not configured for this deployment yet. The OAuth client ID must be added before connecting.": ["此部署尚未配置 Gmail。连接前必须添加 OAuth 客户端 ID。", "この環境では Gmail がまだ設定されていません。接続前に OAuth クライアント ID を追加してください。", "이 배포 환경에는 Gmail이 아직 설정되지 않았습니다. 연결하기 전에 OAuth 클라이언트 ID를 추가해야 합니다."],
+    "Set a Google OAuth web client ID in gmail-config.js, enable the Gmail API in Google Cloud, and authorize this site’s origin. The app requests read-only Gmail access.": ["在 gmail-config.js 中设置 Google OAuth Web 客户端 ID，在 Google Cloud 中启用 Gmail API，并授权此网站的来源。本应用仅请求 Gmail 只读访问权限。", "gmail-config.js に Google OAuth ウェブクライアント ID を設定し、Google Cloud で Gmail API を有効にして、このサイトのオリジンを承認してください。アプリは Gmail の読み取り専用アクセスのみを要求します。", "gmail-config.js에 Google OAuth 웹 클라이언트 ID를 설정하고 Google Cloud에서 Gmail API를 사용 설정한 뒤 이 사이트의 출처를 승인하세요. 앱은 Gmail 읽기 전용 액세스만 요청합니다."],
+    "Could not load Gmail messages.": ["无法加载 Gmail 邮件。", "Gmail メールを読み込めませんでした。", "Gmail 이메일을 불러올 수 없습니다."],
+    "That email is no longer in the visible inbox. Refresh and try again.": ["该邮件已不在当前收件箱中。请刷新后重试。", "そのメールは表示中の受信トレイにありません。更新してもう一度お試しください。", "해당 이메일은 현재 받은편지함에 없습니다. 새로고침한 후 다시 시도하세요."],
+    "Reading the selected email and extracting event details with Puter…": ["正在读取所选邮件并使用 Puter 提取日程详情…", "選択したメールを読み取り、Puter で予定の詳細を抽出しています…", "선택한 이메일을 읽고 Puter로 일정 세부 정보를 추출하는 중…"],
+    "This email has no readable message text. Try another email.": ["此邮件没有可读取的正文。请尝试其他邮件。", "このメールには読み取り可能な本文がありません。別のメールをお試しください。", "이 이메일에는 읽을 수 있는 본문이 없습니다. 다른 이메일을 시도하세요."],
+    "Puter could not identify a specific event in this email. Try another message or create the event manually.": ["Puter 无法识别此邮件中的具体日程。请尝试其他邮件或手动创建日程。", "Puter はこのメールから具体的な予定を特定できませんでした。別のメールを試すか、予定を手動で作成してください。", "Puter가 이 이메일에서 구체적인 일정을 찾지 못했습니다. 다른 이메일을 시도하거나 일정을 직접 만드세요."],
+    "Could not convert this email. Check Gmail and Puter access, then retry.": ["无法转换此邮件。请检查 Gmail 和 Puter 访问权限后重试。", "このメールを変換できませんでした。Gmail と Puter のアクセスを確認して再試行してください。", "이 이메일을 변환할 수 없습니다. Gmail 및 Puter 액세스를 확인한 후 다시 시도하세요."],
+    "Connect Puter in the assistant first. This email will be processed after Puter is enabled.": ["请先在助手中连接 Puter。启用 Puter 后将处理此邮件。", "先にアシスタントで Puter を接続してください。Puter が有効になると、このメールが処理されます。", "먼저 어시스턴트에서 Puter를 연결하세요. Puter가 활성화되면 이 이메일을 처리합니다."]
   });
 
   const PHRASES = new Map();
