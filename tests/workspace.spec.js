@@ -473,3 +473,150 @@ test("Chinese, Japanese, and Korean cover every bundled phrase", async ({ page }
   });
 });
 
+test("East Asian languages translate sidebar, empty states, event forms, previews, and time zones", async ({ page }) => {
+  await page.goto("/");
+
+  const languages = [
+    {
+      code: "zh",
+      workspace: "工作区",
+      assistantPrompt: "规划小帮手",
+      assistantSubtitle: "认识 Calex 助手",
+      footer: "为日常生活而设计",
+      homeTitle: "留一点喘息空间。",
+      homeBody: "你可以安排属于自己的一天。添加一件值得为之留出时间的事吧。",
+      homeButton: "添加你的第一个日程",
+      agendaTitle: "下一篇章尚待书写。",
+      agendaBody: "添加一个日程，开始规划接下来的日子。",
+      accountTitle: "登录或创建账户",
+      accountSubtitle: "在不同设备间安全地同步日历",
+      syncNote: "登录之前，你的日程会保存在此设备上。",
+      quickHint: "开始输入以查看预览…",
+      quickExample: "试试输入",
+      quickPrefix: "基于规则的预览",
+      repeat: "每周重复",
+      eventName: "日程名称",
+      never: "从不",
+      timezoneRegion: "亚洲",
+      using: "正在使用",
+      saveTimezone: "保存以应用更改。",
+    },
+    {
+      code: "ja",
+      workspace: "ワークスペース",
+      assistantPrompt: "計画を少しお手伝い",
+      assistantSubtitle: "Calex アシスタントの紹介",
+      footer: "毎日のために",
+      homeTitle: "少しゆとりを。",
+      homeBody: "一日の過ごし方はあなた次第です。時間をかけたいことを追加しましょう。",
+      homeButton: "最初の予定を追加",
+      agendaTitle: "次の章はまだ白紙です。",
+      agendaBody: "予定を追加して、これからの日々を形にしましょう。",
+      accountTitle: "サインインまたはアカウントを作成",
+      accountSubtitle: "デバイス間でカレンダーを安全に同期",
+      syncNote: "サインインするまで、予定はこのデバイスに保存されます。",
+      quickHint: "入力するとプレビューが表示されます…",
+      quickExample: "などを試してください",
+      quickPrefix: "ルールベースのプレビュー",
+      repeat: "毎週繰り返し",
+      eventName: "予定名",
+      never: "なし",
+      timezoneRegion: "アジア",
+      using: "使用中",
+      saveTimezone: "適用するには保存してください。",
+    },
+    {
+      code: "ko",
+      workspace: "워크스페이스",
+      assistantPrompt: "계획 도우미",
+      assistantSubtitle: "Calex 어시스턴트 만나기",
+      footer: "일상을 위해 만들었습니다",
+      homeTitle: "조금의 여유.",
+      homeBody: "하루는 스스로 만들어 가세요. 시간을 쓸 가치가 있는 일을 추가하세요.",
+      homeButton: "첫 일정 추가",
+      agendaTitle: "다음 장은 아직 쓰이지 않았습니다.",
+      agendaBody: "일정을 추가해 앞으로의 날들을 계획해 보세요.",
+      accountTitle: "로그인 또는 계정 만들기",
+      accountSubtitle: "여러 기기에서 캘린더를 안전하게 동기화",
+      syncNote: "로그인할 때까지 일정은 이 기기에 저장됩니다.",
+      quickHint: "입력을 시작하면 미리보기가 표시됩니다…",
+      quickExample: "등을 입력해 보세요",
+      quickPrefix: "규칙 기반 미리보기",
+      repeat: "매주 반복",
+      eventName: "일정 이름",
+      never: "안 함",
+      timezoneRegion: "아시아",
+      using: "사용 중",
+      saveTimezone: "적용하려면 저장하세요.",
+    },
+  ];
+
+  for (const lang of languages) {
+    await page.locator('[data-screen="settings"]').click();
+    await page.locator("#languageToggle").click();
+    await page.locator(`#languageResults [data-language="${lang.code}"]`).click();
+    await page.locator("#languageToggle").click();
+
+    await expect(page.locator(".sidebar-caption").first()).toHaveText(lang.workspace);
+    await expect(page.locator("#sidebarAssistant > span > span")).toHaveText(lang.assistantSubtitle);
+    const assistantPrompt = await page.locator("#sidebarAssistant > span").evaluate((el) =>
+      Array.from(el.childNodes).find((node) => node.nodeType === 3 && node.textContent.trim())?.textContent.trim(),
+    );
+    expect(assistantPrompt).toBe(lang.assistantPrompt);
+    const footerText = await page.locator(".sidebar-footer > span").nth(1).evaluate((el) =>
+      Array.from(el.childNodes).find((node) => node.nodeType === 3 && node.textContent.trim())?.textContent.trim(),
+    );
+    expect(footerText).toBe(lang.footer);
+
+    await page.locator('[data-screen="home"]').click();
+    await expect(page.locator("#todayEvents .empty h3")).toHaveText(lang.homeTitle);
+    await expect(page.locator("#todayEvents .empty p")).toHaveText(lang.homeBody);
+    await expect(page.locator("#todayEvents .empty button")).toHaveText(lang.homeButton);
+
+    await page.locator("#homeQuickAdd").click();
+    await expect(page.locator("#quickText")).toHaveAttribute("placeholder", lang.code === "zh"
+      ? "例如：明天 10:07 至 11:00 牙医，每周重复"
+      : lang.code === "ja"
+        ? "例：明日10:07〜11:00 歯科、毎週繰り返し"
+        : "예: 내일 10:07~11:00 치과, 매주 반복",
+    );
+    await expect(page.locator("#quickForm .nlp-help").first()).toContainText(lang.quickExample);
+    await expect(page.locator("#quickPreview")).toHaveText(lang.quickHint);
+    await page.locator("#quickText").fill("Team meeting tomorrow every week");
+    await expect(page.locator("#quickPreview")).toContainText(lang.quickPrefix);
+    await expect(page.locator("#quickPreview")).toContainText(lang.repeat);
+    await expect(page.locator("#quickPreview")).toContainText("Team meeting");
+    await page.locator("#closeModal").click();
+
+    await page.locator('[data-screen="calendar"]').click();
+    await page.locator("#panelAdd").click();
+    await expect(page.locator("#modalTitle")).toHaveText(
+      lang.code === "zh" ? "新建事件" : lang.code === "ja" ? "新しい予定" : "새 일정",
+    );
+    await expect(page.locator("#eventTitle")).toHaveAttribute("placeholder", lang.eventName);
+    await expect(page.locator('#eventRepeat option[value="none"]')).toHaveText(lang.never);
+    await expect(page.locator("#eventForm label[for='eventDate']")).toHaveText(
+      lang.code === "zh" ? "日期 *" : lang.code === "ja" ? "日付 *" : "날짜 *",
+    );
+    await page.locator("#closeModal").click();
+
+    await page.locator('[data-screen="agenda"]').click();
+    await expect(page.locator(".agenda-empty h3")).toHaveText(lang.agendaTitle);
+    await expect(page.locator(".agenda-empty p")).toHaveText(lang.agendaBody);
+
+    await page.locator('[data-screen="settings"]').click();
+    await expect(page.locator("#settingsSignInTitle")).toHaveText(lang.accountTitle);
+    await expect(page.locator("#settingsSignInSubtitle")).toHaveText(lang.accountSubtitle);
+    await expect(page.locator("#settingsSyncNote")).toHaveText(lang.syncNote);
+
+    await page.locator("#timezoneToggle").click();
+    await expect(page.locator("#timezoneHelp")).toContainText(lang.using);
+    await page.locator("#timezoneManual").click();
+    await page.locator("#timezoneSearch").fill("Asia/Tokyo");
+    await expect(page.locator("#timezoneResults .timezone-result")).toHaveCount(1);
+    await expect(page.locator("#timezoneResults .timezone-result-region")).toHaveText(lang.timezoneRegion);
+    await page.locator("#timezoneResults .timezone-result").click();
+    await expect(page.locator("#timezoneHelp")).toContainText(lang.saveTimezone);
+  }
+});
+
