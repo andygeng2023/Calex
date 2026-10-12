@@ -717,6 +717,8 @@ for (const lang of eastAsianLanguages) {
 test("Quick Add preview labels update with language changes while keeping event text intact", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => window.CalexI18n.setLanguage("zh"));
+  await expect(page.locator(".gmail-filter").first()).toHaveText("收件箱");
+  await expect(page.locator(".gmail-open-message").first()).toHaveText("在 Gmail 中打开");
   await page.locator("#homeQuickAdd").click();
   await page.locator("#quickText").fill("Team meeting tomorrow every week");
 
@@ -750,9 +752,9 @@ test("Gmail panel explains setup and does not request mailbox access until confi
   await expect(page.locator(".gmail-date-panel")).toHaveCount(0);
   await expect(page.locator("#gmailSetupHelp")).toBeVisible();
   await expect(page.locator("#gmailConnect")).toBeDisabled();
-  await expect(page.locator(".gmail-privacy-note")).toContainText(
-    "its text is sent to Puter AI",
-  );
+  await expect(page.locator(".gmail-privacy-note")).toContainText("its text is sent to Puter AI");
+  await expect(page.locator(".gmail-drag-help")).toContainText("never sends, deletes, or modifies");
+  await expect(page.locator(".gmail-drag-help").evaluate((node) => node.compareDocumentPosition(document.querySelector("#gmailEmails")) & Node.DOCUMENT_POSITION_FOLLOWING)).resolves.toBeTruthy();
   await expect(page.locator("#gmailStatus")).toContainText(
     "not configured",
   );
@@ -827,6 +829,8 @@ test("Gmail connects read-only, wraps message cards, and loads additional pages 
   await expect(email).not.toHaveAttribute("draggable", "true");
   await expect(email.locator(".gmail-open-message")).toHaveAttribute("href", /mail\.google\.com/);
   await expect(page.locator("#gmailStatus")).toContainText("Showing 1 email");
+  await expect(page.locator("#gmailLoadMore .gmail-spinner")).toBeVisible();
+  await expect(page.locator("#gmailLoadMore")).toContainText("Loading more emails");
   await page.locator("#emailScreen").evaluate((element) => { element.scrollTop = element.scrollHeight; });
   await expect(page.locator(".gmail-email").filter({ hasText: "Follow-up meeting" })).toBeVisible();
   await expect(page.locator("#gmailStatus")).toContainText("Showing 2 emails");
