@@ -841,6 +841,7 @@ test("Puter converts email content into a validated event draft without saving i
   await page.locator("#openAssistant").click();
   await page.locator("#connectPuter").click();
   await expect(page.locator("#puterConnection")).toBeHidden();
+  await page.locator("#closeAssistant").click();
 
   const result = await page.evaluate(async () => {
     const result = await window.CalexPuter.convertEmailToEvent({
