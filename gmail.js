@@ -262,6 +262,19 @@
       loading = false;
       renderControls();
       updateLoadMoreHint();
+
+      // If the list is shorter than its scroll container, the sentinel may
+      // already be visible when loading finishes. IntersectionObserver won't
+      // necessarily fire again just because loading changed, so explicitly
+      // continue pagination while the sentinel remains in or near the viewport.
+      const sentinel = $("gmailLoadMore");
+      if (hasMoreMessages && sentinel && emailScreen.classList.contains("active")) {
+        const rootRect = emailScreen.getBoundingClientRect();
+        const sentinelRect = sentinel.getBoundingClientRect();
+        if (sentinelRect.top <= rootRect.bottom + 180 && sentinelRect.bottom >= rootRect.top) {
+          Promise.resolve().then(() => loadMessages(false));
+        }
+      }
     }
   }
 
