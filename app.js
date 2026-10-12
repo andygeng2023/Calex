@@ -2272,12 +2272,32 @@
     "wheel",
     (e) => {
       if (
-        Math.abs(e.deltaY) < 18 ||
         view === "all" ||
         viewWheelLock ||
         $("searchInput").value.trim()
       )
         return;
+
+      const horizontalIntent =
+        Math.abs(e.deltaX) >= 18 &&
+        Math.abs(e.deltaX) > Math.abs(e.deltaY) * 1.15;
+      if (horizontalIntent) {
+        e.preventDefault();
+        viewWheelLock = true;
+        calendarScreen.classList.add("is-calendar-swiping");
+        commitCalendarSwipe(
+          e.deltaX < 0 ? -1 : 1,
+          0,
+          Math.max(1, calendarScroller.clientWidth),
+          e.deltaX / 16,
+        );
+        setTimeout(() => {
+          viewWheelLock = false;
+        }, 520);
+        return;
+      }
+
+      if (Math.abs(e.deltaY) < 18) return;
       if (Math.abs(e.deltaY) < Math.abs(e.deltaX) * 1.15) return;
       e.preventDefault();
       viewWheelLock = true;
