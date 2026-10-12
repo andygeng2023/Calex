@@ -776,7 +776,7 @@ test("Gmail connects read-only, wraps message cards, and loads additional pages 
     if (query) gmailQueries.push(query);
     if (url.includes("/messages?")) {
       const pageToken = new URL(url).searchParams.get("pageToken");
-      if (pageToken) await new Promise((resolve) => setTimeout(resolve, 350));
+      if (pageToken) await new Promise((resolve) => setTimeout(resolve, 1800));
       await route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -827,13 +827,12 @@ test("Gmail connects read-only, wraps message cards, and loads additional pages 
   await expect(email).toContainText("Let's meet to plan the project timeline.");
   await expect(email).not.toHaveAttribute("draggable", "true");
   await expect(email.locator(".gmail-open-message")).toHaveAttribute("href", /mail\.google\.com/);
+  await expect(page.locator("#gmailLoadMore .gmail-spinner")).toBeVisible();
+  await expect(page.locator("#gmailLoadMore")).toContainText("Loading more emails");
+  await expect(page.locator("#gmailStatus")).toContainText("Loading more emails");
   await page.evaluate(() => window.CalexI18n.setLanguage("zh"));
   await expect(email.locator(".gmail-open-message")).toHaveText("在 Gmail 中打开");
   await page.evaluate(() => window.CalexI18n.setLanguage("en"));
-  await expect(page.locator("#gmailStatus")).toContainText("Showing 1 email");
-  await page.locator("#emailScreen").evaluate((element) => { element.scrollTop = element.scrollHeight; });
-  await expect(page.locator("#gmailLoadMore .gmail-spinner")).toBeVisible();
-  await expect(page.locator("#gmailLoadMore")).toContainText("Loading more emails");
   await expect(page.locator(".gmail-email").filter({ hasText: "Follow-up meeting" })).toBeVisible();
   await expect(page.locator("#gmailStatus")).toContainText("Showing 2 emails");
   await page.locator('[data-gmail-filter="unread"]').click();
