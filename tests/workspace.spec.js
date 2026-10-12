@@ -745,7 +745,9 @@ test("Gmail panel explains setup and does not request mailbox access until confi
   await page.goto("/");
   await page.locator("#openGmail").click();
 
-  await expect(page.locator("#gmailDialog")).toBeVisible();
+  await expect(page.locator("#emailScreen")).toBeVisible();
+  await expect(page.locator('[data-screen="email"]')).toHaveAttribute("aria-current", "page");
+  await expect(page.locator("#gmailDateTargets .gmail-date-target")).toHaveCount(7);
   await expect(page.locator("#gmailSetupHelp")).toBeVisible();
   await expect(page.locator("#gmailConnect")).toBeDisabled();
   await expect(page.locator(".gmail-privacy-note")).toContainText(
@@ -767,8 +769,11 @@ test("Gmail connects with read-only OAuth and displays inbox cards that can be d
       body: "window.google={accounts:{oauth2:{initTokenClient:function(c){window.__requestedGmailScope=c.scope;return {requestAccessToken:function(){c.callback({access_token:'test-access-token',expires_in:3600});}};},revoke:function(t,cb){if(cb)cb();}}}};",
     }),
   );
+  const gmailQueries = [];
   await page.route("https://gmail.googleapis.com/**", async (route) => {
     const url = route.request().url();
+    const query = new URL(url).searchParams.get("q");
+    if (query) gmailQueries.push(query);
     if (url.includes("/messages?")) {
       await route.fulfill({
         status: 200,
@@ -817,9 +822,12 @@ test("Gmail connects with read-only OAuth and displays inbox cards that can be d
   await expect(email).toContainText("Let's meet to plan the project timeline.");
   await expect(email).toHaveAttribute("draggable", "true");
   await expect(page.locator("#gmailStatus")).toContainText("Showing 1 recent message");
+  await page.locator('[data-gmail-filter="unread"]').click();
+  await expect.poll(() => gmailQueries[gmailQueries.length - 1]).toContain("is:unread");
+  await expect(page.locator('[data-gmail-filter="unread"]')).toHaveAttribute("aria-pressed", "true");
 
   const dropTarget = await page.evaluate(() => {
-    const cell = document.querySelector("#dateGrid .date-cell[data-date]");
+    const cell = document.querySelector("#gmailDateTargets .gmail-date-target[data-date]");
     const transfer = new DataTransfer();
     transfer.setData("application/x-calex-gmail-message", "mail-planning-1");
     const event = new DragEvent("dragover", {
