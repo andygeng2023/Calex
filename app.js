@@ -1490,10 +1490,7 @@
     if ($("eventFeedback")) $("eventFeedback").textContent = "";
     if (mode === "quick") {
       $("quickText").value = "";
-      $("quickPreview").textContent = translateUiText(
-        "Start typing to see the preview...",
-      );
-      $("quickPreview").classList.add("is-empty");
+      setQuickPreviewEmpty();
       setTimeout(() => $("quickText").focus(), 100);
     } else if (!$("eventTitle").value) setNormalDefaults();
     window.CalexI18n?.refresh();
@@ -1775,14 +1772,29 @@
     return description ? " · " + description : "";
   }
 
-  function showQuickPreview(p, prefix = "Preview") {
+  function setQuickPreviewEmpty() {
     const preview = $("quickPreview");
     preview.replaceChildren();
+    preview.setAttribute("data-i18n", "Start typing to see the preview...");
+    preview.textContent = "Start typing to see the preview...";
+    preview.classList.add("is-empty");
+    window.CalexI18n?.refresh();
+  }
 
-    function addPreviewPart(value, userContent = false) {
+  function showQuickPreview(p, prefix = "Preview") {
+    const preview = $("quickPreview");
+    preview.removeAttribute("data-i18n");
+    preview.replaceChildren();
+
+    function addPreviewPart(value, userContent = false, translationKey = "") {
       const part = document.createElement("span");
       if (userContent) part.setAttribute("data-user-content", "true");
-      part.textContent = value;
+      if (translationKey) {
+        part.setAttribute("data-i18n", translationKey);
+        part.textContent = translationKey;
+      } else {
+        part.textContent = value;
+      }
       preview.appendChild(part);
     }
     function addSeparator() {
@@ -1790,7 +1802,7 @@
     }
 
     // Keep translatable labels separate from the user's title, description, and location.
-    addPreviewPart(translateUiText(prefix));
+    addPreviewPart(prefix, false, prefix);
     addPreviewPart(": ");
     addPreviewPart(p.title, true);
     addSeparator();
@@ -1806,13 +1818,15 @@
     addPreviewPart(
       p.start
         ? p.start + (p.end ? "–" + p.end : "")
-        : translateUiText("All day"),
+        : "All day",
+      false,
+      p.start ? "" : "All day",
     );
 
     const repeat = repeatDescription(p);
     if (repeat) {
       addSeparator();
-      addPreviewPart(translateUiText(repeat));
+      addPreviewPart(repeat, false, repeat);
     }
     if (p.description) {
       addSeparator();
@@ -1822,15 +1836,13 @@
       addSeparator();
       addPreviewPart(p.location, true);
     }
+    window.CalexI18n?.refresh();
   }
   $("quickText").addEventListener("input", () => {
     const raw = $("quickText").value.trim();
     clearTimeout(quickParseTimer);
     if (!raw) {
-      $("quickPreview").textContent = translateUiText(
-        "Start typing to see the preview...",
-      );
-      $("quickPreview").classList.add("is-empty");
+      setQuickPreviewEmpty();
       return;
     }
     $("quickPreview").classList.remove("is-empty");
@@ -3132,8 +3144,7 @@
       if (raw) {
         showQuickPreview(parseNatural(raw), "Rule-based preview");
       } else {
-        $("quickPreview").textContent = translateUiText("Start typing to see the preview...");
-        $("quickPreview").classList.add("is-empty");
+        setQuickPreviewEmpty();
       }
     }
   });
