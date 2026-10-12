@@ -572,6 +572,8 @@
     if (m.adopt) {
       appSettings = { ...defaultSettings, ...m.adopt };
       lsSet(activeSettingsKey(), appSettings);
+      if (window.CalexI18n && appSettings.language)
+        window.CalexI18n.setLanguage(appSettings.language);
       renderProfile();
       renderTimezone();
       applyAppearance();
@@ -658,7 +660,10 @@
       year: "numeric",
     },
   ) {
-    return new Intl.DateTimeFormat("en-GB", opts).format(d);
+    return new Intl.DateTimeFormat(
+      window.CalexI18n?.locale() || "en-GB",
+      opts,
+    ).format(d);
   }
 
   function eventOccurs(e, d) {
@@ -2725,6 +2730,7 @@
   const defaultSettings = {
     name: "",
     location: "",
+    language: window.CalexI18n?.language() || "en",
     timezoneMode: "auto",
     timezone: deviceTimezone(),
     dark: !!(
@@ -2790,8 +2796,9 @@
   let allTimezones = timezoneNames();
 
   function renderProfile() {
-    const name = appSettings.name.trim() || "Your name",
-      location = appSettings.location.trim() || "Add your location";
+    const t = (text) => window.CalexI18n?.translate(text) || text;
+    const name = appSettings.name.trim() || t("Your name"),
+      location = appSettings.location.trim() || t("Add your location");
     $("profileName").textContent = name;
     $("profileLocation").textContent = location;
     $("profileAvatar").textContent = appSettings.name.trim()
@@ -2840,8 +2847,10 @@
   function renderTimezone() {
     const tz = currentTimezone();
     const zoneInfo = timezoneDescription(tz);
+    const t = (text) => window.CalexI18n?.translate(text) || text;
     $("timezoneSummary").textContent =
-      (appSettings.timezoneMode === "auto" ? "Automatic · " : "Manual · ") +
+      t(appSettings.timezoneMode === "auto" ? "Automatic" : "Manual") +
+      " · " +
       zoneInfo.city +
       " · " +
       (zoneInfo.offset || zoneInfo.longName);
@@ -2856,18 +2865,24 @@
     $("timezoneSearchWrap").hidden = appSettings.timezoneMode !== "manual";
     $("timezoneHelp").textContent =
       appSettings.timezoneMode === "auto"
-        ? "Using " +
+        ? t("Using") +
+          " " +
           tz +
           " (" +
           zoneInfo.longName +
           (zoneInfo.offset ? ", " + zoneInfo.offset : "") +
-          "). This follows your device setting automatically."
-        : "Selected: " +
+          "). " +
+          t("This follows your device setting automatically.")
+        : t("Selected:") +
+          " " +
           tz +
           " (" +
           zoneInfo.longName +
           (zoneInfo.offset ? ", " + zoneInfo.offset : "") +
-          "). Save to apply. Existing event dates and times are not converted.";
+          "). " +
+          t("Save to apply.") +
+          " " +
+          t("Existing event dates and times are not converted.");
     populateTimezoneOptions($("timezoneSearch").value || "");
   }
 
@@ -2924,17 +2939,33 @@
   function openSettingsDetail(which) {
     const ids = {
       timezone: "timezoneDetail",
+      language: "languageDetail",
       account: "accountDetail",
     };
     Object.entries(ids).forEach(([key, id]) => {
       const open = key === which && $(id).hidden;
       $(id).hidden = !open;
-      const triggerId = key === "timezone" ? "timezoneToggle" : "profileEdit";
+      const triggerId =
+        key === "timezone"
+          ? "timezoneToggle"
+          : key === "language"
+            ? "languageToggle"
+            : "profileEdit";
       $(triggerId).setAttribute("aria-expanded", String(open));
     });
     if (which === "timezone" && !$("timezoneDetail").hidden) {
       renderTimezone();
     }
+    if (which === "language" && !$("languageDetail").hidden) {
+      renderLanguage();
+    }
+  }
+  function renderLanguage() {
+    const current = window.CalexI18n?.language() || appSettings.language || "en";
+    $("languageSelect").value = current;
+    $("languageSummary").textContent =
+      window.CalexI18n?.languageLabel(current) || "English";
+    $("languageToggle").setAttribute("aria-expanded", String(!$("languageDetail").hidden));
   }
   $("profileEdit").addEventListener("click", () => {
     openSettingsDetail("account");
@@ -2943,6 +2974,24 @@
   $("timezoneToggle").addEventListener("click", () =>
     openSettingsDetail("timezone"),
   );
+  $("languageToggle").addEventListener("click", () => {
+    openSettingsDetail("language");
+  });
+  $("languageSelect").addEventListener("change", () => {
+    const code = $("languageSelect").value;
+    if (!window.CalexI18n?.languages[code]) return;
+    appSettings.language = code;
+    window.CalexI18n.setLanguage(code);
+    renderLanguage();
+    if (!saveAppSettings()) showToast("Could not save settings in this browser.");
+  });
+  window.addEventListener("calex:language", () => {
+    appSettings.language = window.CalexI18n?.language() || appSettings.language || "en";
+    renderAll();
+    renderProfile();
+    renderTimezone();
+    renderLanguage();
+  });
   $("timezoneAuto").addEventListener("click", () => {
     appSettings.timezoneMode = "auto";
     appSettings.timezone = deviceTimezone();
@@ -2986,9 +3035,12 @@
     document.body.classList.toggle("settings-dark", enabled);
     $("appearanceToggle").setAttribute("aria-checked", String(enabled));
     $("appearanceSwitch").setAttribute("data-enabled", String(enabled));
+    const appearanceText = window.CalexI18n?.translate("Dark appearance") || "Dark appearance";
     $("appearanceToggle").setAttribute(
       "aria-label",
-      "Dark appearance " + (enabled ? "on" : "off"),
+      appearanceText + " " + (enabled
+        ? (window.CalexI18n?.translate("on") || "on")
+        : (window.CalexI18n?.translate("off") || "off")),
     );
     document.documentElement.style.colorScheme = enabled ? "dark" : "light";
     document.documentElement.style.backgroundColor = enabled ? "#101512" : "";
