@@ -381,6 +381,7 @@
 
   const PHRASES = new Map();
   const REVERSE = new Map();
+  const ORIGINAL_TEXT = new WeakMap();
   ROWS.forEach((row) => {
     const english = row[0];
     const values = {};
@@ -621,7 +622,9 @@
     while (walker.nextNode()) nodes.push(walker.currentNode);
     nodes.forEach((node) => {
       if (isUserContent(node)) return;
-      const translated = translate(node.nodeValue);
+      if (!ORIGINAL_TEXT.has(node)) ORIGINAL_TEXT.set(node, node.nodeValue);
+      const source = ORIGINAL_TEXT.get(node);
+      const translated = translate(source);
       if (translated !== node.nodeValue) node.nodeValue = translated;
     });
     ATTRS.forEach((attribute) => translateAttribute(element, attribute));
@@ -664,6 +667,7 @@
       if (opts.persist !== false) {
         try { localStorage.setItem(STORAGE_KEY, code); } catch (_) {}
       }
+      translateDocument();
       return true;
     }
     currentLanguage = code;
@@ -672,6 +676,8 @@
     }
     translateDocument();
     window.dispatchEvent(new CustomEvent("calex:language", { detail: code }));
+    // App listeners may replace dynamic content while responding to the event.
+    translateDocument();
     return true;
   }
 
@@ -682,7 +688,10 @@
       records.forEach((record) => {
         if (record.type === "characterData") {
           if (isUserContent(record.target)) return;
-          const after = translate(record.target.nodeValue);
+          if (!ORIGINAL_TEXT.has(record.target))
+            ORIGINAL_TEXT.set(record.target, record.target.nodeValue);
+          const source = ORIGINAL_TEXT.get(record.target);
+          const after = translate(source);
           if (after !== record.target.nodeValue) record.target.nodeValue = after;
           return;
         }
@@ -693,7 +702,9 @@
         record.addedNodes.forEach((node) => {
           if (node.nodeType === 3) {
             if (!isUserContent(node)) {
-              const after = translate(node.nodeValue);
+              if (!ORIGINAL_TEXT.has(node)) ORIGINAL_TEXT.set(node, node.nodeValue);
+              const source = ORIGINAL_TEXT.get(node);
+              const after = translate(source);
               if (after !== node.nodeValue) node.nodeValue = after;
             }
           } else if (node.nodeType === 1) {
