@@ -1224,9 +1224,9 @@
     "자동 시간대 모드는 브라우저나 기기가 제공하는 시간대 식별자를 읽습니다. Calex는 이를 환경설정 표시에 사용하며, 이 기능에 정확한 GPS 위치가 필요하지 않습니다. 프로필이나 일정에 위치를 입력하면 해당 텍스트가 관련 데이터의 일부로 저장됩니다."
   ],
   "5. Cookies, analytics, and third parties": [
-    "5. 쿠키、分析和第三方服务",
+    "5. Cookie、分析工具与第三方服务",
     "5. Cookie、分析、サードパーティ",
-    "5. 쿠키, 분석 및 제3자"
+    "5. 쿠키, 분석 및 제3자 서비스"
   ],
   "Calex uses browser storage for app data and may load the Supabase client library from a content delivery network. The app's authentication and synchronisation features rely on Supabase when configured. Third-party infrastructure may process technical information under its own terms and policies; consult those policies for details.": [
     "Calex 使用浏览器存储保存应用数据，并可能从内容分发网络加载 Supabase 客户端库。配置完成后，应用的身份验证和同步功能会依赖 Supabase。第三方基础设施可能根据其自身条款和政策处理技术信息；详情请查阅相关政策。",
