@@ -54,7 +54,7 @@
       .forEach((el) => {
         if (el.textContent.includes("Nothing planned")) {
           el.innerHTML =
-            '<i data-lucide="sun"></i><h3>A little breathing room.</h3><p>Your day is yours to shape. Add something worth making time for.</p><button class="secondary empty-add">Add your first event</button>';
+            '<i data-lucide="sun"></i><h3 data-i18n="A little breathing room.">A little breathing room.</h3><p data-i18n="Your day is yours to shape. Add something worth making time for.">Your day is yours to shape. Add something worth making time for.</p><button class="secondary empty-add" data-i18n="Add your first event">Add your first event</button>';
           el.querySelector("button").onclick = () => C.newEvent();
         }
       });
@@ -71,7 +71,7 @@
     }).join("");
     if (!count)
       $("agendaList").innerHTML =
-        '<div class="agenda-empty"><i data-lucide="calendar-days"></i><h3>The next chapter is unwritten.</h3><p>Add an event to start shaping the days ahead.</p><button class="primary" id="agendaEmptyAdd">New event</button></div>';
+        '<div class="agenda-empty"><i data-lucide="calendar-days"></i><h3 data-i18n="The next chapter is unwritten.">The next chapter is unwritten.</h3><p data-i18n="Add an event to start shaping the days ahead.">Add an event to start shaping the days ahead.</p><button class="primary" id="agendaEmptyAdd" data-i18n="New event">New event</button></div>';
     C.bindEventActions($("agendaList"));
     $("agendaEmptyAdd")?.addEventListener("click", () => C.newEvent());
   }
