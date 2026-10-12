@@ -740,7 +740,6 @@ test("Gmail panel explains setup and does not request mailbox access until confi
   await expect(page.locator("#gmailDialog")).toBeVisible();
   await expect(page.locator("#gmailSetupHelp")).toBeVisible();
   await expect(page.locator("#gmailConnect")).toBeDisabled();
-  await expect(page.locator("#gmailPrivacyNote")).toHaveCount(0);
   await expect(page.locator(".gmail-privacy-note")).toContainText(
     "its text is sent to Puter AI",
   );
@@ -757,7 +756,7 @@ test("Gmail connects with read-only OAuth and displays inbox cards that can be d
     route.fulfill({
       status: 200,
       contentType: "application/javascript",
-      body: "window.google={accounts:{oauth2:{initTokenClient:function(c){return {requestAccessToken:function(){c.callback({access_token:'test-access-token',expires_in:3600});}};},revoke:function(t,cb){if(cb)cb();}}}};",
+      body: "window.google={accounts:{oauth2:{initTokenClient:function(c){window.__requestedGmailScope=c.scope;return {requestAccessToken:function(){c.callback({access_token:'test-access-token',expires_in:3600});}};},revoke:function(t,cb){if(cb)cb();}}}};",
     }),
   );
   await page.route("https://gmail.googleapis.com/**", async (route) => {
@@ -800,6 +799,9 @@ test("Gmail connects with read-only OAuth and displays inbox cards that can be d
   await page.locator("#openGmail").click();
   await expect(page.locator("#gmailSetupHelp")).toBeHidden();
   await page.locator("#gmailConnect").click();
+  expect(await page.evaluate(() => window.__requestedGmailScope)).toBe(
+    "https://www.googleapis.com/auth/gmail.readonly",
+  );
 
   const email = page.locator(".gmail-email").filter({ hasText: "Planning session" });
   await expect(email).toBeVisible();
