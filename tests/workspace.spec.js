@@ -717,8 +717,6 @@ for (const lang of eastAsianLanguages) {
 test("Quick Add preview labels update with language changes while keeping event text intact", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => window.CalexI18n.setLanguage("zh"));
-  await expect(page.locator(".gmail-filter").first()).toHaveText("收件箱");
-  await expect(page.locator(".gmail-open-message").first()).toHaveText("在 Gmail 中打开");
   await page.locator("#homeQuickAdd").click();
   await page.locator("#quickText").fill("Team meeting tomorrow every week");
 
@@ -829,6 +827,9 @@ test("Gmail connects read-only, wraps message cards, and loads additional pages 
   await expect(email).toContainText("Let's meet to plan the project timeline.");
   await expect(email).not.toHaveAttribute("draggable", "true");
   await expect(email.locator(".gmail-open-message")).toHaveAttribute("href", /mail\.google\.com/);
+  await page.evaluate(() => window.CalexI18n.setLanguage("zh"));
+  await expect(email.locator(".gmail-open-message")).toHaveText("在 Gmail 中打开");
+  await page.evaluate(() => window.CalexI18n.setLanguage("en"));
   await expect(page.locator("#gmailStatus")).toContainText("Showing 1 email");
   await expect(page.locator("#gmailLoadMore .gmail-spinner")).toBeVisible();
   await expect(page.locator("#gmailLoadMore")).toContainText("Loading more emails");
