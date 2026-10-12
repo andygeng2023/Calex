@@ -288,6 +288,36 @@ test("month swipe advances one month and clamps the selected day", async ({ page
   ).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
   await expect(page.locator("#monthTitle")).toContainText(expectedTitle);
   await expect(page.locator("#calendarScreen")).not.toHaveClass(/is-calendar-swiping/);
+
+  const expectedPrevious = await page.evaluate(() => {
+    const date = window.Calex.selected();
+    const previous = new Date(date.getFullYear(), date.getMonth() - 1, 1, 12);
+    const lastDay = new Date(
+      previous.getFullYear(),
+      previous.getMonth() + 1,
+      0,
+    ).getDate();
+    const selected = new Date(
+      previous.getFullYear(),
+      previous.getMonth(),
+      Math.min(date.getDate(), lastDay),
+      12,
+    );
+    return [
+      selected.getFullYear(),
+      String(selected.getMonth() + 1).padStart(2, "0"),
+      String(selected.getDate()).padStart(2, "0"),
+    ].join("-");
+  });
+  const backTransform = await swipeCalendar(page, "right");
+  expect(backTransform).not.toBe("none");
+  await expect.poll(() => selectedDateKey(page)).toBe(expectedPrevious);
+  const previousTitle = new Date(
+    before.year,
+    before.month,
+    1,
+  ).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+  await expect(page.locator("#monthTitle")).toContainText(previousTitle);
 });
 
 
