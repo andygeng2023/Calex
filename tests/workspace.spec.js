@@ -600,7 +600,7 @@ for (const lang of eastAsianLanguages) {
       "aria-label",
       new RegExp(lang.code === "zh" ? "拖动" : lang.code === "ja" ? "ドラッグ" : "드래그"),
     );
-    await page.locator("#panelAdd").click();
+    await page.locator("#globalAdd").click();
     await expect(page.locator("#modalTitle")).toHaveText(
       lang.code === "zh" ? "新建事件" : lang.code === "ja" ? "新しい予定" : "새 일정",
     );
