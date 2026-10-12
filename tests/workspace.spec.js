@@ -847,6 +847,7 @@ test("Gmail connects read-only, wraps message cards, and loads additional pages 
   await page.goto("/");
   await page.locator("#openGmail").click();
   await expect(page.locator("#gmailSetupHelp")).toBeHidden();
+  await expect(page.locator("#gmailStatus")).toContainText("Connect Gmail to link an account");
   await page.locator("#gmailConnect").click();
   expect(await page.evaluate(() => window.__requestedGmailScope)).toBe(
     "https://www.googleapis.com/auth/gmail.readonly",
