@@ -788,7 +788,11 @@
       (e.location ? " · " + esc(e.location) : "") +
       (repeatText(e) ? "<br>" + repeatText(e) : "") +
       (e.description ? "<br>" + esc(e.description) : "") +
-      (e.people ? "<br>With " + esc(e.people) : "") +
+      (e.people
+        ? '<br><span class="event-people-label">With</span> <span data-user-content="true">' +
+          esc(e.people) +
+          "</span>"
+        : "") +
       "</div>" +
       (e.tag ? '<span class="tag">' + esc(e.tag) + "</span>" : "") +
       '</div><button class="icon-btn edit-btn" data-edit="' +
