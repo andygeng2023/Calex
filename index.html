@@ -23,9 +23,9 @@
       href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=42" />
-    <link rel="stylesheet" href="workspace.css?v=42" />
-    <link rel="stylesheet" href="calendar.css?v=42" />
+    <link rel="stylesheet" href="styles.css?v=43" />
+    <link rel="stylesheet" href="workspace.css?v=43" />
+    <link rel="stylesheet" href="calendar.css?v=43" />
   </head>
 
   <body>
@@ -55,11 +55,9 @@
             id="openGmail"
             class="secondary"
             type="button"
-            aria-label="Open Gmail inbox"
-            aria-haspopup="dialog"
-            aria-controls="gmailDialog"
+            aria-label="Open Email workspace"
           >
-            <i data-lucide="mail"></i><span>Gmail</span>
+            <i data-lucide="mail"></i><span>Email</span>
           </button>
           <button id="globalAdd" class="primary">
             <i data-lucide="plus"></i><span>New event</span><kbd>N</kbd>
@@ -976,6 +974,62 @@
             </p>
           </article>
         </section>
+        <section id="emailScreen" class="screen email-screen" aria-label="Email workspace">
+          <header class="email-page-head">
+            <div>
+              <span class="header-eyebrow">EMAIL TO CALENDAR</span>
+              <h2 id="gmailTitle">Inbox, connected to your calendar</h2>
+              <p class="email-page-description">Find the details that matter, then turn an email into an editable event draft.</p>
+            </div>
+            <span class="email-readonly-pill"><i data-lucide="shield-check"></i> Read-only access</span>
+          </header>
+          <p class="gmail-privacy-note">
+            Gmail access is optional. Calex reads messages only after you connect; converting a message sends its text to Puter AI for extraction. Review every draft before saving.
+          </p>
+          <div id="gmailSetupHelp" class="gmail-setup-help" hidden>
+            <strong>Gmail connection needs setup</strong>
+            <p>Set a Google OAuth web client ID in <code>gmail-config.js</code>, enable the Gmail API in Google Cloud, and authorize this site’s origin. The app requests read-only Gmail access.</p>
+          </div>
+          <section class="gmail-workspace-panel" aria-label="Inbox tools">
+            <div class="gmail-toolbar">
+              <div class="gmail-filters" role="group" aria-label="Filter messages">
+                <button type="button" class="gmail-filter active" data-gmail-filter="inbox" aria-pressed="true">Inbox</button>
+                <button type="button" class="gmail-filter" data-gmail-filter="unread" aria-pressed="false">Unread</button>
+                <button type="button" class="gmail-filter" data-gmail-filter="starred" aria-pressed="false">Starred</button>
+              </div>
+              <div class="gmail-controls">
+                <label class="sr-only" for="gmailSearch">Search Gmail inbox</label>
+                <input id="gmailSearch" type="search" placeholder="Search mail by sender, subject, or keyword" />
+                <button id="gmailSearchButton" type="button" class="secondary"><i data-lucide="search"></i><span>Search</span></button>
+              </div>
+            </div>
+            <div class="gmail-actions">
+              <button id="gmailConnect" type="button" class="primary"><i data-lucide="link-2"></i><span>Connect Gmail</span></button>
+              <button id="gmailRefresh" type="button" class="secondary" disabled><i data-lucide="refresh-cw"></i><span>Refresh</span></button>
+              <button id="gmailDisconnect" type="button" class="secondary" hidden><i data-lucide="unlink"></i><span>Disconnect</span></button>
+              <button id="gmailEnablePuter" type="button" class="secondary"><i data-lucide="sparkles"></i><span>Enable AI extraction</span></button>
+            </div>
+          </section>
+          <section class="gmail-workspace-panel gmail-date-panel" aria-labelledby="gmailDateHeading">
+            <div class="gmail-panel-heading">
+              <div>
+                <h3 id="gmailDateHeading">Make an event draft</h3>
+                <p>Choose a suggested date, or drag an email onto one.</p>
+              </div>
+              <span class="gmail-date-hint">Nothing is saved until you confirm it</span>
+            </div>
+            <div id="gmailDateTargets" class="gmail-date-targets" role="group" aria-label="Suggested event dates"></div>
+          </section>
+          <div class="gmail-results-heading">
+            <div>
+              <h3>Messages</h3>
+              <p id="gmailStatus" class="gmail-status" role="status" aria-live="polite">Gmail is not connected.</p>
+            </div>
+            <span class="gmail-results-limit">Up to 20 recent messages</span>
+          </div>
+          <div id="gmailEmails" class="gmail-emails" aria-label="Gmail messages" aria-live="polite"></div>
+          <p class="gmail-drag-help">Email access is read-only. Calex never sends, deletes, or modifies your messages.</p>
+        </section>
       </main>
 
       <nav class="bottom-nav" aria-label="Main navigation">
@@ -1028,6 +1082,9 @@
         </button>
         <button class="nav-btn" data-screen="agenda" aria-label="Agenda">
           <i data-lucide="list"></i><span data-i18n="Agenda">Agenda</span>
+        </button>
+        <button class="nav-btn" data-screen="email" aria-label="Email">
+          <i data-lucide="mail"></i><span>Email</span>
         </button>
         <div class="sidebar-tools">
           <div class="mini-head">
@@ -1362,56 +1419,17 @@
       </div>
     </dialog>
 
-    <dialog
-      id="gmailDialog"
-      class="gmail-dialog"
-      aria-labelledby="gmailTitle"
-    >
-      <header class="gmail-head">
-        <div>
-          <span class="header-eyebrow">EMAIL TO CALENDAR</span>
-          <h2 id="gmailTitle"><i data-lucide="mail"></i> Gmail inbox</h2>
-        </div>
-        <button id="closeGmail" class="icon-btn" type="button" aria-label="Close Gmail panel" title="Close">
-          <i data-lucide="x"></i>
-        </button>
-      </header>
-      <p class="gmail-privacy-note">
-        Connect Gmail to view recent inbox messages. When you turn a message into an event, its text is sent to Puter AI for extraction. Review the draft before saving.
-      </p>
-      <div id="gmailSetupHelp" class="gmail-setup-help" hidden>
-        <strong>Gmail connection needs setup</strong>
-        <p>Set a Google OAuth web client ID in <code>gmail-config.js</code>, enable the Gmail API in Google Cloud, and authorize this site’s origin. The app requests read-only Gmail access.</p>
-      </div>
-      <div class="gmail-controls">
-        <label class="sr-only" for="gmailSearch">Search Gmail inbox</label>
-        <input id="gmailSearch" type="search" placeholder="Search Gmail inbox" />
-        <button id="gmailSearchButton" type="button" class="secondary">Search</button>
-      </div>
-      <div class="gmail-actions">
-        <button id="gmailConnect" type="button" class="primary">Connect Gmail</button>
-        <button id="gmailRefresh" type="button" class="secondary" disabled>Refresh</button>
-        <button id="gmailDisconnect" type="button" class="secondary" hidden>Disconnect</button>
-        <button id="gmailEnablePuter" type="button" class="secondary">Enable Puter</button>
-      </div>
-      <p id="gmailStatus" class="gmail-status" role="status" aria-live="polite">
-        Gmail is not connected.
-      </p>
-      <div id="gmailEmails" class="gmail-emails" aria-label="Gmail messages" aria-live="polite"></div>
-      <p class="gmail-drag-help">Drag an email onto a calendar date, or select “Make event”.</p>
-    </dialog>
-
     <script
       src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3"
       defer
     ></script>
-    <script src="icons.js?v=42" defer></script>
-    <script src="sync.js?v=42" defer></script>
-    <script src="ics.js?v=42" defer></script>
-    <script src="i18n.js?v=42" defer></script>
-    <script src="app.js?v=42" defer></script>
-    <script src="workspace.js?v=42" defer></script>
-    <script src="gmail-config.js?v=42" defer></script>
-    <script src="gmail.js?v=42" defer></script>
+    <script src="icons.js?v=43" defer></script>
+    <script src="sync.js?v=43" defer></script>
+    <script src="ics.js?v=43" defer></script>
+    <script src="i18n.js?v=43" defer></script>
+    <script src="app.js?v=43" defer></script>
+    <script src="workspace.js?v=43" defer></script>
+    <script src="gmail-config.js?v=43" defer></script>
+    <script src="gmail.js?v=43" defer></script>
   </body>
 </html>
