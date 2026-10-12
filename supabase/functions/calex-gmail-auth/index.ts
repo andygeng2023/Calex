@@ -42,7 +42,8 @@ Deno.serve(async (req) => {
     const origin = req.headers.get("Origin") || "";
     if (!allowedOrigins.has(origin)) return json({ error: "This Calex origin is not allowed." }, 403);
     if (req.headers.get("X-Requested-With") !== "XmlHttpRequest") return json({ error: "Request validation failed." }, 403);
-    const accessJwt = (req.headers.get("Authorization") || "").replace(/^Bearer\\s+/i, "");
+    const authorization = req.headers.get("Authorization") || "";
+    const accessJwt = authorization.toLowerCase().startsWith("bearer ") ? authorization.slice(7).trim() : "";
     if (!accessJwt) return json({ error: "Sign in to Calex first." }, 401);
     const url = Deno.env.get("SUPABASE_URL")!;
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
