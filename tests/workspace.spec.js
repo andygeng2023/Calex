@@ -62,7 +62,7 @@ test("language setting translates the interface and persists the choice", async 
   await page.locator('[data-screen="settings"]').click();
   await page.locator("#languageToggle").click();
   await expect(page.locator("#languageDetail")).toBeVisible();
-  await page.locator("#languageSelect").selectOption("es");
+  await page.locator('#languageResults [data-language="es"]').click();
 
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
   expect(
@@ -77,18 +77,18 @@ test("language setting translates the interface and persists the choice", async 
   await expect(page.locator(".settings-title")).toHaveText("Ajustes");
   await page.locator('[data-screen="settings"]').click();
   await page.locator("#languageToggle").click();
-  await expect(page.locator("#languageSelect")).toHaveValue("es");
+  await expect(page.locator('#languageResults [data-language="es"]')).toHaveAttribute("aria-selected", "true");
 
-  await page.locator("#languageSelect").selectOption("fr");
+  await page.locator('#languageResults [data-language="fr"]').click();
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
   await expect(page.locator(".settings-title")).toHaveText("Paramètres");
   await expect(page.locator("#languageSummary")).toHaveText("Français");
 
-  await page.locator("#languageSelect").selectOption("de");
+  await page.locator('#languageResults [data-language="de"]').click();
   await expect(page.locator(".settings-title")).toHaveText("Einstellungen");
   await expect(page.locator("#preferencesSectionTitle")).toHaveText("Einstellungen");
 
-  await page.locator("#languageSelect").selectOption("en");
+  await page.locator('#languageResults [data-language="en"]').click();
   await expect(page.locator(".settings-title")).toHaveText("Settings");
   await expect(page.locator("#preferencesSectionTitle")).toHaveText("Preferences");
 });
@@ -104,7 +104,7 @@ test("language switching leaves event titles unchanged", async ({ page }) => {
 
   await page.locator('[data-screen="settings"]').click();
   await page.locator("#languageToggle").click();
-  await page.locator("#languageSelect").selectOption("es");
+  await page.locator('#languageResults [data-language="es"]').click();
   await page.locator('[data-screen="calendar"]').click();
   await expect(page.locator("#panelEvents")).toContainText("Dentist");
 });
@@ -366,4 +366,33 @@ test("invalid AI event dates never expose a saveable draft", async ({
     "invalid details",
   );
   await expect(page.locator(".assistant-draft")).toHaveCount(0);
+});
+
+test("language picker supports Auto and East Asian languages without a native select", async ({ page }) => {
+  await page.goto("/");
+  await page.locator('[data-screen="settings"]').click();
+  await page.locator("#languageToggle").click();
+  await expect(page.locator("#languageSelect")).toHaveCount(0);
+  for (const code of ["auto", "zh", "ja", "ko"]) {
+    await expect(page.locator(`#languageResults [data-language="${code}"]`)).toBeVisible();
+  }
+  await page.locator("#languageSearch").fill("한국어");
+  await expect(page.locator('#languageResults [data-language="ko"]')).toBeVisible();
+  await expect(page.locator('#languageResults [data-language="zh"]')).toHaveCount(0);
+  await page.locator('#languageResults [data-language="ko"]').click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "ko");
+  await expect(page.locator(".settings-title")).toHaveText("설정");
+  await expect(page.locator("#languageSummary")).toHaveText("한국어");
+});
+
+test("Auto language follows the device system language", async ({ page }) => {
+  await page.goto("/");
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "languages", { configurable: true, get: () => ["ja-JP"] });
+    Object.defineProperty(navigator, "language", { configurable: true, get: () => "ja-JP" });
+    localStorage.setItem("calex-language-v1", "auto");
+  });
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("lang", "ja");
+  await expect(page.locator(".settings-title")).toHaveText("設定");
 });
