@@ -81,6 +81,14 @@ test("language setting translates the interface and persists the choice", async 
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
   await expect(page.locator(".settings-title")).toHaveText("Paramètres");
   await expect(page.locator("#languageSummary")).toHaveText("Français");
+
+  await page.locator("#languageSelect").selectOption("de");
+  await expect(page.locator(".settings-title")).toHaveText("Einstellungen");
+  await expect(page.locator("#preferencesSectionTitle")).toHaveText("Einstellungen");
+
+  await page.locator("#languageSelect").selectOption("en");
+  await expect(page.locator(".settings-title")).toHaveText("Settings");
+  await expect(page.locator("#preferencesSectionTitle")).toHaveText("Preferences");
 });
 
 test("language switching leaves event titles unchanged", async ({ page }) => {
