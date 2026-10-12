@@ -339,7 +339,7 @@ test("touch swipes navigate week view on mobile-style events", async ({ page }) 
     ].join("-");
   });
 
-  await page.locator("#calendarScroller").evaluate((scroller) => {
+  await page.locator("#selectedPanel").evaluate((surface) => {
     const touch = (identifier, clientX, clientY) => ({
       identifier,
       clientX,
@@ -348,13 +348,13 @@ test("touch swipes navigate week view on mobile-style events", async ({ page }) 
       pageY: clientY,
       screenX: clientX,
       screenY: clientY,
-      target: scroller,
+      target: surface,
     });
     const dispatch = (type, touches, changedTouches) => {
       const event = new Event(type, { bubbles: true, cancelable: true });
       Object.defineProperty(event, "touches", { value: touches });
       Object.defineProperty(event, "changedTouches", { value: changedTouches });
-      scroller.dispatchEvent(event);
+      surface.dispatchEvent(event);
     };
     dispatch("touchstart", [touch(1, 320, 100)], [touch(1, 320, 100)]);
     dispatch("touchmove", [touch(1, 210, 101)], [touch(1, 210, 101)]);
