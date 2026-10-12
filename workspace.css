@@ -79,8 +79,8 @@ body .app.settings-dark {
   padding: 0;
   box-shadow: none;
   display: grid;
-  grid-template-columns: 236px minmax(0, 1fr);
-  grid-template-rows: 104px minmax(0, 1fr);
+  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-rows: 92px minmax(0, 1fr);
   height: 100dvh;
 }
 body .app main {
@@ -92,7 +92,7 @@ body .app main {
 body .app .topbar {
   grid-column: 2;
   grid-row: 1;
-  padding: var(--space-6) var(--space-8);
+  padding: var(--space-4) var(--space-8);
   gap: var(--space-4);
   min-width: 0;
 }
@@ -1372,7 +1372,7 @@ body .app .legal-content p {
 @media (max-width: 1250px) {
   body .app,
   body .app.settings-dark {
-    grid-template-columns: 208px minmax(0, 1fr);
+    grid-template-columns: 224px minmax(0, 1fr);
   }
   body .app .topbar {
     padding: var(--space-5) var(--space-6);
@@ -1454,7 +1454,7 @@ body .app .legal-content p {
     padding-bottom: calc(72px + env(safe-area-inset-bottom));
   }
   body .app .topbar {
-    min-height: 84px;
+    min-height: 78px;
     padding: max(var(--space-4), env(safe-area-inset-top)) var(--space-4)
       var(--space-3);
     gap: var(--space-2);
