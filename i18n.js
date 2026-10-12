@@ -2443,6 +2443,90 @@
     ["The assistant is taking too long. The request may still incur usage; retry only if needed.","El asistente está tardando demasiado. La solicitud aún puede generar consumo; vuelve a intentarlo solo si es necesario.","L’assistant met trop de temps à répondre. La requête peut tout de même entraîner une consommation ; ne réessayez que si nécessaire.","Der Assistent braucht zu lange. Für die Anfrage können weiterhin Nutzungskosten anfallen; versuche es nur bei Bedarf erneut."],
   );
 
+// Locale labels for UI-generated previews and IANA time-zone region names.
+  Object.assign(ASIAN_TRANSLATIONS, {
+    "Preview": [
+      "预览",
+      "プレビュー",
+      "미리보기"
+    ],
+    "Africa": [
+      "非洲",
+      "アフリカ",
+      "아프리카"
+    ],
+    "America": [
+      "美洲",
+      "アメリカ",
+      "아메리카"
+    ],
+    "Antarctica": [
+      "南极洲",
+      "南極大陸",
+      "남극"
+    ],
+    "Arctic": [
+      "北极",
+      "北極",
+      "북극"
+    ],
+    "Asia": [
+      "亚洲",
+      "アジア",
+      "아시아"
+    ],
+    "Atlantic": [
+      "大西洋",
+      "大西洋",
+      "대서양"
+    ],
+    "Australia": [
+      "澳大利亚",
+      "オーストラリア",
+      "호주"
+    ],
+    "Europe": [
+      "欧洲",
+      "ヨーロッパ",
+      "유럽"
+    ],
+    "Indian": [
+      "印度洋",
+      "インド洋",
+      "인도양"
+    ],
+    "Pacific": [
+      "太平洋",
+      "太平洋",
+      "태평양"
+    ],
+    "Etc": [
+      "其他",
+      "その他",
+      "기타"
+    ],
+    "Global": [
+      "全球",
+      "グローバル",
+      "전 세계"
+    ]
+  });
+  ROWS.push(
+    ["Preview","Vista previa","Aperçu","Vorschau"],
+    ["Africa","África","Afrique","Afrika"],
+    ["America","América","Amérique","Amerika"],
+    ["Antarctica","Antártida","Antarctique","Antarktis"],
+    ["Arctic","Ártico","Arctique","Arktis"],
+    ["Asia","Asia","Asie","Asien"],
+    ["Atlantic","Atlántico","Atlantique","Atlantik"],
+    ["Australia","Australia","Australie","Australien"],
+    ["Europe","Europa","Europe","Europa"],
+    ["Indian","Índico","Indien","Indischer Ozean"],
+    ["Pacific","Pacífico","Pacifique","Pazifik"],
+    ["Etc","Otros","Autres","Sonstige"],
+    ["Global","Global","Mondial","Weltweit"],
+  );
+
     const PHRASES = new Map();
     const REVERSE = new Map();
     const ORIGINAL_TEXT = new WeakMap();
@@ -2906,87 +2990,3 @@
     observe();
   }
 })();
-  // Locale labels for UI-generated previews and IANA time-zone region names.
-  Object.assign(ASIAN_TRANSLATIONS, {
-    "Preview": [
-      "预览",
-      "プレビュー",
-      "미리보기"
-    ],
-    "Africa": [
-      "非洲",
-      "アフリカ",
-      "아프리카"
-    ],
-    "America": [
-      "美洲",
-      "アメリカ",
-      "아메리카"
-    ],
-    "Antarctica": [
-      "南极洲",
-      "南極大陸",
-      "남극"
-    ],
-    "Arctic": [
-      "北极",
-      "北極",
-      "북극"
-    ],
-    "Asia": [
-      "亚洲",
-      "アジア",
-      "아시아"
-    ],
-    "Atlantic": [
-      "大西洋",
-      "大西洋",
-      "대서양"
-    ],
-    "Australia": [
-      "澳大利亚",
-      "オーストラリア",
-      "호주"
-    ],
-    "Europe": [
-      "欧洲",
-      "ヨーロッパ",
-      "유럽"
-    ],
-    "Indian": [
-      "印度洋",
-      "インド洋",
-      "인도양"
-    ],
-    "Pacific": [
-      "太平洋",
-      "太平洋",
-      "태평양"
-    ],
-    "Etc": [
-      "其他",
-      "その他",
-      "기타"
-    ],
-    "Global": [
-      "全球",
-      "グローバル",
-      "전 세계"
-    ]
-  });
-  ROWS.push(
-    ["Preview","Vista previa","Aperçu","Vorschau"],
-    ["Africa","África","Afrique","Afrika"],
-    ["America","América","Amérique","Amerika"],
-    ["Antarctica","Antártida","Antarctique","Antarktis"],
-    ["Arctic","Ártico","Arctique","Arktis"],
-    ["Asia","Asia","Asie","Asien"],
-    ["Atlantic","Atlántico","Atlantique","Atlantik"],
-    ["Australia","Australia","Australie","Australien"],
-    ["Europe","Europa","Europe","Europa"],
-    ["Indian","Índico","Indien","Indischer Ozean"],
-    ["Pacific","Pacífico","Pacifique","Pazifik"],
-    ["Etc","Otros","Autres","Sonstige"],
-    ["Global","Global","Mondial","Weltweit"],
-  );
-
