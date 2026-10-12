@@ -2979,8 +2979,15 @@
       .slice(0, 80);
     root.innerHTML = "";
     if (!filtered.length) {
-      root.innerHTML =
-        '<p class="timezone-no-results">No matching time zones. Try a city or region name.</p>';
+      const empty = document.createElement("p");
+      empty.className = "timezone-no-results";
+      empty.setAttribute(
+        "data-i18n",
+        "No matching time zones. Try a city or region name.",
+      );
+      empty.textContent = "No matching time zones. Try a city or region name.";
+      root.replaceChildren(empty);
+      window.CalexI18n?.refresh();
       return;
     }
     filtered.forEach((z) => {
