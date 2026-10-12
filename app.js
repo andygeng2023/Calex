@@ -458,7 +458,7 @@
       persist();
       saveAppSettings();
     }
-    if (window.CalexI18n?.languages[appSettings.language])
+    if (window.CalexI18n?.isPreference(appSettings.language))
       window.CalexI18n.setLanguage(appSettings.language);
     renderAuth();
     renderProfile();
@@ -2739,7 +2739,7 @@
   const defaultSettings = {
     name: "",
     location: "",
-    language: window.CalexI18n?.language() || "en",
+    language: window.CalexI18n?.preference() || "auto",
     timezoneMode: "auto",
     timezone: deviceTimezone(),
     dark: !!(
@@ -2759,7 +2759,7 @@
       };
   } catch (_) {}
   // Account-specific preferences may override a device's guest language.
-  if (window.CalexI18n?.languages[appSettings.language])
+  if (window.CalexI18n?.isPreference(appSettings.language))
     window.CalexI18n.setLanguage(appSettings.language);
 
   function saveAppSettings() {
@@ -2972,12 +2972,62 @@
       renderLanguage();
     }
   }
+  function populateLanguageOptions(query) {
+    const results = $("languageResults");
+    if (!results) return;
+    const filter = String(query || "").trim().toLocaleLowerCase();
+    const current = window.CalexI18n?.preference() || appSettings.language || "auto";
+    const choices = [
+      { code: "auto", label: window.CalexI18n?.translate("Auto", window.CalexI18n.language()) || "Auto", detail: window.CalexI18n?.translate("System settings", window.CalexI18n.language()) || "System settings" },
+      ...Object.entries(window.CalexI18n?.languages || {}).map(([code, info]) => ({
+        code, label: info.label, detail: info.locale
+      }))
+    ].filter((item) => {
+      const searchable = (item.label + " " + item.detail + " " + item.code).toLocaleLowerCase();
+      return !filter || searchable.includes(filter);
+    });
+
+    results.replaceChildren();
+    if (!choices.length) {
+      const empty = document.createElement("div");
+      empty.className = "timezone-no-results";
+      empty.textContent = window.CalexI18n?.translate("No matching languages.", window.CalexI18n.language()) || "No matching languages.";
+      results.append(empty);
+      return;
+    }
+    choices.forEach((item) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "timezone-result language-result" + (item.code === current ? " selected" : "");
+      button.setAttribute("role", "option");
+      button.setAttribute("aria-selected", String(item.code === current));
+      button.dataset.language = item.code;
+      const name = document.createElement("span");
+      name.className = "timezone-result-name";
+      name.textContent = item.label;
+      const detail = document.createElement("span");
+      detail.className = "timezone-result-region";
+      detail.textContent = item.code === "auto"
+        ? item.detail + " · " + (window.CalexI18n?.languageLabel(window.CalexI18n.language()) || "English")
+        : item.detail;
+      button.append(name, detail);
+      button.addEventListener("click", () => {
+        if (!window.CalexI18n?.setLanguage(item.code)) return;
+        appSettings.language = window.CalexI18n.preference();
+        renderLanguage();
+        if (!saveAppSettings()) showToast("Could not save settings in this browser.");
+        $("languageSearch").value = "";
+        $("languageSearch").focus();
+      });
+      results.append(button);
+    });
+  }
   function renderLanguage() {
-    const current = window.CalexI18n?.language() || appSettings.language || "en";
-    $("languageSelect").value = current;
+    const current = window.CalexI18n?.preference() || appSettings.language || "auto";
     $("languageSummary").textContent =
-      window.CalexI18n?.languageLabel(current) || "English";
+      window.CalexI18n?.languageLabel(current) || "Auto · System settings";
     $("languageToggle").setAttribute("aria-expanded", String(!$("languageDetail").hidden));
+    populateLanguageOptions($("languageSearch")?.value || "");
   }
   $("profileEdit").addEventListener("click", () => {
     openSettingsDetail("account");
@@ -2989,16 +3039,26 @@
   $("languageToggle").addEventListener("click", () => {
     openSettingsDetail("language");
   });
-  $("languageSelect").addEventListener("change", () => {
-    const code = $("languageSelect").value;
-    if (!window.CalexI18n?.languages[code]) return;
-    appSettings.language = code;
-    window.CalexI18n.setLanguage(code);
-    renderLanguage();
-    if (!saveAppSettings()) showToast("Could not save settings in this browser.");
+  $("languageSearch").addEventListener("input", () =>
+    populateLanguageOptions($("languageSearch").value),
+  );
+  $("languageResults").addEventListener("keydown", (event) => {
+    const options = [...$("languageResults").querySelectorAll("button[data-language]")];
+    const currentIndex = options.indexOf(document.activeElement);
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      const delta = event.key === "ArrowDown" ? 1 : -1;
+      options[(currentIndex + delta + options.length) % options.length]?.focus();
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      options[0]?.focus();
+    } else if (event.key === "End") {
+      event.preventDefault();
+      options[options.length - 1]?.focus();
+    }
   });
   window.addEventListener("calex:language", () => {
-    appSettings.language = window.CalexI18n?.language() || appSettings.language || "en";
+    appSettings.language = window.CalexI18n?.preference() || appSettings.language || "auto";
     renderAll();
     renderProfile();
     renderTimezone();
