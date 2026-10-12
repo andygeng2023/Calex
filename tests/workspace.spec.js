@@ -56,6 +56,48 @@ async function addEvent(
   await expect(page.locator("#modalBackdrop")).not.toHaveClass(/open/);
 }
 
+
+test("language setting translates the interface and persists the choice", async ({ page }) => {
+  await page.goto("/");
+  await page.locator('[data-screen="settings"]').click();
+  await page.locator("#languageToggle").click();
+  await expect(page.locator("#languageDetail")).toBeVisible();
+  await page.locator("#languageSelect").selectOption("es");
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
+  await expect(page.locator(".settings-title")).toHaveText("Ajustes");
+  await expect(page.locator('[data-screen="calendar"]')).toContainText("Calendario");
+  await expect(page.locator("#languageSummary")).toHaveText("Español");
+
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
+  await expect(page.locator(".settings-title")).toHaveText("Ajustes");
+  await page.locator('[data-screen="settings"]').click();
+  await page.locator("#languageToggle").click();
+  await expect(page.locator("#languageSelect")).toHaveValue("es");
+
+  await page.locator("#languageSelect").selectOption("fr");
+  await expect(page.locator("html")).toHaveAttribute("lang", "fr");
+  await expect(page.locator(".settings-title")).toHaveText("Paramètres");
+  await expect(page.locator("#languageSummary")).toHaveText("Français");
+});
+
+test("language switching leaves event titles unchanged", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#globalAdd").click();
+  await page.locator("#eventTitle").fill("Dentist");
+  await page.locator("#eventDate").fill("2026-10-12");
+  await page.locator('#eventForm button[type="submit"]').click();
+  await page.locator('[data-screen="calendar"]').click();
+  await expect(page.locator("#panelEvents")).toContainText("Dentist");
+
+  await page.locator('[data-screen="settings"]').click();
+  await page.locator("#languageToggle").click();
+  await page.locator("#languageSelect").selectOption("es");
+  await page.locator('[data-screen="calendar"]').click();
+  await expect(page.locator("#panelEvents")).toContainText("Dentist");
+});
+
 test("categorized events persist and appear in month, week, and agenda", async ({
   page,
 }) => {
