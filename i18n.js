@@ -423,6 +423,7 @@
   }
 
   function translatePattern(source, code) {
+    let match;
     const t = (key) => {
       const entry = PHRASES.get(normalise(key));
       return entry ? entry[code] : key;
@@ -461,7 +462,7 @@
       return count + (count === 1 ? " Termin importiert" : " Termine importiert") + (duplicates ? " · " + duplicates + " Duplikate übersprungen" : "") + (limited ? " · Limit erreicht" : "");
     }
 
-    let match = source.match(/^Calendar: (Full dates|Month|Week) view$/);
+    match = source.match(/^Calendar: (Full dates|Month|Week) view$/);
     if (match) return t("Calendar") + ": " + t(match[1]) + " " + t("view");
 
     match = source.match(/^(.+), (\d+) events?$/);
