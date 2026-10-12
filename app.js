@@ -2483,20 +2483,20 @@
     incomingAnimation.onfinish = finishAnimation;
   }
 
-  function finishCalendarSwipe(event, cancelled = false) {
+  function finishCalendarSwipeAt(x, cancelled = false) {
     const state = calendarSwipe;
-    if (!state || event.pointerId !== state.pointerId) return;
+    if (!state) return;
     calendarSwipe = null;
     if (!state.dragging) return;
 
     const width = Math.max(1, calendarScroller.clientWidth);
-    const x = Number.isFinite(event.clientX) ? event.clientX : state.lastX;
-    const rawOffset = x - state.startX;
+    const endX = Number.isFinite(x) ? x : state.lastX;
+    const rawOffset = endX - state.startX;
     const offset = Math.max(-width * 0.94, Math.min(width * 0.94, rawOffset));
     calendarScroller.style.transform = "translate3d(" + offset + "px,0,0)";
 
     const now = performance.now();
-    state.samples.push({ x, time: now });
+    state.samples.push({ x: endX, time: now });
     const recent = state.samples.filter((sample) => now - sample.time <= 120);
     const first = recent[0] || state.samples[0];
     const last =
@@ -2516,6 +2516,110 @@
     }
     commitCalendarSwipe(offset < 0 ? -1 : 1, offset, width, velocity);
   }
+
+  function finishCalendarSwipe(event, cancelled = false) {
+    const state = calendarSwipe;
+    if (!state || event.pointerId !== state.pointerId) return;
+    finishCalendarSwipeAt(event.clientX, cancelled);
+  }
+
+  function calendarTouchById(list, identifier) {
+    return Array.from(list || []).find((touch) => touch.identifier === identifier);
+  }
+
+  // Keep a Touch Events path for mobile browsers/WebViews that cancel Pointer
+  // Events during gesture arbitration. Pointer handling remains for mouse/pen.
+  calendarScroller.addEventListener(
+    "touchstart",
+    (event) => {
+      if (
+        event.pointerType === "touch" ||
+        view === "all" ||
+        !calendarScreen.classList.contains("active") ||
+        calendarScreen.classList.contains("is-view-settling") ||
+        $("searchInput").value.trim() ||
+        event.touches.length !== 1
+      )
+        return;
+      const touch = event.touches[0];
+      const now = performance.now();
+      calendarSwipe = {
+        pointerId: "touch-" + touch.identifier,
+        touchIdentifier: touch.identifier,
+        isTouch: true,
+        startX: touch.clientX,
+        startY: touch.clientY,
+        lastX: touch.clientX,
+        dragging: false,
+        offset: 0,
+        samples: [{ x: touch.clientX, time: now }],
+      };
+    },
+    { passive: true },
+  );
+
+  calendarScroller.addEventListener(
+    "touchmove",
+    (event) => {
+      const state = calendarSwipe;
+      if (!state || !state.isTouch) return;
+      const touch = calendarTouchById(event.touches, state.touchIdentifier);
+      if (!touch) return;
+      const now = performance.now();
+      state.lastX = touch.clientX;
+      state.samples.push({ x: touch.clientX, time: now });
+      state.samples = state.samples.filter((sample) => now - sample.time <= 180);
+      const dx = touch.clientX - state.startX;
+      const dy = touch.clientY - state.startY;
+      if (!state.dragging) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        if (Math.abs(dy) > Math.abs(dx) * 1.15) {
+          calendarSwipe = null;
+          return;
+        }
+        state.dragging = true;
+        calendarScreen.classList.add("is-calendar-swiping");
+        calendarScroller.style.willChange = "transform";
+      }
+      // Horizontal gestures belong to the calendar, not the browser's native
+      // scroll handling; vertical gestures are left untouched.
+      if (event.cancelable) event.preventDefault();
+      const width = Math.max(1, calendarScroller.clientWidth);
+      state.offset = Math.max(-width * 0.94, Math.min(width * 0.94, dx));
+      calendarScroller.style.transform =
+        "translate3d(" + state.offset + "px,0,0)";
+    },
+    { passive: false },
+  );
+
+  calendarScroller.addEventListener(
+    "touchend",
+    (event) => {
+      const state = calendarSwipe;
+      if (!state || !state.isTouch) return;
+      const touch = calendarTouchById(
+        event.changedTouches,
+        state.touchIdentifier,
+      );
+      if (!touch) return;
+      finishCalendarSwipeAt(touch.clientX);
+    },
+    { passive: true },
+  );
+
+  calendarScroller.addEventListener(
+    "touchcancel",
+    (event) => {
+      const state = calendarSwipe;
+      if (!state || !state.isTouch) return;
+      const touch = calendarTouchById(
+        event.changedTouches,
+        state.touchIdentifier,
+      );
+      finishCalendarSwipeAt(touch ? touch.clientX : state.lastX, true);
+    },
+    { passive: true },
+  );
 
   calendarScroller.addEventListener(
     "pointerdown",
