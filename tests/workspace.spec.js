@@ -733,3 +733,142 @@ test("Quick Add preview labels update with language changes while keeping event 
   await expect(page.locator("#quickPreview")).toHaveText("入力するとプレビューが表示されます…");
 });
 
+test("Gmail panel explains setup and does not request mailbox access until configured", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#openGmail").click();
+
+  await expect(page.locator("#gmailDialog")).toBeVisible();
+  await expect(page.locator("#gmailSetupHelp")).toBeVisible();
+  await expect(page.locator("#gmailConnect")).toBeDisabled();
+  await expect(page.locator("#gmailPrivacyNote")).toHaveCount(0);
+  await expect(page.locator(".gmail-privacy-note")).toContainText(
+    "its text is sent to Puter AI",
+  );
+  await expect(page.locator("#gmailStatus")).toContainText(
+    "not configured",
+  );
+});
+
+test("Gmail connects with read-only OAuth and displays inbox cards that can be dragged", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.CALEX_GMAIL_CLIENT_ID = "calex-test-client.apps.googleusercontent.com";
+  });
+  await page.route("https://accounts.google.com/gsi/client", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/javascript",
+      body: "window.google={accounts:{oauth2:{initTokenClient:function(c){return {requestAccessToken:function(){c.callback({access_token:'test-access-token',expires_in:3600});}};},revoke:function(t,cb){if(cb)cb();}}}};",
+    }),
+  );
+  await page.route("https://gmail.googleapis.com/**", async (route) => {
+    const url = route.request().url();
+    if (url.includes("/messages?")) {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          messages: [{ id: "mail-planning-1", threadId: "thread-planning-1" }],
+        }),
+      });
+      return;
+    }
+    if (url.includes("/messages/mail-planning-1?") && url.includes("format=metadata")) {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          id: "mail-planning-1",
+          threadId: "thread-planning-1",
+          internalDate: "1793601000000",
+          snippet: "Let's meet to plan the project timeline.",
+          payload: {
+            mimeType: "text/plain",
+            headers: [
+              { name: "From", value: "Sam Example <sam@example.com>" },
+              { name: "Subject", value: "Planning session" },
+              { name: "Date", value: "Mon, 2 Nov 2026 09:30:00 +0000" },
+            ],
+          },
+        }),
+      });
+      return;
+    }
+    await route.fulfill({ status: 404, contentType: "application/json", body: "{}" });
+  });
+
+  await page.goto("/");
+  await page.locator("#openGmail").click();
+  await expect(page.locator("#gmailSetupHelp")).toBeHidden();
+  await page.locator("#gmailConnect").click();
+
+  const email = page.locator(".gmail-email").filter({ hasText: "Planning session" });
+  await expect(email).toBeVisible();
+  await expect(email).toContainText("sam@example.com");
+  await expect(email).toContainText("Let's meet to plan the project timeline.");
+  await expect(email).toHaveAttribute("draggable", "true");
+  await expect(page.locator("#gmailStatus")).toContainText("Showing 1 recent message");
+});
+
+test("Puter converts email content into a validated event draft without saving it", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.puter = {
+      auth: { signIn: async () => true },
+      ai: {
+        chat: async (messages) => {
+          window.__emailExtractionPrompt = messages;
+          return JSON.stringify({
+            reply: "Planning session found.",
+            event: {
+              title: "Planning session with Sam",
+              date: null,
+              start: "09:30",
+              end: "10:15",
+              location: "Online",
+              category: "work",
+              repeat: "none",
+              description: "Discuss the project timeline.",
+              people: "Sam",
+              notes: "Bring the project draft.",
+            },
+          });
+        },
+      },
+    };
+  });
+  await page.goto("/");
+  await page.locator("#openAssistant").click();
+  await page.locator("#connectPuter").click();
+  await expect(page.locator("#puterConnection")).toBeHidden();
+
+  const result = await page.evaluate(async () => {
+    const result = await window.CalexPuter.convertEmailToEvent({
+      from: "Sam Example <sam@example.com>",
+      subject: "Planning session",
+      date: "Mon, 2 Nov 2026 09:30:00 +0000",
+      snippet: "Let's meet to plan the project timeline.",
+      body: "The project planning session will cover milestones.",
+      preferredDate: "2026-11-03",
+    });
+    window.__emailDraft = result.event;
+    return {
+      event: result.event,
+      system: window.__emailExtractionPrompt[0].content,
+      prompt: JSON.parse(window.__emailExtractionPrompt[1].content),
+    };
+  });
+
+  expect(result.event.date).toBe("2026-11-03");
+  expect(result.event.title).toBe("Planning session with Sam");
+  expect(result.event.location).toBe("Online");
+  expect(result.system).toContain("untrusted data");
+  expect(result.prompt.preferredDate).toBe("2026-11-03");
+
+  await page.evaluate(() => window.Calex.draftEvent(window.__emailDraft));
+  await expect(page.locator("#eventTitle")).toHaveValue("Planning session with Sam");
+  await expect(page.locator("#eventDate")).toHaveValue("2026-11-03");
+  await expect(page.locator("#eventDescription")).toHaveValue("Discuss the project timeline.");
+  await expect(page.locator("#eventPeople")).toHaveValue("Sam");
+  await expect(page.locator("#eventNotes")).toHaveValue("Bring the project draft.");
+  await expect(page.locator('#eventForm button[type="submit"]')).toBeVisible();
+});
+
