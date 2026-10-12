@@ -488,12 +488,28 @@ const eastAsianLanguages = [
       accountTitle: "登录或创建账户",
       accountSubtitle: "在不同设备间安全地同步日历",
       syncNote: "登录之前，你的日程会保存在此设备上。",
+      accountDescription: "让你在不同设备上都能使用日历和偏好设置。",
       quickHint: "开始输入以查看预览…",
       quickExample: "试试输入",
       quickPrefix: "基于规则的预览",
       repeat: "每周重复",
       eventName: "日程名称",
       never: "从不",
+      descriptionPlaceholder: "简短描述…",
+      descriptionLabel: "日程描述",
+      locationLabel: "位置",
+      locationPlaceholder: "添加地点",
+      startTimeLabel: "开始时间",
+      endTimeLabel: "结束时间",
+      repeatLabel: "重复",
+      peopleLabel: "人员",
+      categoryLabel: "日历",
+      personalCategory: "个人",
+      workCategory: "工作与学习",
+      wellbeingCategory: "身心健康",
+      notesLabel: "备注",
+      notesPlaceholder: "其他需要记住的事项",
+      saveEvent: "保存事件",
       timezoneRegion: "亚洲",
       using: "正在使用",
       saveTimezone: "保存以应用更改。",
@@ -512,12 +528,28 @@ const eastAsianLanguages = [
       accountTitle: "サインインまたはアカウントを作成",
       accountSubtitle: "デバイス間でカレンダーを安全に同期",
       syncNote: "サインインするまで、予定はこのデバイスに保存されます。",
+      accountDescription: "複数のデバイスでカレンダーと設定を利用できるようにします。",
       quickHint: "入力するとプレビューが表示されます…",
       quickExample: "などを試してください",
       quickPrefix: "ルールベースのプレビュー",
       repeat: "毎週繰り返し",
       eventName: "予定名",
       never: "なし",
+      descriptionPlaceholder: "短い説明…",
+      descriptionLabel: "予定の説明",
+      locationLabel: "場所",
+      locationPlaceholder: "場所を追加",
+      startTimeLabel: "開始時刻",
+      endTimeLabel: "終了時刻",
+      repeatLabel: "繰り返し",
+      peopleLabel: "参加者",
+      categoryLabel: "カレンダー",
+      personalCategory: "個人",
+      workCategory: "仕事と学習",
+      wellbeingCategory: "ウェルビーイング",
+      notesLabel: "メモ",
+      notesPlaceholder: "ほかに覚えておくこと",
+      saveEvent: "予定を保存",
       timezoneRegion: "アジア",
       using: "使用中",
       saveTimezone: "適用するには保存してください。",
@@ -536,12 +568,28 @@ const eastAsianLanguages = [
       accountTitle: "로그인 또는 계정 만들기",
       accountSubtitle: "여러 기기에서 캘린더를 안전하게 동기화",
       syncNote: "로그인할 때까지 일정은 이 기기에 저장됩니다.",
+      accountDescription: "여러 기기에서 캘린더와 환경설정을 사용할 수 있습니다.",
       quickHint: "입력을 시작하면 미리보기가 표시됩니다…",
       quickExample: "등을 입력해 보세요",
       quickPrefix: "규칙 기반 미리보기",
       repeat: "매주 반복",
       eventName: "일정 이름",
       never: "안 함",
+      descriptionPlaceholder: "간단한 설명…",
+      descriptionLabel: "일정 설명",
+      locationLabel: "위치",
+      locationPlaceholder: "장소 추가",
+      startTimeLabel: "시작 시간",
+      endTimeLabel: "종료 시간",
+      repeatLabel: "반복",
+      peopleLabel: "참여자",
+      categoryLabel: "캘린더",
+      personalCategory: "개인",
+      workCategory: "업무 및 학습",
+      wellbeingCategory: "웰빙",
+      notesLabel: "메모",
+      notesPlaceholder: "기억할 다른 사항",
+      saveEvent: "일정 저장",
       timezoneRegion: "아시아",
       using: "사용 중",
       saveTimezone: "적용하려면 저장하세요.",
@@ -609,6 +657,21 @@ for (const lang of eastAsianLanguages) {
     await expect(page.locator("#eventForm label[for='eventDate']")).toHaveText(
       lang.code === "zh" ? "日期 *" : lang.code === "ja" ? "日付 *" : "날짜 *",
     );
+    await expect(page.locator("#eventDescription")).toHaveAttribute("placeholder", lang.descriptionPlaceholder);
+    await expect(page.locator("#eventDescription")).toHaveAttribute("aria-label", lang.descriptionLabel);
+    await expect(page.locator("#eventForm label[for='eventLocation']")).toHaveText(lang.locationLabel);
+    await expect(page.locator("#eventLocation")).toHaveAttribute("placeholder", lang.locationPlaceholder);
+    await expect(page.locator("#eventForm label[for='eventStart']")).toHaveText(lang.startTimeLabel);
+    await expect(page.locator("#eventForm label[for='eventEnd']")).toHaveText(lang.endTimeLabel);
+    await expect(page.locator("#eventForm label[for='eventRepeat']")).toHaveText(lang.repeatLabel);
+    await expect(page.locator("#eventForm label[for='eventPeople']")).toHaveText(lang.peopleLabel);
+    await expect(page.locator("#eventForm label[for='eventCategory']")).toHaveText(lang.categoryLabel);
+    await expect(page.locator('#eventCategory option[value="personal"]')).toHaveText(lang.personalCategory);
+    await expect(page.locator('#eventCategory option[value="work"]')).toHaveText(lang.workCategory);
+    await expect(page.locator('#eventCategory option[value="wellbeing"]')).toHaveText(lang.wellbeingCategory);
+    await expect(page.locator("#eventForm label[for='eventNotes']")).toHaveText(lang.notesLabel);
+    await expect(page.locator("#eventNotes")).toHaveAttribute("placeholder", lang.notesPlaceholder);
+    await expect(page.locator('#eventForm button[type="submit"]')).toHaveText(lang.saveEvent);
     await page.locator("#closeModal").click();
 
     await page.locator('[data-screen="agenda"]').click();
@@ -626,6 +689,7 @@ for (const lang of eastAsianLanguages) {
           ? ".ics ファイル（Google、Outlook、Apple）から予定を追加"
           : ".ics 파일(Google, Outlook, Apple)에서 일정 추가",
     );
+    await expect(page.locator(".settings-section-description")).toHaveText(lang.accountDescription);
     await expect(page.locator("#settingsSignInTitle")).toHaveText(lang.accountTitle);
     await expect(page.locator("#settingsSignInSubtitle")).toHaveText(lang.accountSubtitle);
     await expect(page.locator("#settingsSyncNote")).toHaveText(lang.syncNote);
