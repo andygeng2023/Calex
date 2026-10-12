@@ -2605,8 +2605,16 @@
     window.__calexI18nObserver = observer;
   }
 
+  function missingTranslations(targetLanguage) {
+    const code = LANGUAGES[targetLanguage] ? targetLanguage : currentLanguage;
+    return Array.from(PHRASES.entries())
+      .filter(([, values]) => !values[code] || values[code] === values.en)
+      .map(([source]) => source);
+  }
+
   window.CalexI18n = {
     languages: LANGUAGES,
+    missingTranslations,
     language,
     preference,
     isPreference,
