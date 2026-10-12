@@ -1,3 +1,39 @@
+
+test("desktop top bar is slimmer and left sidebar is wider", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("/");
+
+  const desktop = await page.evaluate(() => ({
+    topbarHeight: document.querySelector(".topbar").getBoundingClientRect().height,
+    sidebarWidth: document.querySelector(".bottom-nav").getBoundingClientRect().width,
+    gridColumns: getComputedStyle(document.querySelector(".app")).gridTemplateColumns,
+  }));
+  expect(desktop.topbarHeight).toBe(92);
+  expect(desktop.sidebarWidth).toBe(260);
+  expect(desktop.gridColumns.startsWith("260px")).toBeTruthy();
+
+  await page.setViewportSize({ width: 1100, height: 900 });
+  const mediumDesktop = await page.evaluate(() => ({
+    topbarHeight: document.querySelector(".topbar").getBoundingClientRect().height,
+    sidebarWidth: document.querySelector(".bottom-nav").getBoundingClientRect().width,
+    gridColumns: getComputedStyle(document.querySelector(".app")).gridTemplateColumns,
+  }));
+  expect(mediumDesktop.topbarHeight).toBe(92);
+  expect(mediumDesktop.sidebarWidth).toBe(224);
+  expect(mediumDesktop.gridColumns.startsWith("224px")).toBeTruthy();
+});
+
+test("mobile top bar remains compact with bottom navigation", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const layout = await page.evaluate(() => ({
+    topbarHeight: document.querySelector(".topbar").getBoundingClientRect().height,
+    sidebarPosition: getComputedStyle(document.querySelector(".bottom-nav")).position,
+  }));
+  expect(layout.topbarHeight).toBe(78);
+  expect(layout.sidebarPosition).toBe("absolute");
+});
+
 const { test, expect } = require("@playwright/test");
 
 const isoToday = () => {
