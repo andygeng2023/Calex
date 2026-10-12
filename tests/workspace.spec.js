@@ -641,3 +641,22 @@ test("East Asian languages translate sidebar, empty states, event forms, preview
   }
 });
 
+test("Quick Add preview labels update with language changes while keeping event text intact", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => window.CalexI18n.setLanguage("zh"));
+  await page.locator("#homeQuickAdd").click();
+  await page.locator("#quickText").fill("Team meeting tomorrow every week");
+
+  await expect(page.locator("#quickPreview")).toContainText("基于规则的预览");
+  await expect(page.locator("#quickPreview")).toContainText("每周重复");
+  await expect(page.locator("#quickPreview")).toContainText("Team meeting");
+
+  await page.evaluate(() => window.CalexI18n.setLanguage("ja"));
+  await expect(page.locator("#quickPreview")).toContainText("ルールベースのプレビュー");
+  await expect(page.locator("#quickPreview")).toContainText("毎週繰り返し");
+  await expect(page.locator("#quickPreview")).toContainText("Team meeting");
+
+  await page.locator("#quickText").fill("");
+  await expect(page.locator("#quickPreview")).toHaveText("入力するとプレビューが表示されます…");
+});
+
