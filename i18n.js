@@ -363,6 +363,14 @@
     ["A LITTLE PROGRESS", "UN POCO DE PROGRESO", "UN PEU DE PROGRÈS", "EIN KLEINER FORTSCHRITT"],
     ["Nothing new to import.", "No hay nada nuevo que importar.", "Aucun nouvel élément à importer.", "Nichts Neues zum Importieren."],
     ["Please choose a language.", "Elige un idioma.", "Veuillez choisir une langue.", "Bitte wähle eine Sprache aus."],
+    ["Reset link accepted. Choose a new password below.", "Enlace de restablecimiento aceptado. Elige una nueva contraseña abajo.", "Lien de réinitialisation accepté. Choisissez un nouveau mot de passe ci-dessous.", "Link zum Zurücksetzen akzeptiert. Lege unten ein neues Passwort fest."],
+    ["Manage your account and sign-out options", "Gestiona tu cuenta y las opciones para cerrar sesión", "Gérez votre compte et les options de déconnexion", "Verwalte dein Konto und die Abmeldeoptionen"],
+    ["Rule-based preview", "Vista previa basada en reglas", "Aperçu basé sur des règles", "Regelbasierte Vorschau"],
+    ["Supabase could not send the email. The app maintainer needs to check SMTP settings and Auth delivery logs.", "Supabase no pudo enviar el correo. La persona responsable de la aplicación debe revisar la configuración SMTP y los registros de entrega de Auth.", "Supabase n’a pas pu envoyer l’e-mail. Le responsable de l’application doit vérifier la configuration SMTP et les journaux de livraison Auth.", "Supabase konnte die E-Mail nicht senden. Die betreuende Person muss die SMTP-Einstellungen und die Auth-Zustellprotokolle prüfen."],
+    ["The email service cannot send to this address. The app maintainer must configure custom SMTP in Supabase. You can also try Google sign-in.", "El servicio de correo no puede enviar mensajes a esta dirección. La persona responsable debe configurar SMTP personalizado en Supabase. También puedes probar el acceso con Google.", "Le service de messagerie ne peut pas envoyer à cette adresse. Le responsable doit configurer un SMTP personnalisé dans Supabase. Vous pouvez aussi essayer la connexion Google.", "Der E-Mail-Dienst kann an diese Adresse nicht senden. Die betreuende Person muss benutzerdefiniertes SMTP in Supabase einrichten. Du kannst auch die Google-Anmeldung versuchen."],
+    ["You’re signed in. Your calendar syncs with your account.", "Has iniciado sesión. Tu calendario se sincroniza con tu cuenta.", "Vous êtes connecté. Votre calendrier se synchronise avec votre compte.", "Du bist angemeldet. Dein Kalender wird mit deinem Konto synchronisiert."],
+    ["duplicates skipped", "duplicados omitidos", "doublons ignorés", "Duplikate übersprungen"],
+    ["limit reached", "límite alcanzado", "limite atteinte", "Limit erreicht"],
   ];
 
   const PHRASES = new Map();
@@ -411,6 +419,37 @@
       const entry = PHRASES.get(normalise(key));
       return entry ? entry[code] : key;
     };
+    match = source.match(/^Signed in as (.+)$/);
+    if (match) {
+      if (code === "es") return "Sesión iniciada como " + match[1];
+      if (code === "fr") return "Connecté en tant que " + match[1];
+      return "Angemeldet als " + match[1];
+    }
+
+    match = source.match(/^Resend available in (\d+)s$/);
+    if (match) {
+      if (code === "es") return "Reenvío disponible en " + match[1] + " s";
+      if (code === "fr") return "Nouvel envoi possible dans " + match[1] + " s";
+      return "Erneut senden in " + match[1] + " s möglich";
+    }
+
+    match = source.match(/^Synced at (.+?)\. Your calendar is up to date across devices\.$/);
+    if (match) {
+      if (code === "es") return "Sincronizado a las " + match[1] + ". Tu calendario está actualizado en todos tus dispositivos.";
+      if (code === "fr") return "Synchronisé à " + match[1] + ". Votre calendrier est à jour sur tous vos appareils.";
+      return "Synchronisiert um " + match[1] + ". Dein Kalender ist auf allen Geräten aktuell.";
+    }
+
+    match = source.match(/^Imported (\d+) events?(?: · (\d+) duplicates skipped)?(?: · limit reached)?$/);
+    if (match) {
+      const count = Number(match[1]);
+      const duplicates = match[2] ? Number(match[2]) : 0;
+      const limited = source.includes("· limit reached");
+      if (code === "es") return "Importados " + count + (count === 1 ? " evento" : " eventos") + (duplicates ? " · " + duplicates + " duplicados omitidos" : "") + (limited ? " · límite alcanzado" : "");
+      if (code === "fr") return count + (count === 1 ? " événement importé" : " événements importés") + (duplicates ? " · " + duplicates + " doublons ignorés" : "") + (limited ? " · limite atteinte" : "");
+      return count + (count === 1 ? " Termin importiert" : " Termine importiert") + (duplicates ? " · " + duplicates + " Duplikate übersprungen" : "") + (limited ? " · Limit erreicht" : "");
+    }
+
     let match = source.match(/^Calendar: (Full dates|Month|Week) view$/);
     if (match) return t("Calendar") + ": " + t(match[1]) + " " + t("view");
 
@@ -450,12 +489,35 @@
 
     match = source.match(/^Repeats every (\d+) (days|weeks|months|years)$/);
     if (match) {
-      const unit = { days: "day", weeks: "week", months: "month", years: "year" }[match[2]];
-      const unitText = { day: { es: "día", fr: "jour", de: "Tag" }, week: { es: "semana", fr: "semaine", de: "Woche" }, month: { es: "mes", fr: "mois", de: "Monat" }, year: { es: "año", fr: "an", de: "Jahr" } }[unit][code] || unit;
       const n = Number(match[1]);
-      if (code === "es") return "Se repite cada " + n + " " + unitText + (n === 1 ? "" : unit === "day" ? "s" : unit === "week" ? "s" : unit === "month" ? "es" : "s");
-      if (code === "fr") return "Répète tous les " + n + " " + unitText + (n === 1 ? "" : unit === "year" ? "s" : "s");
-      if (code === "de") return "Wiederholt sich alle " + n + " " + unitText + (n === 1 ? "" : "n");
+      const baseUnit = { days: "day", weeks: "week", months: "month", years: "year" }[match[2]];
+      if (code === "es") {
+        const unit = {
+          day: n === 1 ? "día" : "días",
+          week: n === 1 ? "semana" : "semanas",
+          month: n === 1 ? "mes" : "meses",
+          year: n === 1 ? "año" : "años",
+        }[baseUnit];
+        return "Se repite cada " + n + " " + unit;
+      }
+      if (code === "fr") {
+        const unit = {
+          day: n === 1 ? "jour" : "jours",
+          week: n === 1 ? "semaine" : "semaines",
+          month: n === 1 ? "mois" : "mois",
+          year: n === 1 ? "an" : "ans",
+        }[baseUnit];
+        return "Répète " + (baseUnit === "week" ? "toutes les " : "tous les ") + n + " " + unit;
+      }
+      if (code === "de") {
+        const unit = {
+          day: n === 1 ? "Tag" : "Tage",
+          week: n === 1 ? "Woche" : "Wochen",
+          month: n === 1 ? "Monat" : "Monate",
+          year: n === 1 ? "Jahr" : "Jahre",
+        }[baseUnit];
+        return "Wiederholt sich alle " + n + " " + unit;
+      }
     }
 
     match = source.match(/^Repeats (daily|weekly|monthly|yearly)$/);
