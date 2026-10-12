@@ -170,6 +170,223 @@ test("event checkboxes align to the center of their event row", async ({ page })
 });
 
 
+
+async function swipeCalendar(page, direction) {
+  const scroller = page.locator("#calendarScroller");
+  const box = await scroller.boundingBox();
+  if (!box) throw new Error("Calendar scroller is not visible.");
+  const y = box.y + box.height / 2;
+  const startRatio = direction === "left" ? 0.8 : 0.2;
+  const endRatio = direction === "left" ? 0.2 : 0.8;
+  await page.mouse.move(box.x + box.width * startRatio, y);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * endRatio, y, { steps: 6 });
+  const draggedTransform = await scroller.evaluate(
+    (element) => getComputedStyle(element).transform,
+  );
+  await page.mouse.up();
+  return draggedTransform;
+}
+
+function selectedDateKey(page) {
+  return page.evaluate(() => {
+    const date = window.Calex.selected();
+    return [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, "0"),
+      String(date.getDate()).padStart(2, "0"),
+    ].join("-");
+  });
+}
+
+test("week swipe moves one week with drag-glide motion", async ({ page }) => {
+  await seedEvents(page, []);
+  await page.goto("/");
+  await page.evaluate(() => window.Calex.setView("week"));
+  await expect(page.locator("#calendarScreen")).not.toHaveClass(/is-view-settling/);
+
+  const originalDate = await selectedDateKey(page);
+  const expectedNext = await page.evaluate(() => {
+    const date = window.Calex.selected();
+    date.setDate(date.getDate() + 7);
+    return [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, "0"),
+      String(date.getDate()).padStart(2, "0"),
+    ].join("-");
+  });
+
+  const draggedTransform = await swipeCalendar(page, "left");
+  expect(draggedTransform).not.toBe("none");
+  await expect.poll(() => selectedDateKey(page)).toBe(expectedNext);
+  await expect(page.locator("#calendarScreen")).not.toHaveClass(/is-calendar-swiping/);
+
+  await expect(page.locator("#calendarScreen")).not.toHaveClass(/is-view-settling/);
+  const returnTransform = await swipeCalendar(page, "right");
+  expect(returnTransform).not.toBe("none");
+  await expect.poll(() => selectedDateKey(page)).toBe(originalDate);
+});
+
+test("month swipe advances one month and clamps the selected day", async ({ page }) => {
+  await seedEvents(page, []);
+  await page.goto("/");
+  await page.evaluate(() => {
+    const base = new Date();
+    base.setDate(1);
+    let target = null;
+    for (let offset = 0; offset < 12; offset += 1) {
+      const year = base.getFullYear();
+      const month = base.getMonth() + offset;
+      const monthEnd = new Date(year, month + 1, 0, 12);
+      const nextMonthEnd = new Date(year, month + 2, 0, 12);
+      if (monthEnd.getDate() > nextMonthEnd.getDate()) {
+        target = monthEnd;
+        break;
+      }
+    }
+    if (!target) throw new Error("Could not find a month-end clamp fixture.");
+    const key = [
+      target.getFullYear(),
+      String(target.getMonth() + 1).padStart(2, "0"),
+      String(target.getDate()).padStart(2, "0"),
+    ].join("-");
+    window.Calex.selectDate(key);
+    window.Calex.setView("month");
+  });
+  await expect(page.locator("#calendarScreen")).not.toHaveClass(/is-view-settling/);
+
+  const before = await page.evaluate(() => {
+    const date = window.Calex.selected();
+    return {
+      year: date.getFullYear(),
+      month: date.getMonth(),
+      day: date.getDate(),
+    };
+  });
+  const expectedNext = await page.evaluate(() => {
+    const date = window.Calex.selected();
+    const next = new Date(date.getFullYear(), date.getMonth() + 1, 1, 12);
+    const lastDay = new Date(
+      next.getFullYear(),
+      next.getMonth() + 1,
+      0,
+    ).getDate();
+    return [
+      next.getFullYear(),
+      String(next.getMonth() + 1).padStart(2, "0"),
+      String(Math.min(date.getDate(), lastDay)).padStart(2, "0"),
+    ].join("-");
+  });
+
+  const draggedTransform = await swipeCalendar(page, "left");
+  expect(draggedTransform).not.toBe("none");
+  await expect.poll(() => selectedDateKey(page)).toBe(expectedNext);
+  const expectedTitle = new Date(
+    before.year,
+    before.month + 1,
+    1,
+  ).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+  await expect(page.locator("#monthTitle")).toContainText(expectedTitle);
+  await expect(page.locator("#calendarScreen")).not.toHaveClass(/is-calendar-swiping/);
+
+  const expectedPrevious = await page.evaluate(() => {
+    const date = window.Calex.selected();
+    const previous = new Date(date.getFullYear(), date.getMonth() - 1, 1, 12);
+    const lastDay = new Date(
+      previous.getFullYear(),
+      previous.getMonth() + 1,
+      0,
+    ).getDate();
+    const selected = new Date(
+      previous.getFullYear(),
+      previous.getMonth(),
+      Math.min(date.getDate(), lastDay),
+      12,
+    );
+    return [
+      selected.getFullYear(),
+      String(selected.getMonth() + 1).padStart(2, "0"),
+      String(selected.getDate()).padStart(2, "0"),
+    ].join("-");
+  });
+  const backTransform = await swipeCalendar(page, "right");
+  expect(backTransform).not.toBe("none");
+  await expect.poll(() => selectedDateKey(page)).toBe(expectedPrevious);
+  const previousTitle = new Date(
+    before.year,
+    before.month,
+    1,
+  ).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+  await expect(page.locator("#monthTitle")).toContainText(previousTitle);
+});
+
+
+
+test("touch swipes navigate week view on mobile-style events", async ({ page }) => {
+  await seedEvents(page, []);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.evaluate(() => window.Calex.setView("week"));
+  await expect(page.locator("#calendarScreen")).not.toHaveClass(/is-view-settling/);
+
+  const expectedNext = await page.evaluate(() => {
+    const date = window.Calex.selected();
+    date.setDate(date.getDate() + 7);
+    return [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, "0"),
+      String(date.getDate()).padStart(2, "0"),
+    ].join("-");
+  });
+
+  await page.locator("#selectedPanel").evaluate((surface) => {
+    const touch = (identifier, clientX, clientY) => ({
+      identifier,
+      clientX,
+      clientY,
+      pageX: clientX,
+      pageY: clientY,
+      screenX: clientX,
+      screenY: clientY,
+      target: surface,
+    });
+    const dispatch = (type, touches, changedTouches) => {
+      const event = new Event(type, { bubbles: true, cancelable: true });
+      Object.defineProperty(event, "touches", { value: touches });
+      Object.defineProperty(event, "changedTouches", { value: changedTouches });
+      surface.dispatchEvent(event);
+    };
+    dispatch("touchstart", [touch(1, 320, 100)], [touch(1, 320, 100)]);
+    dispatch("touchmove", [touch(1, 210, 101)], [touch(1, 210, 101)]);
+    dispatch("touchend", [], [touch(1, 210, 101)]);
+  });
+
+  await expect.poll(() => selectedDateKey(page)).toBe(expectedNext);
+  await expect(page.locator("#calendarScreen")).not.toHaveClass(/is-calendar-swiping/);
+});
+
+test("horizontal trackpad gestures also advance the current period", async ({ page }) => {
+  await seedEvents(page, []);
+  await page.goto("/");
+  await page.evaluate(() => window.Calex.setView("week"));
+  await expect(page.locator("#calendarScreen")).not.toHaveClass(/is-view-settling/);
+
+  const expectedNext = await page.evaluate(() => {
+    const date = window.Calex.selected();
+    date.setDate(date.getDate() + 7);
+    return [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, "0"),
+      String(date.getDate()).padStart(2, "0"),
+    ].join("-");
+  });
+
+  await page.locator("#calendarScroller").hover();
+  await page.mouse.wheel(-120, 0);
+  await expect.poll(() => selectedDateKey(page)).toBe(expectedNext);
+  await expect(page.locator("#calendarScreen")).not.toHaveClass(/is-calendar-swiping/);
+});
+
 test("asset and service-worker cache versions stay in sync", async ({ page }) => {
   await page.goto("/");
   const assets = await page
