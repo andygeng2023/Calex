@@ -65,8 +65,23 @@ test("language setting translates the interface and persists the choice", async 
   await page.locator("#languageSelect").selectOption("es");
 
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
-  expect(await page.evaluate(() => window.CalexI18n.translate("Settings", "es"))).toBe("Ajustes");
-  await expect(page.locator(".settings-title")).toHaveText("Ajustes");
+  const renderedLanguage = await page.evaluate(() => {
+    const heading = document.querySelector(".settings-title");
+    const calendar = document.querySelector('[data-screen="calendar"]');
+    const skipSelector =
+      ".event-title, .cell-event, .chat-message > div, .assistant-draft strong, .profile-name, .profile-location, [data-user-content='true']";
+    return {
+      htmlLang: document.documentElement.lang,
+      apiLanguage: window.CalexI18n.language(),
+      dictionary: window.CalexI18n.translate("Settings", "es"),
+      settingsTitle: heading && heading.textContent,
+      firstTextNode: heading && heading.firstChild && heading.firstChild.nodeValue,
+      skippedAncestor: heading && heading.closest(skipSelector) && heading.closest(skipSelector).outerHTML,
+      calendarLabel: calendar && calendar.textContent.trim(),
+      inBody: !!heading && document.body.contains(heading),
+    };
+  });
+  expect(renderedLanguage.settingsTitle, JSON.stringify(renderedLanguage)).toBe("Ajustes");
   await expect(page.locator('[data-screen="calendar"]')).toContainText("Calendario");
   await expect(page.locator("#languageSummary")).toHaveText("Español");
 
