@@ -103,6 +103,7 @@
           "Content-Type": "application/json",
           apikey: SUPABASE_PUBLISHABLE_KEY,
           Authorization: "Bearer " + sessionToken,
+          "X-Requested-With": "XmlHttpRequest",
         },
         body: JSON.stringify({ action, ...payload }),
         cache: "no-store",
@@ -203,7 +204,7 @@
     try {
       await loadIdentityLibrary();
       const code = await requestAuthorizationCode();
-      const result = await serverAction("exchange", { code });
+      const result = await serverAction("exchange", { code, redirectUri: location.origin });
       accessToken = result.accessToken || "";
       tokenExpiresAt = Date.now() + (Number(result.expiresIn) || 3600) * 1000;
       linkedEmail = result.email || "";
