@@ -14,8 +14,10 @@
   let pendingConversion = null;
   let loading = false;
   let activeConversions = new Set();
+  let activeFilter = "inbox";
+  let selectedEmailDate = "";
 
-  const dialog = $("gmailDialog");
+  const emailScreen = $("emailScreen");
   const results = $("gmailEmails");
   const status = $("gmailStatus");
   const connectButton = $("gmailConnect");
@@ -48,6 +50,12 @@
     refreshButton.disabled = !hasToken() || loading;
     searchInput.disabled = !hasToken() || loading;
     searchButton.disabled = !hasToken() || loading;
+    document.querySelectorAll("[data-gmail-filter]").forEach((button) => {
+      button.disabled = !hasToken() || loading;
+      const active = button.dataset.gmailFilter === activeFilter;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
     if (!configured) {
       setStatus("Gmail is not configured for this deployment yet.");
     }
@@ -196,8 +204,13 @@
     setStatus("Loading recent emails…");
     try {
       const query = searchInput.value.trim();
+      const filterQuery = {
+        inbox: "in:inbox",
+        unread: "in:inbox is:unread",
+        starred: "in:inbox is:starred",
+      }[activeFilter] || "in:inbox";
       const params = new URLSearchParams();
-      params.set("q", ["in:inbox", query].filter(Boolean).join(" "));
+      params.set("q", [filterQuery, query].filter(Boolean).join(" "));
       params.set("maxResults", String(MAX_MESSAGES));
       params.set("fields", "messages(id,threadId),resultSizeEstimate");
       const page = await gmailApi("/messages?" + params.toString());
@@ -208,7 +221,7 @@
         metadata.append("metadataHeaders", "From");
         metadata.append("metadataHeaders", "Subject");
         metadata.append("metadataHeaders", "Date");
-        metadata.set("fields", "id,threadId,internalDate,snippet,payload(headers,mimeType)");
+        metadata.set("fields", "id,threadId,internalDate,snippet,labelIds,payload(headers,mimeType)");
         const data = await gmailApi("/messages/" + encodeURIComponent(item.id) + "?" + metadata.toString());
         return {
           id: data.id,
@@ -218,6 +231,7 @@
           date: headerValue(data.payload && data.payload.headers, "Date"),
           internalDate: Number(data.internalDate) || 0,
           snippet: String(data.snippet || ""),
+          labelIds: Array.isArray(data.labelIds) ? data.labelIds : [],
         };
       }));
       messages = loaded.filter(Boolean).sort((a, b) => b.internalDate - a.internalDate);
@@ -233,6 +247,19 @@
 
   function renderMessages() {
     results.replaceChildren();
+    if (!messages.length) {
+      const empty = document.createElement("div");
+      empty.className = "gmail-empty-state";
+      const heading = document.createElement("strong");
+      heading.textContent = hasToken() ? "No matching messages" : "Connect Gmail to get started";
+      const detail = document.createElement("p");
+      detail.textContent = hasToken()
+        ? "Try another search or choose a different inbox filter."
+        : "Your inbox will appear here after you grant read-only access.";
+      empty.append(heading, detail);
+      results.append(empty);
+      return;
+    }
     messages.forEach((email) => {
       const card = document.createElement("article");
       card.className = "gmail-email";
@@ -256,6 +283,19 @@
       subject.className = "gmail-email-subject";
       subject.dataset.userContent = "true";
       subject.textContent = email.subject;
+      if (email.labelIds.includes("UNREAD")) {
+        const unread = document.createElement("span");
+        unread.className = "gmail-message-badge";
+        unread.textContent = "Unread";
+        unread.setAttribute("aria-label", "Unread message");
+        subject.append(" ", unread);
+      }
+      if (email.labelIds.includes("STARRED")) {
+        const starred = document.createElement("span");
+        starred.className = "gmail-message-badge is-starred";
+        starred.textContent = "Starred";
+        subject.append(" ", starred);
+      }
       const snippet = document.createElement("p");
       snippet.className = "gmail-email-snippet";
       snippet.dataset.userContent = "true";
@@ -269,7 +309,7 @@
       makeEvent.textContent = activeConversions.has(email.id) ? "Working…" : "Make event";
       makeEvent.disabled = activeConversions.has(email.id);
       makeEvent.addEventListener("click", () => {
-        convertMessage(email.id, window.Calex ? window.Calex.dateKey(window.Calex.selected()) : "");
+        convertMessage(email.id, selectedEmailDate || (window.Calex ? window.Calex.dateKey(window.Calex.selected()) : ""));
       });
       actions.append(makeEvent);
       card.append(top, subject, snippet, actions);
@@ -338,6 +378,39 @@
     };
   }
 
+  function renderDateTargets() {
+    const root = $("gmailDateTargets");
+    if (!root || !window.Calex) return;
+    const selected = window.Calex.selected();
+    if (!selectedEmailDate) selectedEmailDate = window.Calex.dateKey(selected);
+    const base = window.Calex.parseDate(selectedEmailDate) || selected;
+    root.replaceChildren();
+    for (let offset = 0; offset < 7; offset++) {
+      const day = window.Calex.addDays(base, offset);
+      const key = window.Calex.dateKey(day);
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "gmail-date-target" + (key === selectedEmailDate ? " active" : "");
+      button.dataset.date = key;
+      button.setAttribute("aria-pressed", String(key === selectedEmailDate));
+      button.setAttribute("aria-label", "Use " + day.toLocaleDateString(undefined, { dateStyle: "full" }) + " as the event date");
+      const weekday = document.createElement("span");
+      weekday.className = "gmail-date-weekday";
+      weekday.textContent = day.toLocaleDateString(undefined, { weekday: "short" });
+      const number = document.createElement("strong");
+      number.textContent = String(day.getDate());
+      const month = document.createElement("span");
+      month.className = "gmail-date-month";
+      month.textContent = day.toLocaleDateString(undefined, { month: "short" });
+      button.append(weekday, number, month);
+      button.addEventListener("click", () => {
+        selectedEmailDate = key;
+        renderDateTargets();
+      });
+      root.append(button);
+    }
+  }
+
   async function convertMessage(messageId, preferredDate) {
     const email = messages.find((item) => item.id === messageId);
     if (!email) {
@@ -348,7 +421,7 @@
     if (!window.CalexPuter || !window.CalexPuter.isReady()) {
       pendingConversion = { messageId, preferredDate };
       setStatus("Connect Puter in the assistant first. This email will be processed after Puter is enabled.");
-      $("gmailDialog").open || $("gmailDialog").show();
+      window.Calex.switchScreen("email");
       $("openAssistant").click();
       return;
     }
@@ -371,7 +444,7 @@
       }
       const draft = extracted.event;
       if ($("assistantDialog").open) $("assistantDialog").close();
-      $("gmailDialog").close();
+      window.Calex.switchScreen("calendar");
       window.Calex.draftEvent(draft);
       window.Calex.showToast("Event draft ready. Review the details and save to add it to your calendar.");
       if (extracted.reply) console.info("Calex Gmail event extraction:", extracted.reply);
@@ -383,13 +456,21 @@
     }
   }
 
-  $("openGmail").addEventListener("click", () => {
-    if (!dialog.open) dialog.show();
+  $("openGmail").addEventListener("click", () => window.Calex.switchScreen("email"));
+  window.addEventListener("calex:screen", (event) => {
+    if (event.detail !== "email") return;
+    renderDateTargets();
     renderControls();
     if (hasToken() && !loading) loadMessages();
     else if (!hasToken() && clientId()) setStatus("Connect Gmail to view your inbox.");
   });
-  $("closeGmail").addEventListener("click", () => dialog.close());
+  document.querySelectorAll("[data-gmail-filter]").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeFilter = button.dataset.gmailFilter;
+      renderControls();
+      if (hasToken()) loadMessages();
+    });
+  });
   connectButton.addEventListener("click", connectGmail);
   refreshButton.addEventListener("click", loadMessages);
   searchButton.addEventListener("click", loadMessages);
@@ -416,18 +497,18 @@
     const id = event.dataTransfer && event.dataTransfer.getData("application/x-calex-gmail-message");
     const carriesGmail = id || Array.from((event.dataTransfer && event.dataTransfer.types) || []).includes("application/x-calex-gmail-message");
     if (!carriesGmail) return;
-    const cell = event.target && event.target.closest && event.target.closest(".date-cell[data-date]");
+    const cell = event.target && event.target.closest && event.target.closest(".date-cell[data-date], .gmail-date-target[data-date]");
     if (!cell) return;
     event.preventDefault();
     event.dataTransfer.dropEffect = "copy";
     cell.classList.add("gmail-drop-target");
   });
   document.addEventListener("dragleave", (event) => {
-    const cell = event.target && event.target.closest && event.target.closest(".date-cell.gmail-drop-target");
+    const cell = event.target && event.target.closest && event.target.closest(".date-cell.gmail-drop-target, .gmail-date-target.gmail-drop-target");
     if (cell && (!event.relatedTarget || !cell.contains(event.relatedTarget))) cell.classList.remove("gmail-drop-target");
   });
   document.addEventListener("drop", (event) => {
-    const cell = event.target && event.target.closest && event.target.closest(".date-cell[data-date]");
+    const cell = event.target && event.target.closest && event.target.closest(".date-cell[data-date], .gmail-date-target[data-date]");
     if (!cell || !event.dataTransfer) return;
     const messageId = event.dataTransfer.getData("application/x-calex-gmail-message");
     if (!messageId) return;
@@ -446,14 +527,21 @@
     convertMessage(pending.messageId, pending.preferredDate);
   });
   window.addEventListener("calex:language", () => {
-    if (dialog.open) renderMessages();
+    if (emailScreen.classList.contains("active")) renderMessages();
   });
 
   renderControls();
+  renderDateTargets();
   if (!clientId()) setStatus("Gmail is not configured for this deployment yet. The OAuth client ID must be added before connecting.");
   window.CalexGmail = {
     isConnected: hasToken,
     listMessages: loadMessages,
     disconnect: disconnectLocalState,
+    setFilter: (filter) => {
+      if (!["inbox", "unread", "starred"].includes(filter)) return;
+      activeFilter = filter;
+      renderControls();
+      if (hasToken()) loadMessages();
+    },
   };
 })();
