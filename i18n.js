@@ -2741,15 +2741,38 @@
     if (after !== before) element.setAttribute(attribute, after);
   }
 
+  function translateMarkedText(element) {
+    const source = element?.getAttribute("data-i18n");
+    if (!source || element.hasAttribute("data-user-content")) return;
+    const expected = normalise(source);
+    const node = Array.from(element.childNodes).find(
+      (child) =>
+        child.nodeType === 3 &&
+        (normalise(child.nodeValue) === expected ||
+          (ORIGINAL_TEXT.has(child) &&
+            normalise(ORIGINAL_TEXT.get(child)) === expected)),
+    );
+    if (!node) return;
+    if (!ORIGINAL_TEXT.has(node)) ORIGINAL_TEXT.set(node, node.nodeValue);
+    const original = ORIGINAL_TEXT.get(node);
+    const start = original.match(/^\\s*/)[0];
+    const end = original.match(/\\s*$/)[0];
+    const next = start + translate(source) + end;
+    if (node.nodeValue !== next) node.nodeValue = next;
+  }
+
   function translateElement(element) {
     if (!element || element.nodeType !== 1) return;
     if (element.matches("[data-user-content='true']")) return;
 
-    // Walk each element's direct text nodes to keep updates deterministic.
+    // data-i18n anchors fragile, nested UI labels to their English source phrase.
+    // This also covers direct text nodes beside child elements, such as sidebar labels.
     const elements = [element, ...element.querySelectorAll("*")];
     elements.forEach((current) => {
       if (current.matches("[data-user-content='true']")) return;
+      translateMarkedText(current);
 
+      // Walk each element's direct text nodes to keep updates deterministic.
       Array.from(current.childNodes).forEach((node) => {
         if (node.nodeType !== 3 || isUserContent(node)) return;
         try {
