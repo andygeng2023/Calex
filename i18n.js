@@ -905,6 +905,916 @@
 
   // Bundled translations are deliberately local: no page text is sent to a
   // translation API. Existing rows contain English, Spanish, French, and German.
+
+  // Complete East Asian coverage for the phrase table, including legal copy and error states.
+  Object.assign(ASIAN_TRANSLATIONS, {
+  "Already used Google? Choose Google again. Email/password works only after you have set a password for that account.": [
+    "已使用过 Google？请再次选择 Google。只有为该账户设置密码后，才能使用电子邮件和密码登录。",
+    "Googleを利用したことがありますか？もう一度 Google を選択してください。メールアドレスとパスワードでのログインは、そのアカウントにパスワードを設定した後に利用できます。",
+    "Google로 로그인한 적이 있나요? Google을 다시 선택하세요. 이메일과 비밀번호 로그인은 해당 계정에 비밀번호를 설정한 후에만 사용할 수 있습니다."
+  ],
+  "Choose a password for your confirmed account.": [
+    "为已验证的账户设置密码。",
+    "確認済みのアカウントにパスワードを設定してください。",
+    "인증된 계정의 비밀번호를 설정하세요."
+  ],
+  "Your calendar syncs only when you are signed in. You can keep using Calex on this device without an account.": [
+    "只有登录后，日历才会同步。即使没有账户，你仍可以在此设备上使用 Calex。",
+    "カレンダーはサインイン中のみ同期されます。アカウントがなくても、このデバイスで Calex を引き続き利用できます。",
+    "로그인한 경우에만 캘린더가 동기화됩니다. 계정이 없어도 이 기기에서 Calex를 계속 사용할 수 있습니다."
+  ],
+  "These details personalize your calendar on this device.": [
+    "这些信息用于个性化此设备上的日历。",
+    "これらの情報は、このデバイスのカレンダーをカスタマイズするために使用されます。",
+    "이 정보는 이 기기의 캘린더를 개인화하는 데 사용됩니다."
+  ],
+  "Keep your calendar and preferences available across devices.": [
+    "让你在不同设备上都能使用日历和偏好设置。",
+    "複数のデバイスでカレンダーと設定を利用できるようにします。",
+    "여러 기기에서 캘린더와 환경설정을 사용할 수 있습니다."
+  ],
+  "Sign in or create account": [
+    "登录或创建账户",
+    "サインインまたはアカウントを作成",
+    "로그인 또는 계정 만들기"
+  ],
+  "Securely sync your calendar across devices": [
+    "在不同设备间安全地同步日历",
+    "デバイス間でカレンダーを安全に同期",
+    "여러 기기에서 캘린더를 안전하게 동기화"
+  ],
+  "Your events stay on this device until you sign in.": [
+    "登录之前，你的日程会保存在此设备上。",
+    "サインインするまで、予定はこのデバイスに保存されます。",
+    "로그인할 때까지 일정은 이 기기에 저장됩니다."
+  ],
+  "Sync now": [
+    "立即同步",
+    "今すぐ同期",
+    "지금 동기화"
+  ],
+  "Try London, Tokyo, or UTC…": [
+    "试试输入伦敦、东京或 UTC…",
+    "ロンドン、東京、UTC などをお試しください…",
+    "런던, 도쿄 또는 UTC를 입력해 보세요…"
+  ],
+  "Manual": [
+    "手动",
+    "手動",
+    "수동"
+  ],
+  "What's on the horizon": [
+    "接下来有什么安排",
+    "これからの予定",
+    "앞으로의 일정"
+  ],
+  "Help me plan a balanced day.": [
+    "帮我规划充实而均衡的一天。",
+    "バランスの取れた一日の計画を手伝ってください。",
+    "균형 잡힌 하루를 계획하도록 도와주세요."
+  ],
+  "Find a 60-minute focus window in my upcoming calendar.": [
+    "在我接下来的日程中找出一段 60 分钟的专注时间。",
+    "今後の予定から60分間の集中できる時間帯を探してください。",
+    "다가오는 일정에서 60분 동안 집중할 수 있는 시간을 찾아주세요."
+  ],
+  "Schedule a 30-minute weekly planning session tomorrow at 9am.": [
+    "安排明天上午 9 点进行一次 30 分钟的每周计划会议。",
+    "明日の午前9時に、30分間の週次計画セッションを予定してください。",
+    "내일 오전 9시에 30분 동안 주간 계획 회의를 예약해 주세요."
+  ],
+  "YOU": [
+    "你",
+    "あなた",
+    "나"
+  ],
+  "event today": [
+    "今天的日程",
+    "今日の予定",
+    "오늘 일정"
+  ],
+  "Timed": [
+    "定时",
+    "時間指定",
+    "시간 지정"
+  ],
+  "Repeating": [
+    "重复",
+    "繰り返し",
+    "반복"
+  ],
+  "Add events from an .ics file (Google, Outlook, Apple)": [
+    "从 .ics 文件添加日程（Google、Outlook、Apple）",
+    ".ics ファイル（Google、Outlook、Apple）から予定を追加",
+    ".ics 파일(Google, Outlook, Apple)에서 일정 추가"
+  ],
+  "When signed out, your calendar is stored on this device. Signing in enables account-based sync. You can export a copy of your events at any time.": [
+    "退出登录时，日历会存储在此设备上。登录后即可通过账户同步。你可以随时导出日程副本。",
+    "サインアウト中、カレンダーはこのデバイスに保存されます。サインインするとアカウント同期が有効になります。予定のコピーはいつでもエクスポートできます。",
+    "로그아웃 상태에서는 캘린더가 이 기기에 저장됩니다. 로그인하면 계정 동기화를 사용할 수 있습니다. 일정 사본은 언제든지 내보낼 수 있습니다."
+  ],
+  "Terms of service": [
+    "服务条款",
+    "利用規約",
+    "서비스 약관"
+  ],
+  "Rules and limitations for using Calex": [
+    "使用 Calex 的规则和限制",
+    "Calex の利用規則と制限",
+    "Calex 이용 규칙 및 제한"
+  ],
+  "Privacy policy": [
+    "隐私政策",
+    "プライバシーポリシー",
+    "개인정보 처리방침"
+  ],
+  "How calendar and account data are handled": [
+    "日历和账户数据的处理方式",
+    "カレンダーとアカウントデータの取り扱い",
+    "캘린더 및 계정 데이터 처리 방식"
+  ],
+  "ABOUT": [
+    "关于",
+    "概要",
+    "소개"
+  ],
+  "A calm, straightforward calendar for keeping track of your days.": [
+    "一款简洁、平和的日历，帮助你安排每一天。",
+    "毎日の予定を把握するための、落ち着いたシンプルなカレンダーです。",
+    "하루를 정리할 수 있는 차분하고 간편한 캘린더입니다."
+  ],
+  "What you can do": [
+    "你可以做什么",
+    "できること",
+    "사용 가능한 기능"
+  ],
+  "Create and manage events, browse dates, search your calendar, set a preferred time zone, and export events as an iCalendar (.ics) file.": [
+    "创建和管理日程、浏览日期、搜索日历、设置首选时区，并将日程导出为 iCalendar（.ics）文件。",
+    "予定の作成・管理、日付の確認、カレンダー検索、タイムゾーンの設定、iCalendar（.ics）形式での予定のエクスポートができます。",
+    "일정을 만들고 관리하고, 날짜를 살펴보고, 캘린더를 검색하고, 원하는 시간대를 설정하며, 일정을 iCalendar(.ics) 파일로 내보낼 수 있습니다."
+  ],
+  "Your calendar, your choice": [
+    "你的日历，由你决定",
+    "あなたのカレンダーはあなた次第",
+    "내 캘린더는 내가 선택"
+  ],
+  "You can use Calex on one device without signing in. Signing in enables account-based synchronisation where configured. You can export a copy of your events from Settings.": [
+    "无需登录即可在一台设备上使用 Calex。配置完成后，登录可启用账户同步。你可以在“设置”中导出日程副本。",
+    "サインインせずに1台のデバイスで Calex を利用できます。設定されている場合、サインインするとアカウント同期が有効になります。設定から予定のコピーをエクスポートできます。",
+    "로그인하지 않고 한 기기에서 Calex를 사용할 수 있습니다. 설정된 경우 로그인하면 계정 동기화가 활성화됩니다. 설정에서 일정 사본을 내보낼 수 있습니다."
+  ],
+  "Help and feedback": [
+    "帮助与反馈",
+    "ヘルプとフィードバック",
+    "도움말 및 의견"
+  ],
+  "Report a bug or request an improvement through the": [
+    "你可以通过以下渠道报告错误或提出改进建议：",
+    "不具合の報告や改善の提案は、次の窓口から送信できます：",
+    "다음 경로를 통해 오류를 신고하거나 개선 사항을 제안하세요:"
+  ],
+  "Calex GitHub issue tracker": [
+    "Calex 的 GitHub 问题跟踪页",
+    "Calex の GitHub イシュートラッカー",
+    "Calex GitHub 이슈 트래커"
+  ],
+  ". Do not include passwords, private event details, or other sensitive information in a public issue.": [
+    "。请勿在公开问题中填写密码、私人日程详情或其他敏感信息。",
+    "。公開の Issue には、パスワード、非公開の予定の詳細、その他の機密情報を記載しないでください。",
+    "。공개 이슈에 비밀번호, 비공개 일정 세부 정보 또는 기타 민감한 정보를 포함하지 마세요."
+  ],
+  "LEGAL": [
+    "法律信息",
+    "法的事項",
+    "법률 정보"
+  ],
+  "These terms explain the basic conditions for using Calex. By using the app, you agree to these terms. If you do not agree, stop using the app.": [
+    "本条款说明使用 Calex 的基本条件。使用本应用即表示你同意这些条款。如不同意，请停止使用本应用。",
+    "本規約では Calex を利用するための基本条件を説明します。本アプリを利用することで、本規約に同意したものとみなされます。同意しない場合は利用を中止してください。",
+    "이 약관은 Calex 이용의 기본 조건을 설명합니다. 앱을 사용하면 이 약관에 동의하는 것입니다. 동의하지 않으면 앱 사용을 중단하세요."
+  ],
+  "1. The service": [
+    "1. 服务",
+    "1. サービス",
+    "1. 서비스"
+  ],
+  "Calex provides calendar and event-management features, including local storage, optional account sign-in and synchronisation, time-zone preferences, and calendar export. Features may change, be unavailable, or be discontinued.": [
+    "Calex 提供日历和日程管理功能，包括本地存储、可选的账户登录与同步、时区偏好设置以及日历导出。功能可能发生变化、暂时不可用或停止提供。",
+    "Calex は、ローカル保存、任意のアカウントサインインと同期、タイムゾーン設定、カレンダーのエクスポートなど、カレンダーと予定の管理機能を提供します。機能は変更、停止、または利用できなくなる場合があります。",
+    "Calex는 로컬 저장, 선택적 계정 로그인 및 동기화, 시간대 설정, 캘린더 내보내기 등 캘린더와 일정 관리 기능을 제공합니다. 기능은 변경되거나 사용할 수 없게 되거나 종료될 수 있습니다."
+  ],
+  "2. Your information and responsibilities": [
+    "2. 정보와 사용자 책임",
+    "2. 情報とユーザーの責任",
+    "2. 정보 및 사용자 책임"
+  ],
+  "You are responsible for the accuracy of the events you enter and for keeping your account credentials secure. Do not use Calex as the only copy of important information. Export or otherwise back up events you cannot afford to lose.": [
+    "你有责任确保输入的日程准确，并妥善保护账户凭据。请勿将 Calex 作为重要信息的唯一副本。对于不能丢失的日程，请导出或以其他方式备份。",
+    "入力した予定の正確性と、アカウント認証情報の安全な管理は利用者の責任です。重要な情報の唯一の保存先として Calex を使用しないでください。失うことのできない予定は、エクスポートするなどして別途バックアップしてください。",
+    "입력한 일정의 정확성과 계정 인증 정보를 안전하게 보관하는 것은 사용자의 책임입니다. 중요한 정보의 유일한 사본으로 Calex를 사용하지 마세요. 잃어서는 안 되는 일정은 내보내거나 다른 방법으로 백업하세요."
+  ],
+  "3. Acceptable use": [
+    "3. 허용되는 사용",
+    "3. 許容される利用",
+    "3. 허용되는 사용"
+  ],
+  "Do not misuse the service, attempt to gain unauthorised access, interfere with its operation, or use it in a way that violates applicable law or another person's rights.": [
+    "请勿滥用本服务、尝试未经授权访问、干扰服务运行，或以违反适用法律或他人权利的方式使用本服务。",
+    "本サービスを悪用したり、不正アクセスを試みたり、運用を妨害したり、適用法令や他者の権利に反する方法で利用したりしないでください。",
+    "서비스를 악용하거나, 무단 접근을 시도하거나, 운영을 방해하거나, 관련 법률 또는 타인의 권리를 침해하는 방식으로 사용하지 마세요."
+  ],
+  "4. Availability and data loss": [
+    "4. 服务可用性与数据丢失",
+    "4. 利用可能性とデータの消失",
+    "4. 서비스 가용성 및 데이터 손실"
+  ],
+  "Calex is provided on an “as available” basis. We do not guarantee uninterrupted service, error-free operation, successful synchronisation, or permanent preservation of data. Device failure, browser settings, clearing site data, account issues, or service outages may affect access to events.": [
+    "Calex 按“可用状态”提供。我们不保证服务不会中断、运行不会出错、同步一定成功或数据会永久保存。设备故障、浏览器设置、清除网站数据、账户问题或服务中断都可能影响日程访问。",
+    "Calex は「提供可能な範囲」で提供されます。サービスの中断がないこと、エラーが発生しないこと、同期が必ず成功すること、データが永久に保存されることを保証しません。デバイスの故障、ブラウザー設定、サイトデータの消去、アカウントの問題、サービス停止により、予定にアクセスできなくなる場合があります。",
+    "Calex는 ‘사용 가능한 상태로’ 제공됩니다. 서비스 중단 없음, 오류 없는 작동, 동기화 성공 또는 데이터의 영구 보존을 보장하지 않습니다. 기기 고장, 브라우저 설정, 사이트 데이터 삭제, 계정 문제 또는 서비스 중단으로 일정에 접근하지 못할 수 있습니다."
+  ],
+  "5. No professional advice or emergency service": [
+    "5. 专业建议与紧急服务声明",
+    "5. 専門的助言および緊急サービスではありません",
+    "5. 전문 상담 또는 긴급 서비스가 아닙니다"
+  ],
+  "Calex is a general-purpose organisational tool. It is not a medical, legal, financial, or emergency service. You are responsible for checking event details, reminders, dates, and times that matter to you.": [
+    "Calex 是通用的组织管理工具，并非医疗、法律、金融或紧急服务。你有责任检查对自己重要的日程详情、提醒、日期和时间。",
+    "Calex は一般的な整理・管理ツールです。医療、法律、金融、緊急対応のサービスではありません。重要な予定の詳細、リマインダー、日付、時刻はご自身で確認してください。",
+    "Calex는 일반적인 일정 관리 도구이며 의료, 법률, 금융 또는 긴급 서비스가 아닙니다. 중요한 일정 세부 정보, 알림, 날짜와 시간은 직접 확인해야 합니다."
+  ],
+  "6. Limitation of liability": [
+    "6. 责任限制",
+    "6. 責任の制限",
+    "6. 책임 제한"
+  ],
+  "To the extent permitted by applicable law, Calex is not liable for indirect or consequential loss, missed appointments, or loss of calendar data arising from use of the service. Nothing in these terms excludes rights or liability that cannot lawfully be excluded.": [
+    "在适用法律允许的范围内，Calex 不对因使用本服务而产生的间接或后果性损失、错过约会或日历数据丢失承担责任。本条款不排除法律规定不得排除的权利或责任。",
+    "適用法令で認められる範囲において、Calex は本サービスの利用に起因する間接損害・結果的損害、予定の見落とし、カレンダーデータの消失について責任を負いません。本規約は、法律上排除できない権利や責任を排除するものではありません。",
+    "관련 법률이 허용하는 범위에서 Calex는 서비스 사용으로 인한 간접적·결과적 손실, 약속 누락 또는 캘린더 데이터 손실에 대해 책임지지 않습니다. 이 약관은 법적으로 배제할 수 없는 권리나 책임을 배제하지 않습니다."
+  ],
+  "7. Changes to these terms": [
+    "7. 条款变更",
+    "7. 本規約の変更",
+    "7. 약관 변경"
+  ],
+  "These terms may be updated as the app changes. The effective date above indicates the latest published version. Continued use after an update means you accept the revised terms where the law permits.": [
+    "随着应用程序的发展，本条款可能会更新。上方的生效日期表示最新发布的版本。在法律允许的情况下，更新后继续使用即表示你接受修订后的条款。",
+    "アプリの変更に伴い、本規約は更新される場合があります。上記の発効日は最新公開版を示します。法律で認められる範囲では、更新後も利用を続けることで改定後の規約に同意したものとみなされます。",
+    "앱의 변경에 따라 이 약관은 업데이트될 수 있습니다. 위 시행일은 가장 최근에 게시된 버전을 나타냅니다. 법률이 허용하는 범위에서 업데이트 후에도 계속 사용하면 개정된 약관에 동의한 것으로 간주됩니다."
+  ],
+  "8. Contact": [
+    "8. 联系方式",
+    "8. お問い合わせ",
+    "8. 문의"
+  ],
+  "For support or questions about these terms, use the": [
+    "如需支持或咨询本条款，请使用：",
+    "サポートや本規約に関するお問い合わせは、次をご利用ください：",
+    "지원이 필요하거나 약관에 관해 문의하려면 다음을 이용하세요:"
+  ],
+  ". Do not post confidential information publicly.": [
+    "。请勿公开发布机密信息。",
+    "。機密情報を公開の場に投稿しないでください。",
+    "。기밀 정보를 공개적으로 게시하지 마세요."
+  ],
+  "This policy describes how the current Calex app handles information. The precise handling of account data can depend on your sign-in and synchronisation configuration.": [
+    "本政策说明当前版本的 Calex 如何处理信息。账户数据的具体处理方式可能取决于你的登录和同步配置。",
+    "本ポリシーは、現在の Calex アプリにおける情報の取り扱いを説明します。アカウントデータの詳細な取り扱いは、サインインや同期の設定によって異なる場合があります。",
+    "이 정책은 현재 Calex 앱이 정보를 처리하는 방식을 설명합니다. 계정 데이터의 구체적인 처리 방식은 로그인 및 동기화 설정에 따라 달라질 수 있습니다."
+  ],
+  "1. Information you enter": [
+    "1. 你输入的信息",
+    "1. 入力する情報",
+    "1. 입력하는 정보"
+  ],
+  "Calendar events may include titles, descriptions, dates, times, locations, attendees or people, repeat settings, and notes. Profile preferences may include a display name, location, time-zone choice, and appearance preference. Avoid entering information you do not want stored in your calendar.": [
+    "日历日程可能包含标题、描述、日期、时间、地点、参与者、重复设置和备注。个人资料偏好可能包含显示名称、位置、时区选择和外观偏好。请避免输入不希望保存在日历中的信息。",
+    "カレンダーの予定には、タイトル、説明、日付、時刻、場所、参加者、繰り返し設定、メモが含まれる場合があります。プロフィール設定には、表示名、場所、タイムゾーン、表示スタイルの設定が含まれる場合があります。カレンダーに保存したくない情報は入力しないでください。",
+    "캘린더 일정에는 제목, 설명, 날짜, 시간, 위치, 참석자, 반복 설정 및 메모가 포함될 수 있습니다. 프로필 설정에는 표시 이름, 위치, 시간대 및 화면 모양 설정이 포함될 수 있습니다. 캘린더에 저장하고 싶지 않은 정보는 입력하지 마세요."
+  ],
+  "2. Local storage": [
+    "2. 本地存储",
+    "2. ローカルストレージ",
+    "2. 로컬 저장소"
+  ],
+  "When you use Calex while signed out, events and preferences are saved in your browser's local storage on that device. They are not automatically available on another device. Clearing browser/site data, using private browsing, or losing access to the device may remove locally stored information. Use the export feature to keep a separate copy.": [
+    "退出登录时使用 Calex，日程和偏好设置会保存在该设备浏览器的本地存储中，不会自动同步到其他设备。清除浏览器或网站数据、使用无痕浏览模式或无法再访问该设备，都可能导致本地信息丢失。请使用导出功能保留单独副本。",
+    "サインアウト中に Calex を利用すると、予定と設定はそのデバイスのブラウザーのローカルストレージに保存されます。別のデバイスでは自動的に利用できません。ブラウザーやサイトのデータ消去、プライベートブラウズの利用、デバイスへのアクセス喪失により、ローカルデータが削除される場合があります。エクスポート機能で別のコピーを保存してください。",
+    "로그아웃 상태에서 Calex를 사용하면 일정과 환경설정이 해당 기기 브라우저의 로컬 저장소에 저장되며 다른 기기에서 자동으로 사용할 수 없습니다. 브라우저/사이트 데이터 삭제, 비공개 브라우징 사용 또는 기기에 대한 접근 권한 상실로 로컬 정보가 삭제될 수 있습니다. 내보내기 기능으로 별도 사본을 보관하세요."
+  ],
+  "3. Account and synchronisation": [
+    "3. 账户与同步",
+    "3. アカウントと同期",
+    "3. 계정 및 동기화"
+  ],
+  "If you sign in and synchronisation is enabled, Calex uses Supabase authentication and its configured database service to authenticate your account and synchronise calendar events and preferences. This means relevant data may be transmitted to and stored by that service. Account-based data is associated with your account, subject to the app's database access policies and service configuration.": [
+    "如果你登录并启用了同步，Calex 会使用 Supabase 身份验证及其配置的数据库服务来验证账户并同步日程和偏好设置。这意味着相关数据可能会传输给该服务并由其存储。账户数据会与你的账户关联，并受应用的数据库访问策略和服务配置约束。",
+    "サインインして同期を有効にすると、Calex は Supabase 認証と設定済みのデータベースサービスを使用してアカウントを認証し、予定と設定を同期します。そのため、関連データが当該サービスに送信・保存される場合があります。アカウントに基づくデータは、アプリのデータベースアクセス方針とサービス設定に従ってアカウントに紐づけられます。",
+    "로그인하고 동기화를 활성화하면 Calex는 Supabase 인증과 구성된 데이터베이스 서비스를 사용해 계정을 인증하고 일정과 환경설정을 동기화합니다. 이에 따라 관련 데이터가 해당 서비스로 전송되어 저장될 수 있습니다. 계정 기반 데이터는 앱의 데이터베이스 접근 정책과 서비스 구성에 따라 계정에 연결됩니다."
+  ],
+  "4. Time zone and device information": [
+    "4. 时区与设备信息",
+    "4. タイムゾーンとデバイス情報",
+    "4. 시간대 및 기기 정보"
+  ],
+  "Automatic time-zone mode reads the time-zone identifier provided by your browser or device. Calex uses it to display your preference; the app does not need your precise GPS location for this feature. If you enter a location in your profile or an event, that text is stored as part of the relevant data.": [
+    "自动时区模式会读取浏览器或设备提供的时区标识符。Calex 使用它来显示你的时区偏好，此功能不需要精确的 GPS 位置。如果你在个人资料或日程中输入地点，该文本会作为相关数据的一部分保存。",
+    "タイムゾーンの自動モードは、ブラウザーまたはデバイスが提供するタイムゾーン識別子を読み取ります。Calex はそれを設定の表示に使用し、この機能に正確な GPS 位置情報は必要ありません。プロフィールや予定に場所を入力した場合、そのテキストは関連データの一部として保存されます。",
+    "자동 시간대 모드는 브라우저나 기기가 제공하는 시간대 식별자를 읽습니다. Calex는 이를 환경설정 표시에 사용하며, 이 기능에 정확한 GPS 위치가 필요하지 않습니다. 프로필이나 일정에 위치를 입력하면 해당 텍스트가 관련 데이터의 일부로 저장됩니다."
+  ],
+  "5. Cookies, analytics, and third parties": [
+    "5. 쿠키、分析和第三方服务",
+    "5. Cookie、分析、サードパーティ",
+    "5. 쿠키, 분석 및 제3자"
+  ],
+  "Calex uses browser storage for app data and may load the Supabase client library from a content delivery network. The app's authentication and synchronisation features rely on Supabase when configured. Third-party infrastructure may process technical information under its own terms and policies; consult those policies for details.": [
+    "Calex 使用浏览器存储保存应用数据，并可能从内容分发网络加载 Supabase 客户端库。配置完成后，应用的身份验证和同步功能会依赖 Supabase。第三方基础设施可能根据其自身条款和政策处理技术信息；详情请查阅相关政策。",
+    "Calex はアプリデータの保存にブラウザーストレージを使用し、コンテンツ配信ネットワークから Supabase クライアントライブラリを読み込む場合があります。設定されている場合、認証と同期機能は Supabase に依存します。第三者のインフラは独自の規約とポリシーに基づいて技術情報を処理する場合があるため、詳細は各ポリシーを確認してください。",
+    "Calex는 앱 데이터를 위해 브라우저 저장소를 사용하며 콘텐츠 전송 네트워크에서 Supabase 클라이언트 라이브러리를 불러올 수 있습니다. 구성된 경우 인증 및 동기화 기능은 Supabase에 의존합니다. 제3자 인프라는 자체 약관과 정책에 따라 기술 정보를 처리할 수 있으므로 자세한 내용은 해당 정책을 확인하세요."
+  ],
+  "Optional AI assistant": [
+    "可选的 AI 助手",
+    "オプションの AI アシスタント",
+    "선택형 AI 어시스턴트"
+  ],
+  "The assistant loads Puter.js only when you enable it. Messages you submit are sent to Puter and its AI provider. Calendar context is off by default; turning it on shares upcoming event titles, dates, times, and locations for the next 14 days. Descriptions, notes, and people are not included. Chat history is kept only for this session. Puter authentication, usage allowances, and charges are separate from Calex. Review": [
+    "只有在你启用助手后，才会加载 Puter.js。你提交的消息会发送给 Puter 及其 AI 服务提供商。日历上下文默认关闭；开启后，未来 14 天日程的标题、日期、时间和地点会被共享，不包括描述、备注和参与者。聊天记录仅保留在当前会话中。Puter 的身份验证、使用额度和费用均独立于 Calex。分享敏感信息前，请先查看",
+    "アシスタントを有効にした場合にのみ Puter.js が読み込まれます。送信したメッセージは Puter とその AI プロバイダーに送られます。カレンダーコンテキストは既定でオフです。オンにすると、今後14日間の予定のタイトル、日付、時刻、場所が共有されます。説明、メモ、参加者は含まれません。チャット履歴はこのセッション中のみ保持されます。Puter の認証、利用枠、料金は Calex とは別です。機密情報を共有する前に",
+    "어시스턴트를 활성화한 경우에만 Puter.js가 로드됩니다. 제출한 메시지는 Puter 및 해당 AI 제공업체로 전송됩니다. 캘린더 컨텍스트는 기본적으로 꺼져 있으며, 켜면 향후 14일간 일정의 제목, 날짜, 시간, 위치가 공유됩니다. 설명, 메모, 참석자는 포함되지 않습니다. 채팅 기록은 현재 세션에만 유지됩니다. Puter 인증, 사용 한도 및 요금은 Calex와 별개입니다. 민감한 정보를 공유하기 전에"
+  ],
+  "Puter's privacy policy": [
+    "Puter 的隐私政策",
+    "Puter のプライバシーポリシー",
+    "Puter 개인정보 처리방침"
+  ],
+  "before sharing sensitive information. AI suggestions are not saved until you review and confirm them in the event editor.": [
+    "，请先阅读其政策。AI 建议只有在你于日程编辑器中检查并确认后才会保存。",
+    "、ポリシーを確認してください。AI の提案は、予定編集画面で確認して確定するまで保存されません。",
+    "정책을 확인하세요. AI 제안은 일정 편집기에서 검토하고 확인할 때까지 저장되지 않습니다."
+  ],
+  "6. Sharing and disclosure": [
+    "6. 信息共享与披露",
+    "6. 共有と開示",
+    "6. 공유 및 공개"
+  ],
+  "Calex does not provide a public calendar-sharing feature in the current interface. Data may be processed by the infrastructure providers required to operate sign-in and synchronisation, or disclosed where required by law. Anyone with access to your unlocked device or account may be able to access your calendar.": [
+    "当前界面中的 Calex 不提供公开分享日历的功能。为提供登录和同步服务所需的基础设施提供商可能会处理数据；法律要求时也可能披露数据。任何能够访问你已解锁设备或账户的人，都可能访问你的日历。",
+    "現在の Calex のインターフェースには、カレンダーを一般公開する機能はありません。サインインと同期の運用に必要なインフラ提供者がデータを処理する場合や、法律により開示が求められる場合があります。ロック解除済みのデバイスやアカウントにアクセスできる人は、カレンダーを閲覧できる可能性があります。",
+    "현재 Calex 인터페이스에는 캘린더 공개 공유 기능이 없습니다. 로그인 및 동기화 운영에 필요한 인프라 제공업체가 데이터를 처리하거나 법률에 따라 데이터가 공개될 수 있습니다. 잠금 해제된 기기나 계정에 접근할 수 있는 사람은 캘린더를 볼 수 있습니다."
+  ],
+  "7. Retention and deletion": [
+    "7. 보관 및 삭제",
+    "7. 保持と削除",
+    "7. 보관 및 삭제"
+  ],
+  "Local data remains in your browser until you remove it or the browser clears it. Signed-in data may remain in the configured cloud database until deleted through supported app or account-management processes or by the service operator. Export your events before clearing local data or changing accounts. If you need account data deleted, contact the app maintainer through the link below; do not include private event details in a public request.": [
+    "本地数据会一直保留在浏览器中，直到你将其删除或浏览器清除数据。登录后的数据可能会保留在配置的云数据库中，直到通过应用或账户管理支持的流程删除，或由服务运营方删除。清除本地数据或更换账户前，请先导出日程。如需删除账户数据，请通过下方链接联系应用维护者；请勿在公开请求中包含私人日程详情。",
+    "ローカルデータは、削除するかブラウザーによって消去されるまで保存されます。サインイン中のデータは、対応するアプリまたはアカウント管理の手続きで削除するか、サービス運営者が削除するまで、設定済みのクラウドデータベースに残る場合があります。ローカルデータを消去したりアカウントを変更したりする前に予定をエクスポートしてください。アカウントデータの削除が必要な場合は、下のリンクからアプリの管理者に連絡してください。公開リクエストに個人的な予定の詳細を含めないでください。",
+    "로컬 데이터는 직접 삭제하거나 브라우저가 지울 때까지 브라우저에 남아 있습니다. 로그인한 데이터는 지원되는 앱 또는 계정 관리 절차나 서비스 운영자가 삭제할 때까지 구성된 클라우드 데이터베이스에 남아 있을 수 있습니다. 로컬 데이터를 지우거나 계정을 변경하기 전에 일정을 내보내세요. 계정 데이터 삭제가 필요하면 아래 링크를 통해 앱 관리자에게 문의하고, 공개 요청에 개인 일정 세부 정보를 포함하지 마세요."
+  ],
+  "8. Your choices and security": [
+    "8. 你的选择与安全",
+    "8. 選択肢とセキュリティ",
+    "8. 선택 사항 및 보안"
+  ],
+  "You can use Calex without signing in, choose whether to enable account synchronisation, export your calendar, and avoid entering unnecessary personal information. No online service can guarantee absolute security, so use a strong unique password and protect access to your device.": [
+    "你可以不登录使用 Calex，自行决定是否启用账户同步，导出日历，并避免输入不必要的个人信息。任何在线服务都无法保证绝对安全，因此请使用高强度且唯一的密码，并保护好设备访问权限。",
+    "サインインせずに Calex を利用し、アカウント同期を有効にするか選択し、カレンダーをエクスポートし、不要な個人情報の入力を避けることができます。絶対的な安全性を保証できるオンラインサービスはないため、強固で使い回しのないパスワードを使用し、デバイスへのアクセスを保護してください。",
+    "로그인하지 않고 Calex를 사용하거나 계정 동기화 여부를 선택하고, 캘린더를 내보내고, 불필요한 개인정보 입력을 피할 수 있습니다. 어떤 온라인 서비스도 완벽한 보안을 보장할 수 없으므로 강력하고 고유한 비밀번호를 사용하고 기기 접근을 보호하세요."
+  ],
+  "9. Children and sensitive information": [
+    "9. 儿童与敏感信息",
+    "9. 子どもと機密情報",
+    "9. 아동 및 민감한 정보"
+  ],
+  "Do not use Calex to store highly sensitive information unless you have assessed that it is appropriate for your circumstances and the service configuration. If you are using Calex under a parent's or organisation's guidance, follow their applicable rules.": [
+    "除非你已确认根据自身情况和服务配置存储高度敏感信息是合适的，否则请勿使用 Calex 保存此类信息。如果你在家长或组织的指导下使用 Calex，请遵循适用的相关规则。",
+    "ご自身の状況とサービス設定に照らして適切だと判断できる場合を除き、非常に機密性の高い情報を Calex に保存しないでください。保護者や組織の指導のもとで Calex を使用している場合は、適用される規則に従ってください。",
+    "개인 상황과 서비스 설정을 검토해 적절하다고 판단한 경우가 아니라면 매우 민감한 정보를 Calex에 저장하지 마세요. 보호자나 조직의 지침에 따라 Calex를 사용한다면 해당 규칙을 따르세요."
+  ],
+  "10. Policy changes and contact": [
+    "10. 政策变更与联系方式",
+    "10. ポリシーの変更とお問い合わせ",
+    "10. 정책 변경 및 문의"
+  ],
+  "This policy may change as Calex evolves. For privacy questions or deletion requests, contact the maintainer through the": [
+    "随着 Calex 的发展，本政策可能会发生变化。如有隐私问题或数据删除请求，请通过以下方式联系维护者：",
+    "Calex の変更に伴い、本ポリシーは改定される場合があります。プライバシーに関する質問や削除依頼は、次の窓口から管理者に連絡してください：",
+    "Calex의 발전에 따라 이 정책은 변경될 수 있습니다. 개인정보 관련 문의나 삭제 요청은 다음 경로를 통해 관리자에게 연락하세요:"
+  ],
+  ". Public issues are visible to others, so request a private contact route before sharing personal data.": [
+    "。公开问题对其他人可见，因此在分享个人数据前，请先索取私密联系方式。",
+    "。公開 Issue は他の人にも見えるため、個人データを共有する前に非公開の連絡方法を確認してください。",
+    "。공개 이슈는 다른 사람에게도 보이므로 개인정보를 공유하기 전에 비공개 연락 방법을 요청하세요."
+  ],
+  "WORKSPACE": [
+    "工作区",
+    "ワークスペース",
+    "워크스페이스"
+  ],
+  "A little help planning": [
+    "规划小帮手",
+    "計画を少しお手伝い",
+    "계획 도우미"
+  ],
+  "Meet your Calex assistant": [
+    "认识 Calex 助手",
+    "Calex アシスタントの紹介",
+    "Calex 어시스턴트 만나기"
+  ],
+  "Made for your everyday": [
+    "为日常生活而设计",
+    "毎日のために",
+    "일상을 위해 만들었습니다"
+  ],
+  "Try “Team meeting tomorrow 10:07 to 20:00”, “Gym every Monday at 6pm”, or “Lunch on 14 June at noon”. We’ll interpret common dates, times and repeats.": [
+    "试试输入“明天 10:07 至 20:00 团队会议”、“每周一下午 6 点健身”或“6 月 14 日中午午餐”。我们会识别常见的日期、时间和重复安排。",
+    "「明日 10:07〜20:00 チーム会議」「毎週月曜18時にジム」「6月14日正午にランチ」などを試してください。一般的な日付、時刻、繰り返しを解釈します。",
+    "“내일 10:07~20:00 팀 회의”, “매주 월요일 오후 6시 운동”, “6월 14일 정오 점심” 등을 입력해 보세요. 일반적인 날짜, 시간 및 반복 일정을 해석합니다."
+  ],
+  "A LITTLE CLARITY": [
+    "更清晰一点",
+    "少し整理しましょう",
+    "조금 더 명확하게"
+  ],
+  "Less juggling.": [
+    "减少忙乱。",
+    "やりくりの負担を減らす。",
+    "복잡함은 줄이고."
+  ],
+  "More breathing room.": [
+    "留出更多余地。",
+    "ゆとりを増やす。",
+    "여유는 더하고."
+  ],
+  "Plan your day, find a focus window, or turn an idea into an event.": [
+    "规划一天、寻找专注时段，或将想法变成日程。",
+    "一日の計画を立てたり、集中できる時間帯を探したり、アイデアを予定に変えたりできます。",
+    "하루를 계획하고, 집중 시간을 찾고, 아이디어를 일정으로 만들 수 있습니다."
+  ],
+  "Powered by Puter. Your own account handles AI access and any usage costs. Only messages you send are shared unless you enable calendar context.": [
+    "由 Puter 提供支持。AI 访问和相关使用费用由你自己的账户处理。除非启用日历上下文，否则只会共享你发送的消息。",
+    "Puter を利用しています。AI へのアクセスと利用料金はご自身のアカウントで管理されます。カレンダーコンテキストを有効にしない限り、送信したメッセージのみが共有されます。",
+    "Puter 기반 서비스입니다. AI 접근 및 사용 요금은 본인 계정에서 처리됩니다. 캘린더 컨텍스트를 활성화하지 않는 한 보낸 메시지만 공유됩니다."
+  ],
+  "Enable Puter assistant": [
+    "启用 Puter 助手",
+    "Puter アシスタントを有効にする",
+    "Puter 어시스턴트 활성화"
+  ],
+  "Share next 14 days (titles, times, locations)": [
+    "共享未来 14 天（日程标题、时间和地点）",
+    "今後14日間を共有（タイトル、時刻、場所）",
+    "향후 14일 공유(제목, 시간, 위치)"
+  ],
+  "AI can make mistakes. Review dates and times before saving.": [
+    "AI 可能会出错。保存前请检查日期和时间。",
+    "AI は間違えることがあります。保存する前に日付と時刻を確認してください。",
+    "AI는 실수할 수 있습니다. 저장하기 전에 날짜와 시간을 확인하세요."
+  ],
+  "Make time for shortcuts": [
+    "为快捷操作留出时间",
+    "ショートカットを活用する",
+    "단축 기능을 활용하세요"
+  ],
+  "Appearance changed for this session, but could not be saved.": [
+    "外观已在本次会话中更改，但未能保存。",
+    "表示設定はこのセッション中に変更されましたが、保存できませんでした。",
+    "화면 모양이 이번 세션에서는 변경되었지만 저장하지 못했습니다."
+  ],
+  "No events found in that file.": [
+    "该文件中没有找到日程。",
+    "そのファイルに予定が見つかりませんでした。",
+    "해당 파일에서 일정을 찾을 수 없습니다."
+  ],
+  "Couldn’t read that file. Is it a valid .ics calendar?": [
+    "无法读取该文件。它是有效的 .ics 日历文件吗？",
+    "ファイルを読み取れませんでした。有効な .ics カレンダーですか？",
+    "파일을 읽을 수 없습니다. 올바른 .ics 캘린더 파일인가요?"
+  ],
+  "Couldn’t sync. Your changes are saved on this device.": [
+    "无法同步。你的更改已保存在此设备上。",
+    "同期できませんでした。変更はこのデバイスに保存されています。",
+    "동기화하지 못했습니다. 변경 사항은 이 기기에 저장되었습니다."
+  ],
+  "Couldn’t sync just now. Your changes are safe on this device. Tap Sync now to retry.": [
+    "暂时无法同步。你的更改已安全保存在此设备上。点按“立即同步”重试。",
+    "現在同期できませんでした。変更はこのデバイスに安全に保存されています。「今すぐ同期」をタップして再試行してください。",
+    "지금은 동기화할 수 없습니다. 변경 사항은 이 기기에 안전하게 저장되었습니다. 다시 시도하려면 ‘지금 동기화’를 누르세요."
+  ],
+  "Browser storage is unavailable. Events last only for this session. Export a backup from Settings.": [
+    "浏览器存储不可用。日程只会保留到本次会话结束。请在设置中导出备份。",
+    "ブラウザーストレージを利用できません。予定はこのセッション中のみ保持されます。設定からバックアップをエクスポートしてください。",
+    "브라우저 저장소를 사용할 수 없습니다. 일정은 이번 세션 동안만 유지됩니다. 설정에서 백업을 내보내세요."
+  ],
+  "Events · chronological": [
+    "日程 · 按时间顺序",
+    "予定 · 時系列",
+    "일정 · 시간순"
+  ],
+  "Make yourself at home": [
+    "按自己的习惯使用",
+    "自分らしく使いましょう",
+    "편하게 사용하세요"
+  ],
+  "A little space for everything": [
+    "为每件事留出一点空间",
+    "すべてに少しずつ余裕を",
+    "모든 일을 위한 작은 여유"
+  ],
+  "Your privacy matters": [
+    "你的隐私很重要",
+    "プライバシーを大切に",
+    "개인정보 보호는 중요합니다"
+  ],
+  "Authentication library is unavailable. Refresh and try again.": [
+    "身份验证库不可用。请刷新页面后重试。",
+    "認証ライブラリを利用できません。ページを更新して再試行してください。",
+    "인증 라이브러리를 사용할 수 없습니다. 새로고침한 뒤 다시 시도하세요."
+  ],
+  "Could not load authentication. Refresh and try again.": [
+    "无法加载身份验证功能。请刷新页面后重试。",
+    "認証機能を読み込めませんでした。ページを更新して再試行してください。",
+    "인증 기능을 불러오지 못했습니다. 새로고침한 뒤 다시 시도하세요."
+  ],
+  "Could not contact authentication. Check your connection and try again.": [
+    "无法连接身份验证服务。请检查网络连接后重试。",
+    "認証サービスに接続できませんでした。接続を確認して再試行してください。",
+    "인증 서비스에 연결할 수 없습니다. 연결을 확인하고 다시 시도하세요."
+  ],
+  "Could not request a confirmation email.": [
+    "无法请求发送确认邮件。",
+    "確認メールをリクエストできませんでした。",
+    "확인 이메일을 요청하지 못했습니다."
+  ],
+  "Could not request a reset. Please try again.": [
+    "无法请求重置密码，请重试。",
+    "リセットをリクエストできませんでした。もう一度お試しください。",
+    "재설정을 요청하지 못했습니다. 다시 시도하세요."
+  ],
+  "Could not restore your sign-in session. Please try again.": [
+    "无法恢复登录会话，请重试。",
+    "サインインセッションを復元できませんでした。もう一度お試しください。",
+    "로그인 세션을 복원하지 못했습니다. 다시 시도하세요."
+  ],
+  "Could not set a password.": [
+    "无法设置密码。",
+    "パスワードを設定できませんでした。",
+    "비밀번호를 설정하지 못했습니다."
+  ],
+  "Authentication could not complete. Check your connection and try again.": [
+    "身份验证未能完成。请检查网络连接后重试。",
+    "認証を完了できませんでした。接続を確認して再試行してください。",
+    "인증을 완료하지 못했습니다. 연결을 확인하고 다시 시도하세요."
+  ],
+  "Enter your email first.": [
+    "请先输入电子邮件地址。",
+    "先にメールアドレスを入力してください。",
+    "먼저 이메일 주소를 입력하세요."
+  ],
+  "Enter a valid email address before requesting a confirmation.": [
+    "请求确认邮件前，请输入有效的电子邮件地址。",
+    "確認メールをリクエストする前に、有効なメールアドレスを入力してください。",
+    "확인 이메일을 요청하기 전에 유효한 이메일 주소를 입력하세요."
+  ],
+  "Enter a valid email and password of at least 6 characters.": [
+    "请输入有效的电子邮件地址和至少 6 个字符的密码。",
+    "有効なメールアドレスと6文字以上のパスワードを入力してください。",
+    "유효한 이메일 주소와 6자 이상의 비밀번호를 입력하세요."
+  ],
+  "Google sign-in could not start.": [
+    "无法启动 Google 登录。",
+    "Google サインインを開始できませんでした。",
+    "Google 로그인을 시작하지 못했습니다."
+  ],
+  "Google sign-in must run outside this embedded preview. Open the live Calex site using the link below, then choose Continue with Google.": [
+    "Google 登录必须在此嵌入式预览之外进行。请使用下方链接打开正式版 Calex 网站，然后选择“使用 Google 继续”。",
+    "Google サインインは埋め込みプレビューの外で行う必要があります。下のリンクから Calex の公開サイトを開き、「Google で続行」を選択してください。",
+    "Google 로그인은 이 내장 미리보기 외부에서 진행해야 합니다. 아래 링크로 Calex 실제 사이트를 연 다음 ‘Google로 계속’을 선택하세요."
+  ],
+  "Passwords do not match.": [
+    "两次输入的密码不一致。",
+    "パスワードが一致しません。",
+    "비밀번호가 일치하지 않습니다."
+  ],
+  "Your email is not confirmed yet. Check your inbox and spam folder, or request a new confirmation below.": [
+    "你的电子邮件地址尚未确认。请检查收件箱和垃圾邮件文件夹，或在下方重新请求确认邮件。",
+    "メールアドレスがまだ確認されていません。受信トレイと迷惑メールフォルダーを確認するか、下から確認メールを再送信してください。",
+    "이메일 주소가 아직 확인되지 않았습니다. 받은편지함과 스팸 폴더를 확인하거나 아래에서 확인 이메일을 다시 요청하세요."
+  ],
+  "Password reset requested. If an account exists for this email, check your inbox and spam folder.": [
+    "已请求重置密码。如果此邮箱存在账户，请检查收件箱和垃圾邮件文件夹。",
+    "パスワードのリセットをリクエストしました。このメールアドレスのアカウントがある場合は、受信トレイと迷惑メールフォルダーを確認してください。",
+    "비밀번호 재설정이 요청되었습니다. 이 이메일 주소로 된 계정이 있다면 받은편지함과 스팸 폴더를 확인하세요."
+  ],
+  "Password set. You can now use email/password or Google for this account.": [
+    "密码已设置。现在可以使用电子邮件/密码或 Google 登录此账户。",
+    "パスワードを設定しました。このアカウントでは、メールアドレスとパスワード、または Google でサインインできます。",
+    "비밀번호가 설정되었습니다. 이제 이 계정에서 이메일/비밀번호 또는 Google로 로그인할 수 있습니다."
+  ],
+  "Signed in. Your calendar is connected.": [
+    "已登录。日历已连接。",
+    "サインインしました。カレンダーが接続されています。",
+    "로그인했습니다. 캘린더가 연결되었습니다."
+  ],
+  "Signed out": [
+    "已退出登录",
+    "サインアウトしました",
+    "로그아웃됨"
+  ],
+  "Sign-in request completed": [
+    "登录请求已完成",
+    "サインイン要求が完了しました",
+    "로그인 요청 완료"
+  ],
+  "Account created": [
+    "账户已创建",
+    "アカウントを作成しました",
+    "계정이 생성되었습니다"
+  ],
+  "Account connected": [
+    "账户已连接",
+    "アカウントを接続しました",
+    "계정이 연결되었습니다"
+  ],
+  "Account sync enabled": [
+    "已启用账户同步",
+    "アカウント同期を有効にしました",
+    "계정 동기화가 활성화되었습니다"
+  ],
+  "Sync needs attention": [
+    "同步需要处理",
+    "同期に注意が必要です",
+    "동기화 확인이 필요합니다"
+  ],
+  "Offline · saved locally": [
+    "离线 · 已在本地保存",
+    "オフライン · ローカルに保存済み",
+    "오프라인 · 로컬에 저장됨"
+  ],
+  "Offline, still organised": [
+    "离线也能保持井井有条",
+    "オフラインでも整理をキープ",
+    "오프라인에서도 정리된 상태 유지"
+  ],
+  "Storage unavailable · export a backup": [
+    "存储不可用 · 导出备份",
+    "ストレージを利用できません · バックアップをエクスポート",
+    "저장소를 사용할 수 없음 · 백업 내보내기"
+  ],
+  "Loading Puter…": [
+    "正在加载 Puter…",
+    "Puter を読み込み中…",
+    "Puter 로드 중…"
+  ],
+  "Sign in to Puter": [
+    "登录 Puter",
+    "Puter にサインイン",
+    "Puter에 로그인"
+  ],
+  "Ready. Click Sign in to open Puter's account window.": [
+    "准备就绪。点击“登录”以打开 Puter 账户窗口。",
+    "準備完了です。「サインイン」をクリックして Puter のアカウントウィンドウを開いてください。",
+    "준비되었습니다. ‘로그인’을 클릭해 Puter 계정 창을 여세요."
+  ],
+  "Sign-in did not finish. Please try again.": [
+    "登录未能完成，请重试。",
+    "サインインが完了しませんでした。もう一度お試しください。",
+    "로그인이 완료되지 않았습니다. 다시 시도하세요."
+  ],
+  "The assistant needs an internet connection. Your calendar still works offline.": [
+    "助手需要互联网连接。你的日历仍可离线使用。",
+    "アシスタントにはインターネット接続が必要ですが、カレンダーはオフラインでも使用できます。",
+    "어시스턴트는 인터넷 연결이 필요하지만 캘린더는 오프라인에서도 작동합니다."
+  ],
+  "Enable the assistant and sign in to Puter first.": [
+    "请先启用助手并登录 Puter。",
+    "先にアシスタントを有効にして Puter にサインインしてください。",
+    "먼저 어시스턴트를 활성화하고 Puter에 로그인하세요."
+  ],
+  "You're offline. Reconnect to use the assistant.": [
+    "你当前处于离线状态。请重新连接网络以使用助手。",
+    "オフラインです。アシスタントを使用するには再接続してください。",
+    "오프라인 상태입니다. 어시스턴트를 사용하려면 다시 연결하세요."
+  ],
+  "Making a little room for thought…": [
+    "正在腾出一点思考空间…",
+    "考えるための少しの余裕を作っています…",
+    "생각할 여유를 만들고 있어요…"
+  ],
+  "Please try rephrasing that.": [
+    "请尝试换一种说法。",
+    "別の表現で試してください。",
+    "다른 표현으로 다시 시도해 보세요."
+  ],
+  "Review event": [
+    "检查日程",
+    "予定を確認",
+    "일정 검토"
+  ],
+  "The suggested event had invalid details. Ask the assistant to correct them.": [
+    "建议的日程包含无效信息。请让助手进行更正。",
+    "提案された予定の詳細が無効です。アシスタントに修正を依頼してください。",
+    "제안된 일정에 유효하지 않은 정보가 있습니다. 어시스턴트에게 수정을 요청하세요."
+  ],
+  "We couldn't finish that request.": [
+    "无法完成该请求。",
+    "リクエストを完了できませんでした。",
+    "요청을 완료하지 못했습니다."
+  ],
+  "The assistant returned an unreadable response. Please try again.": [
+    "助手返回了无法读取的响应，请重试。",
+    "アシスタントが読み取れない応答を返しました。もう一度お試しください。",
+    "어시스턴트가 읽을 수 없는 응답을 반환했습니다. 다시 시도하세요."
+  ],
+  "Calendar context not shared. Do not invent existing events or availability.": [
+    "未共享日历上下文。请勿编造现有日程或可用时间。",
+    "カレンダーのコンテキストは共有されていません。既存の予定や空き時間を作り上げないでください。",
+    "캘린더 컨텍스트가 공유되지 않았습니다. 기존 일정이나 가능한 시간을 지어내지 마세요."
+  ],
+  "Calendar context removed. Future requests start with a fresh conversation.": [
+    "日历上下文已移除。后续请求将从新的对话开始。",
+    "カレンダーのコンテキストを削除しました。次のリクエストは新しい会話として開始されます。",
+    "캘린더 컨텍스트가 삭제되었습니다. 이후 요청은 새 대화에서 시작됩니다."
+  ],
+  "Upcoming titles, dates, times, and locations will be shared with your next message.": [
+    "接下来日程的标题、日期、时间和地点将随你的下一条消息共享。",
+    "今後の予定のタイトル、日付、時刻、場所が次のメッセージとともに共有されます。",
+    "다가오는 일정의 제목, 날짜, 시간 및 위치가 다음 메시지와 함께 공유됩니다."
+  ],
+  "Nothing planned": [
+    "暂无安排",
+    "予定なし",
+    "예정 없음"
+  ],
+  "A little breathing room.": [
+    "留一点喘息空间。",
+    "少しゆとりを。",
+    "조금의 여유."
+  ],
+  "Your day is yours to shape. Add something worth making time for.": [
+    "你可以安排属于自己的一天。添加一件值得为之留出时间的事吧。",
+    "一日の過ごし方はあなた次第です。時間をかけたいことを追加しましょう。",
+    "하루는 스스로 만들어 가세요. 시간을 쓸 가치가 있는 일을 추가하세요."
+  ],
+  "Add your first event": [
+    "添加你的第一个日程",
+    "最初の予定を追加",
+    "첫 일정 추가"
+  ],
+  "The next chapter is unwritten.": [
+    "下一篇章尚待书写。",
+    "次の章はまだ白紙です。",
+    "다음 장은 아직 쓰이지 않았습니다."
+  ],
+  "Add an event to start shaping the days ahead.": [
+    "添加一个日程，开始规划接下来的日子。",
+    "予定を追加して、これからの日々を形にしましょう。",
+    "일정을 추가해 앞으로의 날들을 계획해 보세요."
+  ],
+  "A valid time is required.": [
+    "请输入有效时间。",
+    "有効な時刻を入力してください。",
+    "유효한 시간을 입력해야 합니다."
+  ],
+  "This follows your device setting automatically.": [
+    "此选项会自动遵循设备设置。",
+    "デバイスの設定に自動的に従います。",
+    "기기 설정을 자동으로 따릅니다."
+  ],
+  "Selected:": [
+    "已选择：",
+    "選択済み：",
+    "선택됨:"
+  ],
+  "Save to apply.": [
+    "保存以应用更改。",
+    "適用するには保存してください。",
+    "적용하려면 저장하세요."
+  ],
+  "Existing event dates and times are not converted.": [
+    "现有日程的日期和时间不会转换。",
+    "既存の予定の日付と時刻は変換されません。",
+    "기존 일정의 날짜와 시간은 변환되지 않습니다."
+  ],
+  "The assistant could not load. Check your connection and retry.": [
+    "无法加载助手。请检查网络连接后重试。",
+    "アシスタントを読み込めませんでした。接続を確認して再試行してください。",
+    "어시스턴트를 불러오지 못했습니다. 연결을 확인하고 다시 시도하세요."
+  ],
+  "Could not load Puter. Check your connection and retry.": [
+    "无法加载 Puter。请检查网络连接后重试。",
+    "Puter を読み込めませんでした。接続を確認して再試行してください。",
+    "Puter를 불러오지 못했습니다. 연결을 확인하고 다시 시도하세요."
+  ],
+  "Puter could not complete this request. Check your account access and try again.": [
+    "Puter 无法完成此请求。请检查账户访问权限后重试。",
+    "Puter はリクエストを完了できませんでした。アカウントへのアクセスを確認して再試行してください。",
+    "Puter가 요청을 완료하지 못했습니다. 계정 접근 권한을 확인하고 다시 시도하세요."
+  ],
+  "Puter could not initialise.": [
+    "Puter 无法初始化。",
+    "Puter を初期化できませんでした。",
+    "Puter를 초기화하지 못했습니다."
+  ],
+  "Puter took too long to load. Check your connection and retry.": [
+    "Puter 加载超时。请检查网络连接后重试。",
+    "Puter の読み込みに時間がかかりすぎています。接続を確認して再試行してください。",
+    "Puter 로딩 시간이 너무 깁니다. 연결을 확인하고 다시 시도하세요."
+  ],
+  "Toggle appearance": [
+    "切换外观",
+    "表示を切り替え",
+    "화면 모양 전환"
+  ],
+  "Close filters": [
+    "关闭筛选器",
+    "フィルターを閉じる",
+    "필터 닫기"
+  ],
+  "Close shortcuts": [
+    "关闭快捷键面板",
+    "ショートカットを閉じる",
+    "단축키 닫기"
+  ],
+  "Calendar: Month view": [
+    "日历：月视图",
+    "カレンダー：月表示",
+    "캘린더: 월 보기"
+  ],
+  "Calendar: Week view": [
+    "日历：周视图",
+    "カレンダー：週表示",
+    "캘린더: 주 보기"
+  ],
+  "Calendar: Full dates view": [
+    "日历：完整日期视图",
+    "カレンダー：全日付表示",
+    "캘린더: 전체 날짜 보기"
+  ],
+  "Full dates view. Drag up for month and week, down for full dates. Keyboard shortcuts: M, W, Y.": [
+    "完整日期视图。向上拖动可切换到月视图或周视图，向下拖动可返回完整日期视图。键盘快捷键：M、W、Y。",
+    "全日付表示です。上にドラッグすると月・週表示、下にドラッグすると全日付表示になります。キーボードショートカット：M、W、Y。",
+    "전체 날짜 보기입니다. 위로 드래그하면 월/주 보기, 아래로 드래그하면 전체 날짜 보기로 전환됩니다. 키보드 단축키: M, W, Y."
+  ],
+  "Month view. Drag up for month and week, down for full dates. Keyboard shortcuts: M, W, Y.": [
+    "月视图。向上拖动可切换到月视图或周视图，向下拖动可返回完整日期视图。键盘快捷键：M、W、Y。",
+    "月表示です。上にドラッグすると月・週表示、下にドラッグすると全日付表示になります。キーボードショートカット：M、W、Y。",
+    "월 보기입니다. 위로 드래그하면 월/주 보기, 아래로 드래그하면 전체 날짜 보기로 전환됩니다. 키보드 단축키: M, W, Y."
+  ],
+  "Week view. Drag up for month and week, down for full dates. Keyboard shortcuts: M, W, Y.": [
+    "周视图。向上拖动可切换到月视图或周视图，向下拖动可返回完整日期视图。键盘快捷键：M、W、Y。",
+    "週表示です。上にドラッグすると月・週表示、下にドラッグすると全日付表示になります。キーボードショートカット：M、W、Y。",
+    "주 보기입니다. 위로 드래그하면 월/주 보기, 아래로 드래그하면 전체 날짜 보기로 전환됩니다. 키보드 단축키: M, W, Y."
+  ],
+  "of": [
+    "共",
+    "中",
+    "중"
+  ],
+  "Please choose a language.": [
+    "请选择一种语言。",
+    "言語を選択してください。",
+    "언어를 선택하세요."
+  ],
+  "Reset link accepted. Choose a new password below.": [
+    "密码重置链接已验证。请在下方设置新密码。",
+    "パスワードリセットリンクを確認しました。下で新しいパスワードを設定してください。",
+    "비밀번호 재설정 링크가 확인되었습니다. 아래에서 새 비밀번호를 설정하세요."
+  ],
+  "Rule-based preview": [
+    "基于规则的预览",
+    "ルールベースのプレビュー",
+    "규칙 기반 미리보기"
+  ],
+  "Supabase could not send the email. The app maintainer needs to check SMTP settings and Auth delivery logs.": [
+    "Supabase 无法发送邮件。应用维护者需要检查 SMTP 设置和身份验证邮件投递日志。",
+    "Supabase はメールを送信できませんでした。アプリ管理者は SMTP 設定と Auth の配信ログを確認する必要があります。",
+    "Supabase가 이메일을 보내지 못했습니다. 앱 관리자는 SMTP 설정과 Auth 전송 로그를 확인해야 합니다."
+  ],
+  "The email service cannot send to this address. The app maintainer must configure custom SMTP in Supabase. You can also try Google sign-in.": [
+    "邮件服务无法向此地址发送邮件。应用维护者必须在 Supabase 中配置自定义 SMTP。你也可以尝试使用 Google 登录。",
+    "メールサービスはこのアドレスに送信できません。アプリ管理者は Supabase でカスタム SMTP を設定する必要があります。Google サインインもお試しください。",
+    "이메일 서비스가 이 주소로 메일을 보낼 수 없습니다. 앱 관리자는 Supabase에서 사용자 지정 SMTP를 구성해야 합니다. Google 로그인도 시도해 볼 수 있습니다."
+  ],
+  "You’re signed in. Your calendar syncs with your account.": [
+    "你已登录。日历会与账户同步。",
+    "サインインしました。カレンダーはアカウントと同期されます。",
+    "로그인되었습니다. 캘린더가 계정과 동기화됩니다."
+  ],
+  "duplicates skipped": [
+    "已跳过重复项",
+    "重複をスキップ",
+    "중복 항목 건너뜀"
+  ],
+  "limit reached": [
+    "已达到上限",
+    "上限に達しました",
+    "한도에 도달함"
+  ]
+});
+
   const ROWS = [
     ["Skip to calendar", "Saltar al calendario", "Passer au calendrier", "Zum Kalender springen"],
     ["YOUR TIME, WELL SPENT", "TU TIEMPO, BIEN APROVECHADO", "VOTRE TEMPS, BIEN UTILISÉ", "DEINE ZEIT, GUT GENUTZT"],
@@ -1529,6 +2439,9 @@
     if (match) {
       if (code === "es") return "+" + match[1] + " más";
       if (code === "fr") return "+" + match[1] + " de plus";
+      if (code === "zh") return "+" + match[1] + " 更多";
+      if (code === "ja") return "ほか" + match[1] + "件";
+      if (code === "ko") return "외 " + match[1] + "개";
       return "+" + match[1] + " weitere";
     }
     return null;
