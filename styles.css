@@ -3446,3 +3446,9 @@ body.settings-dark .modal #quickPreview {
   will-change: transform;
   transition: none !important;
 }
+
+
+/* Keep horizontal gestures available across the open calendar while preserving vertical scrolling. */
+#calendarScreen.panel-open {
+  touch-action: pan-y;
+}
