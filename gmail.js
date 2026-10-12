@@ -245,6 +245,7 @@
       top.className = "gmail-email-top";
       const sender = document.createElement("strong");
       sender.className = "gmail-email-sender";
+      sender.dataset.userContent = "true";
       sender.textContent = email.from;
       const date = document.createElement("time");
       date.className = "gmail-email-date";
@@ -253,9 +254,11 @@
 
       const subject = document.createElement("h3");
       subject.className = "gmail-email-subject";
+      subject.dataset.userContent = "true";
       subject.textContent = email.subject;
       const snippet = document.createElement("p");
       snippet.className = "gmail-email-snippet";
+      snippet.dataset.userContent = "true";
       snippet.textContent = email.snippet || "No preview text is available.";
 
       const actions = document.createElement("div");
