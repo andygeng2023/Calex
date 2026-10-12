@@ -2302,49 +2302,264 @@
       passive: false,
     },
   );
-  let touchX = 0,
-    touchY = 0;
-  $("calendarScreen").addEventListener(
-    "touchstart",
-    (e) => {
-      touchX = e.touches[0].clientX;
-      touchY = e.touches[0].clientY;
+  let calendarSwipe = null,
+    suppressCalendarClick = false,
+    suppressCalendarClickTimer = null;
+
+  function calendarSwipeMotionAllowed() {
+    return !(
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+  }
+
+  function clearCalendarSwipeStyles() {
+    calendarScroller.style.removeProperty("transform");
+    calendarScroller.style.removeProperty("will-change");
+    calendarScreen.classList.remove("is-calendar-swiping");
+  }
+
+  function shiftCalendarPeriod(step) {
+    if (view === "week") {
+      selected = addDays(selected, step * 7);
+      cursor = new Date(selected);
+      return;
+    }
+    if (view !== "month") return;
+    const nextCursor = new Date(
+      cursor.getFullYear(),
+      cursor.getMonth() + step,
+      1,
+      12,
+    );
+    const daysInMonth = new Date(
+      nextCursor.getFullYear(),
+      nextCursor.getMonth() + 1,
+      0,
+    ).getDate();
+    selected = new Date(
+      nextCursor.getFullYear(),
+      nextCursor.getMonth(),
+      Math.min(selected.getDate(), daysInMonth),
+      12,
+    );
+    cursor = nextCursor;
+  }
+
+  function suppressCalendarClickAfterDrag() {
+    suppressCalendarClick = true;
+    clearTimeout(suppressCalendarClickTimer);
+    suppressCalendarClickTimer = setTimeout(() => {
+      suppressCalendarClick = false;
+    }, 450);
+  }
+
+  calendarScroller.addEventListener(
+    "click",
+    (event) => {
+      if (!suppressCalendarClick) return;
+      suppressCalendarClick = false;
+      clearTimeout(suppressCalendarClickTimer);
+      event.preventDefault();
+      event.stopImmediatePropagation();
     },
-    {
-      passive: true,
-    },
+    true,
   );
-  $("calendarScreen").addEventListener(
-    "touchend",
-    (e) => {
-      const dx = e.changedTouches[0].clientX - touchX,
-        dy = e.changedTouches[0].clientY - touchY;
+
+  function glideCalendarSwipeBack(offset) {
+    const canAnimate =
+      Math.abs(offset) > 1 &&
+      calendarSwipeMotionAllowed() &&
+      typeof calendarScroller.animate === "function";
+    calendarScroller.style.removeProperty("transform");
+    if (!canAnimate) {
+      clearCalendarSwipeStyles();
+      return;
+    }
+    const animation = calendarScroller.animate(
+      [
+        { transform: "translate3d(" + offset + "px,0,0)" },
+        { transform: "translate3d(0,0,0)" },
+      ],
+      {
+        duration: 220,
+        easing: "cubic-bezier(.22,.75,.25,1)",
+        fill: "both",
+      },
+    );
+    animation.onfinish = () => {
+      animation.cancel();
+      clearCalendarSwipeStyles();
+    };
+  }
+
+  function commitCalendarSwipe(swipeDirection, offset, width, velocity) {
+    // A leftward swipe advances; a rightward swipe goes back.
+    const step = swipeDirection < 0 ? 1 : -1;
+    const canAnimate =
+      calendarSwipeMotionAllowed() &&
+      typeof calendarScroller.animate === "function";
+    if (!canAnimate) {
+      shiftCalendarPeriod(step);
+      renderCalendarContent(true);
+      clearCalendarSwipeStyles();
+      return;
+    }
+
+    const scrollerRect = calendarScroller.getBoundingClientRect();
+    const screenRect = calendarScreen.getBoundingClientRect();
+    const snapshot = calendarScroller.cloneNode(true);
+    snapshot.removeAttribute("id");
+    snapshot.setAttribute("aria-hidden", "true");
+    snapshot.style.cssText +=
+      ";position:fixed;left:" +
+      (scrollerRect.left - screenRect.left) +
+      "px;top:" +
+      (scrollerRect.top - screenRect.top) +
+      "px;width:" +
+      scrollerRect.width +
+      "px;height:" +
+      scrollerRect.height +
+      "px;margin:0;z-index:999;pointer-events:none;transform:translate3d(" +
+      offset +
+      "px,0,0);will-change:transform";
+    calendarScreen.appendChild(snapshot);
+
+    shiftCalendarPeriod(step);
+    renderCalendarContent(true);
+    calendarScroller.style.removeProperty("transform");
+    calendarScroller.style.removeProperty("will-change");
+
+    const incomingOffset = offset - swipeDirection * width;
+    const duration = Math.max(
+      220,
+      Math.min(430, Math.round(370 - Math.abs(velocity) * 110)),
+    );
+    const easing = "cubic-bezier(.18,.67,.32,1)";
+    const outgoingAnimation = snapshot.animate(
+      [
+        { transform: "translate3d(" + offset + "px,0,0)" },
+        { transform: "translate3d(" + swipeDirection * width + "px,0,0)" },
+      ],
+      { duration, easing, fill: "both" },
+    );
+    const incomingAnimation = calendarScroller.animate(
+      [
+        { transform: "translate3d(" + incomingOffset + "px,0,0)" },
+        { transform: "translate3d(0,0,0)" },
+      ],
+      { duration, easing, fill: "both" },
+    );
+    let finishedAnimations = 0;
+    const finishAnimation = () => {
+      finishedAnimations += 1;
+      if (finishedAnimations !== 2) return;
+      outgoingAnimation.cancel();
+      incomingAnimation.cancel();
+      snapshot.remove();
+      clearCalendarSwipeStyles();
+    };
+    outgoingAnimation.onfinish = finishAnimation;
+    incomingAnimation.onfinish = finishAnimation;
+  }
+
+  function finishCalendarSwipe(event, cancelled = false) {
+    const state = calendarSwipe;
+    if (!state || event.pointerId !== state.pointerId) return;
+    calendarSwipe = null;
+    if (!state.dragging) return;
+
+    const width = Math.max(1, calendarScroller.clientWidth);
+    const x = Number.isFinite(event.clientX) ? event.clientX : state.lastX;
+    const rawOffset = x - state.startX;
+    const offset = Math.max(-width * 0.94, Math.min(width * 0.94, rawOffset));
+    calendarScroller.style.transform = "translate3d(" + offset + "px,0,0)";
+
+    const now = performance.now();
+    state.samples.push({ x, time: now });
+    const recent = state.samples.filter((sample) => now - sample.time <= 120);
+    const first = recent[0] || state.samples[0];
+    const last =
+      recent[recent.length - 1] || state.samples[state.samples.length - 1];
+    const elapsed = Math.max(1, last.time - first.time);
+    const velocity = (last.x - first.x) / elapsed;
+    const distanceThreshold = Math.max(56, width * 0.18);
+    const shouldNavigate =
+      !cancelled &&
+      (Math.abs(offset) >= distanceThreshold ||
+        (Math.abs(velocity) >= 0.55 && Math.abs(offset) >= 28));
+
+    suppressCalendarClickAfterDrag();
+    if (!shouldNavigate) {
+      glideCalendarSwipeBack(offset);
+      return;
+    }
+    commitCalendarSwipe(offset < 0 ? -1 : 1, offset, width, velocity);
+  }
+
+  calendarScroller.addEventListener(
+    "pointerdown",
+    (event) => {
       if (
-        Math.abs(dx) > 65 &&
-        Math.abs(dx) > Math.abs(dy) * 1.25 &&
-        view !== "all"
-      ) {
-        cursor = new Date(
-          cursor.getFullYear(),
-          cursor.getMonth() + (dx < 0 ? 1 : -1),
-          1,
-          12,
-        );
-        selected = new Date(
-          cursor.getFullYear(),
-          cursor.getMonth(),
-          Math.min(
-            selected.getDate(),
-            new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0).getDate(),
-          ),
-          12,
-        );
-        renderCalendar();
+        view === "all" ||
+        !calendarScreen.classList.contains("active") ||
+        calendarScreen.classList.contains("is-calendar-swiping") ||
+        calendarScreen.classList.contains("is-view-settling") ||
+        $("searchInput").value.trim() ||
+        event.isPrimary === false ||
+        (event.pointerType === "mouse" && event.button !== 0)
+      )
+        return;
+      const now = performance.now();
+      calendarSwipe = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        lastX: event.clientX,
+        dragging: false,
+        offset: 0,
+        samples: [{ x: event.clientX, time: now }],
+      };
+    },
+    { passive: true },
+  );
+
+  calendarScroller.addEventListener(
+    "pointermove",
+    (event) => {
+      const state = calendarSwipe;
+      if (!state || event.pointerId !== state.pointerId) return;
+      const now = performance.now();
+      state.lastX = event.clientX;
+      state.samples.push({ x: event.clientX, time: now });
+      state.samples = state.samples.filter((sample) => now - sample.time <= 180);
+      const dx = event.clientX - state.startX;
+      const dy = event.clientY - state.startY;
+      if (!state.dragging) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        if (Math.abs(dy) > Math.abs(dx) * 1.15) {
+          calendarSwipe = null;
+          return;
+        }
+        state.dragging = true;
+        calendarScreen.classList.add("is-calendar-swiping");
+        calendarScroller.style.willChange = "transform";
+        calendarScroller.setPointerCapture?.(event.pointerId);
       }
+      event.preventDefault();
+      const width = Math.max(1, calendarScroller.clientWidth);
+      state.offset = Math.max(-width * 0.94, Math.min(width * 0.94, dx));
+      calendarScroller.style.transform =
+        "translate3d(" + state.offset + "px,0,0)";
     },
-    {
-      passive: true,
-    },
+    { passive: false },
+  );
+  calendarScroller.addEventListener("pointerup", finishCalendarSwipe);
+  calendarScroller.addEventListener("pointercancel", (event) =>
+    finishCalendarSwipe(event, true),
+  );
+  calendarScroller.addEventListener("lostpointercapture", (event) =>
+    finishCalendarSwipe(event, true),
   );
 
   document.addEventListener("keydown", (e) => {
