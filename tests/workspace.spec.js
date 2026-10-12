@@ -383,6 +383,19 @@ test("language picker supports Auto and East Asian languages without a native se
   await expect(page.locator("html")).toHaveAttribute("lang", "ko");
   await expect(page.locator(".settings-title")).toHaveText("설정");
   await expect(page.locator("#languageSummary")).toHaveText("한국어");
+  await expect(page.locator("#languageResults [data-language='en']")).toBeVisible();
+
+  await page.locator("#languageSearch").fill("中文");
+  await page.locator('#languageResults [data-language="zh"]').click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "zh");
+  await expect(page.locator(".settings-title")).toHaveText("设置");
+  expect(await page.evaluate(() => window.CalexI18n.translate("Repeats every 2 weeks", "zh"))).toBe("每2周重复");
+
+  await page.locator("#languageSearch").fill("日本語");
+  await page.locator('#languageResults [data-language="ja"]').click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "ja");
+  await expect(page.locator(".settings-title")).toHaveText("設定");
+  expect(await page.evaluate(() => window.CalexI18n.translate("Repeats every 2 weeks", "ja"))).toBe("毎2週間繰り返し");
 });
 
 test("Auto language follows the device system language", async ({ page }) => {
