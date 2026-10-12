@@ -1272,6 +1272,14 @@
     ["limit reached", "límite alcanzado", "limite atteinte", "Limit erreicht"],
   ];
 
+  ROWS.push(
+    ["Auto · System settings", "Automático · configuración del sistema", "Auto · paramètres système", "Auto · Systemeinstellungen"],
+    ["Auto", "Automático", "Auto", "Auto"],
+    ["System settings", "Configuración del sistema", "Paramètres système", "Systemeinstellungen"],
+    ["Search languages", "Buscar idiomas", "Rechercher des langues", "Sprachen suchen"],
+    ["No matching languages.", "No hay idiomas coincidentes.", "Aucune langue correspondante.", "Keine passenden Sprachen."],
+  );
+
   const PHRASES = new Map();
   const REVERSE = new Map();
   const ORIGINAL_TEXT = new WeakMap();
@@ -1352,6 +1360,9 @@
     if (match) {
       if (code === "es") return "Sesión iniciada como " + match[1];
       if (code === "fr") return "Connecté en tant que " + match[1];
+      if (code === "zh") return "已登录为 " + match[1];
+      if (code === "ja") return match[1] + " としてログイン中";
+      if (code === "ko") return match[1] + " 계정으로 로그인됨";
       return "Angemeldet als " + match[1];
     }
 
@@ -1359,6 +1370,9 @@
     if (match) {
       if (code === "es") return "Reenvío disponible en " + match[1] + " s";
       if (code === "fr") return "Nouvel envoi possible dans " + match[1] + " s";
+      if (code === "zh") return match[1] + " 秒后可重新发送";
+      if (code === "ja") return match[1] + "秒後に再送信できます";
+      if (code === "ko") return match[1] + "초 후 다시 보낼 수 있습니다";
       return "Erneut senden in " + match[1] + " s möglich";
     }
 
@@ -1366,6 +1380,9 @@
     if (match) {
       if (code === "es") return "Sincronizado a las " + match[1] + ". Tu calendario está actualizado en todos tus dispositivos.";
       if (code === "fr") return "Synchronisé à " + match[1] + ". Votre calendrier est à jour sur tous vos appareils.";
+      if (code === "zh") return "已于 " + match[1] + " 同步。你的日历在所有设备上均为最新。";
+      if (code === "ja") return match[1] + " に同期しました。すべてのデバイスでカレンダーは最新です。";
+      if (code === "ko") return match[1] + "에 동기화했습니다. 모든 기기의 캘린더가 최신 상태입니다.";
       return "Synchronisiert um " + match[1] + ". Dein Kalender ist auf allen Geräten aktuell.";
     }
 
@@ -1376,6 +1393,9 @@
       const limited = source.includes("· limit reached");
       if (code === "es") return "Importados " + count + (count === 1 ? " evento" : " eventos") + (duplicates ? " · " + duplicates + " duplicados omitidos" : "") + (limited ? " · límite alcanzado" : "");
       if (code === "fr") return count + (count === 1 ? " événement importé" : " événements importés") + (duplicates ? " · " + duplicates + " doublons ignorés" : "") + (limited ? " · limite atteinte" : "");
+      if (code === "zh") return "已导入 " + count + " 个事件" + (duplicates ? " · 已跳过 " + duplicates + " 个重复项" : "") + (limited ? " · 已达到上限" : "");
+      if (code === "ja") return count + " 件の予定をインポートしました" + (duplicates ? " · 重複 " + duplicates + " 件をスキップ" : "") + (limited ? " · 上限に達しました" : "");
+      if (code === "ko") return count + "개 일정을 가져왔습니다" + (duplicates ? " · 중복 " + duplicates + "개 건너뜀" : "") + (limited ? " · 한도에 도달함" : "");
       return count + (count === 1 ? " Termin importiert" : " Termine importiert") + (duplicates ? " · " + duplicates + " Duplikate übersprungen" : "") + (limited ? " · Limit erreicht" : "");
     }
 
@@ -1393,6 +1413,9 @@
     if (match) {
       if (code === "es") return "de " + match[1] + " completados";
       if (code === "fr") return "sur " + match[1] + " terminés";
+      if (code === "zh") return "共 " + match[1] + " 项已完成";
+      if (code === "ja") return match[1] + " 件中完了";
+      if (code === "ko") return match[1] + "개 중 완료";
       return "von " + match[1] + " erledigt";
     }
 
@@ -1400,6 +1423,9 @@
     if (match) {
       if (code === "es") return "Última actualización: " + match[1];
       if (code === "fr") return "Dernière mise à jour : " + match[1];
+      if (code === "zh") return "最后更新：" + match[1];
+      if (code === "ja") return "最終更新：" + match[1];
+      if (code === "ko") return "마지막 업데이트: " + match[1];
       return "Zuletzt aktualisiert: " + match[1];
     }
 
@@ -1407,6 +1433,9 @@
     if (match) {
       if (code === "es") return "Fecha de entrada en vigor: " + match[1];
       if (code === "fr") return "Date d’entrée en vigueur : " + match[1];
+      if (code === "zh") return "生效日期：" + match[1];
+      if (code === "ja") return "発効日：" + match[1];
+      if (code === "ko") return "시행일: " + match[1];
       return "Gültig ab: " + match[1];
     }
 
@@ -1447,15 +1476,25 @@
         }[baseUnit];
         return "Wiederholt sich alle " + n + " " + unit;
       }
+      const units = {
+        zh: { day: "天", week: "周", month: "个月", year: "年" },
+        ja: { day: "日", week: "週間", month: "か月", year: "年" },
+        ko: { day: "일", week: "주", month: "개월", year: "년" },
+      };
+      if (units[code]) {
+        const prefix = { zh: "每", ja: "毎", ko: "매" }[code];
+        const suffix = { zh: "重复", ja: "繰り返し", ko: " 반복" }[code];
+        return prefix + n + units[code][baseUnit] + suffix;
+      }
     }
 
     match = source.match(/^Repeats (daily|weekly|monthly|yearly)$/);
     if (match) {
       const values = {
-        daily: { es: "Se repite a diario", fr: "Répétition quotidienne", de: "Wiederholt sich täglich" },
-        weekly: { es: "Se repite cada semana", fr: "Répétition hebdomadaire", de: "Wiederholt sich wöchentlich" },
-        monthly: { es: "Se repite cada mes", fr: "Répétition mensuelle", de: "Wiederholt sich monatlich" },
-        yearly: { es: "Se repite cada año", fr: "Répétition annuelle", de: "Wiederholt sich jährlich" },
+        daily: { es: "Se repite a diario", fr: "Répétition quotidienne", de: "Wiederholt sich täglich", zh: "每天重复", ja: "毎日繰り返し", ko: "매일 반복" },
+        weekly: { es: "Se repite cada semana", fr: "Répétition hebdomadaire", de: "Wiederholt sich wöchentlich", zh: "每周重复", ja: "毎週繰り返し", ko: "매주 반복" },
+        monthly: { es: "Se repite cada mes", fr: "Répétition mensuelle", de: "Wiederholt sich monatlich", zh: "每月重复", ja: "毎月繰り返し", ko: "매월 반복" },
+        yearly: { es: "Se repite cada año", fr: "Répétition annuelle", de: "Wiederholt sich jährlich", zh: "每年重复", ja: "毎年繰り返し", ko: "매년 반복" },
       };
       return values[match[1]][code];
     }
@@ -1470,6 +1509,9 @@
     if (match) {
       if (code === "es") return "Aviso: se solapa con " + match[1] + ". Puedes guardarlo de todos modos.";
       if (code === "fr") return "Attention : ce créneau chevauche " + match[1] + ". Vous pouvez tout de même enregistrer.";
+      if (code === "zh") return "提示：此时间与 " + match[1] + " 重叠。你仍然可以保存。";
+      if (code === "ja") return "注意：この時間は " + match[1] + " と重複しています。そのまま保存できます。";
+      if (code === "ko") return "주의: 이 시간이 " + match[1] + " 일정과 겹칩니다. 그래도 저장할 수 있습니다.";
       return "Achtung: Dieser Zeitraum überschneidet sich mit " + match[1] + ". Du kannst trotzdem speichern.";
     }
 
