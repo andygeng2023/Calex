@@ -3517,7 +3517,10 @@ body.settings-dark .modal #quickPreview {
 .gmail-message-badge { display:inline-block; vertical-align:1px; padding:3px 6px; border-radius:5px; background:var(--green-pale); color:var(--green-dark); font-size:9px; font-weight:750; letter-spacing:.01em; }
 .gmail-message-badge.is-starred { background:#f8f0d8; color:#82621a; }
 .gmail-email-snippet { display:-webkit-box; margin:0; overflow:hidden; color:var(--muted); font-size:12px; line-height:1.55; overflow-wrap:anywhere; -webkit-box-orient:vertical; -webkit-line-clamp:3; }
-.gmail-email-actions { display:flex; justify-content:flex-end; margin-top:12px; }
+.gmail-email-actions { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:12px; margin-top:12px; }
+.gmail-open-message { color:var(--green-dark); font-size:12px; font-weight:650; text-decoration:none; text-underline-offset:3px; }
+.gmail-open-message:hover { text-decoration:underline; }
+.gmail-open-message:focus-visible { outline:2px solid var(--green); outline-offset:3px; border-radius:3px; }
 .gmail-email-actions button:disabled { cursor:wait; opacity:.65; }
 .gmail-empty-state { grid-column:1 / -1; padding:34px 20px; border:1px dashed var(--line); border-radius:16px; text-align:center; color:var(--muted); }
 .gmail-empty-state strong { color:var(--ink); font-size:14px; }
