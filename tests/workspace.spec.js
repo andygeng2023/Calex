@@ -770,13 +770,19 @@ test("Gmail connects read-only, wraps message cards, and loads additional pages 
     }),
   );
   const gmailQueries = [];
+  let releaseNextPage;
+  let nextPageRequested = false;
+  const nextPageGate = new Promise((resolve) => { releaseNextPage = resolve; });
   await page.route("https://gmail.googleapis.com/**", async (route) => {
     const url = route.request().url();
     const query = new URL(url).searchParams.get("q");
     if (query) gmailQueries.push(query);
     if (url.includes("/messages?")) {
       const pageToken = new URL(url).searchParams.get("pageToken");
-      if (pageToken) await new Promise((resolve) => setTimeout(resolve, 1800));
+      if (pageToken) {
+        nextPageRequested = true;
+        await nextPageGate;
+      }
       await route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -827,9 +833,12 @@ test("Gmail connects read-only, wraps message cards, and loads additional pages 
   await expect(email).toContainText("Let's meet to plan the project timeline.");
   await expect(email).not.toHaveAttribute("draggable", "true");
   await expect(email.locator(".gmail-open-message")).toHaveAttribute("href", /mail\.google\.com/);
+  await page.locator("#gmailLoadMore").scrollIntoViewIfNeeded();
+  await expect.poll(() => nextPageRequested).toBe(true);
   await expect(page.locator("#gmailLoadMore .gmail-spinner")).toBeVisible();
   await expect(page.locator("#gmailLoadMore")).toContainText("Loading more emails");
   await expect(page.locator("#gmailStatus")).toContainText("Loading more emails");
+  releaseNextPage();
   await page.evaluate(() => window.CalexI18n.setLanguage("zh"));
   await expect(email.locator(".gmail-open-message")).toHaveText("在 Gmail 中打开");
   await page.evaluate(() => window.CalexI18n.setLanguage("en"));
