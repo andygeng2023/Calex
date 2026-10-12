@@ -409,3 +409,38 @@ test("Auto language follows the device system language", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("lang", "ja");
   await expect(page.locator(".settings-title")).toHaveText("設定");
 });
+
+test("Chinese, Japanese, and Korean cover every bundled phrase", async ({ page }) => {
+  await page.goto("/");
+
+  const audit = await page.evaluate(() => ({
+    zh: window.CalexI18n.missingTranslations("zh"),
+    ja: window.CalexI18n.missingTranslations("ja"),
+    ko: window.CalexI18n.missingTranslations("ko"),
+    more: {
+      zh: window.CalexI18n.translate("3 more", "zh"),
+      ja: window.CalexI18n.translate("3 more", "ja"),
+      ko: window.CalexI18n.translate("3 more", "ko"),
+    },
+    policy: {
+      zh: window.CalexI18n.translate("Privacy policy", "zh"),
+      ja: window.CalexI18n.translate("Privacy policy", "ja"),
+      ko: window.CalexI18n.translate("Privacy policy", "ko"),
+    },
+  }));
+
+  expect(audit.zh).toEqual([]);
+  expect(audit.ja).toEqual([]);
+  expect(audit.ko).toEqual([]);
+  expect(audit.more).toEqual({
+    zh: "+3 更多",
+    ja: "ほか3件",
+    ko: "외 3개",
+  });
+  expect(audit.policy).toEqual({
+    zh: "隐私政策",
+    ja: "プライバシーポリシー",
+    ko: "개인정보 처리방침",
+  });
+});
+
