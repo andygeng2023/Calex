@@ -198,6 +198,7 @@
     $("runtimeNotice").textContent = !C.storageAvailable()
       ? "Browser storage is unavailable. Events last only for this session. Export a backup from Settings."
       : "You're offline. Your calendar still works, and changes are saved on this device.";
+    window.CalexI18n?.refresh();
   }
 
   function refresh() {
@@ -208,6 +209,8 @@
     renderWeek();
     updateStatus();
     icon();
+    // Workspace and empty-state strings are created dynamically, so translate after render.
+    window.CalexI18n?.refresh();
   }
   window.addEventListener("calex:render", refresh);
   window.addEventListener("calex:language", refresh);
