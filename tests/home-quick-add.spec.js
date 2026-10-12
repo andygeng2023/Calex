@@ -290,6 +290,29 @@ test("month swipe advances one month and clamps the selected day", async ({ page
   await expect(page.locator("#calendarScreen")).not.toHaveClass(/is-calendar-swiping/);
 });
 
+
+test("horizontal trackpad gestures also advance the current period", async ({ page }) => {
+  await seedEvents(page, []);
+  await page.goto("/");
+  await page.evaluate(() => window.Calex.setView("week"));
+  await expect(page.locator("#calendarScreen")).not.toHaveClass(/is-view-settling/);
+
+  const expectedNext = await page.evaluate(() => {
+    const date = window.Calex.selected();
+    date.setDate(date.getDate() + 7);
+    return [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, "0"),
+      String(date.getDate()).padStart(2, "0"),
+    ].join("-");
+  });
+
+  await page.locator("#calendarScroller").hover();
+  await page.mouse.wheel(-120, 0);
+  await expect.poll(() => selectedDateKey(page)).toBe(expectedNext);
+  await expect(page.locator("#calendarScreen")).not.toHaveClass(/is-calendar-swiping/);
+});
+
 test("asset and service-worker cache versions stay in sync", async ({ page }) => {
   await page.goto("/");
   const assets = await page
