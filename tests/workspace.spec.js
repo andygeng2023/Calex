@@ -778,6 +778,7 @@ test("Gmail connects read-only, wraps message cards, and loads additional pages 
     if (query) gmailQueries.push(query);
     if (url.includes("/messages?")) {
       const pageToken = new URL(url).searchParams.get("pageToken");
+      if (pageToken) await new Promise((resolve) => setTimeout(resolve, 350));
       await route.fulfill({
         status: 200,
         contentType: "application/json",
