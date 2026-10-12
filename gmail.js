@@ -115,7 +115,7 @@
     tokenExpiresAt = 0;
     tokenClient = null;
     messages = [];
-    results.replaceChildren();
+    renderMessages();
     renderControls();
   }
 
@@ -311,7 +311,13 @@
       makeEvent.addEventListener("click", () => {
         convertMessage(email.id, selectedEmailDate || (window.Calex ? window.Calex.dateKey(window.Calex.selected()) : ""));
       });
-      actions.append(makeEvent);
+      const openMessage = document.createElement("a");
+      openMessage.className = "gmail-open-message";
+      openMessage.href = "https://mail.google.com/mail/u/0/#all/" + encodeURIComponent(email.id);
+      openMessage.target = "_blank";
+      openMessage.rel = "noopener noreferrer";
+      openMessage.textContent = "Open in Gmail";
+      actions.append(openMessage, makeEvent);
       card.append(top, subject, snippet, actions);
       card.addEventListener("dragstart", (event) => {
         if (!event.dataTransfer) return;
