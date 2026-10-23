@@ -758,7 +758,7 @@ test("Gmail panel explains setup and does not request mailbox access until confi
   );
 });
 
-test("Gmail connects read-only, wraps message cards, and loads additional pages on scroll", async ({ page }) => {
+test("Gmail connects read-only, wraps message cards, and loads additional pages on demand", async ({ page }) => {
   await page.addInitScript(() => {
     window.CALEX_GMAIL_CLIENT_ID = "calex-test-client.apps.googleusercontent.com";
     window.addEventListener("load", () => {
@@ -860,6 +860,10 @@ test("Gmail connects read-only, wraps message cards, and loads additional pages 
   await expect(email).not.toHaveAttribute("draggable", "true");
   await expect(email.locator(".gmail-open-message")).toHaveAttribute("href", /mail\.google\.com/);
   await page.locator("#gmailLoadMore").scrollIntoViewIfNeeded();
+  await expect(page.locator("#gmailLoadMore")).toBeVisible();
+  expect(nextPageRequested).toBe(false);
+  await expect(page.locator("#gmailLoadMore .gmail-spinner")).toHaveCount(0);
+  await page.locator("#gmailLoadMore").click();
   await expect.poll(() => nextPageRequested).toBe(true);
   await expect(page.locator("#gmailLoadMore .gmail-spinner")).toBeVisible();
   await expect(page.locator("#gmailLoadMore")).toContainText("Loading more emails");
