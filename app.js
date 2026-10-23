@@ -1,5 +1,67 @@
-(function () {
+window.CalexReady = (async function () {
   "use strict";
+  let sqliteReadySettled = false;
+  window.CalexSQLiteReady?.then(() => { sqliteReadySettled = true; });
+  const nativeStorageAvailable = (() => {
+    try {
+      const key = "__calex_storage_probe__";
+      window.localStorage.setItem(key, "1");
+      window.localStorage.removeItem(key);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  })();
+  if (!nativeStorageAvailable) await window.CalexSQLiteReady;
+  let fallbackStorageMode = !nativeStorageAvailable;
+  const appStorage = {
+    getItem(key) {
+      try {
+        const value = window.localStorage.getItem(key);
+        if (value !== null) {
+          if (window.CalexSQLite && window.CalexSQLite.getItem(key) !== value)
+            window.CalexSQLite.setItem(key, value);
+          return value;
+        }
+        if (!fallbackStorageMode) return null;
+      } catch (_) {
+        fallbackStorageMode = true;
+      }
+      return window.CalexSQLite?.getItem(key) ?? null;
+    },
+    setItem(key, value) {
+      value = String(value);
+      let nativeError = null;
+      try {
+        window.localStorage.setItem(key, value);
+      } catch (error) {
+        fallbackStorageMode = true;
+        nativeError = error;
+      }
+      if (window.CalexSQLite) {
+        window.CalexSQLite.setItem(key, value);
+        return;
+      }
+      if (nativeError && window.CalexSQLiteReady && !sqliteReadySettled) {
+        window.CalexSQLiteReady.then((store) => {
+          if (store) store.setItem(key, value);
+        });
+        return;
+      }
+      if (nativeError) throw nativeError;
+    },
+    removeItem(key) {
+      let nativeError = null;
+      try {
+        window.localStorage.removeItem(key);
+      } catch (error) {
+        fallbackStorageMode = true;
+        nativeError = error;
+      }
+      if (window.CalexSQLite) window.CalexSQLite.removeItem(key);
+      else if (nativeError) throw nativeError;
+    },
+  };
   const $ = (id) => document.getElementById(id),
     pad = (n) => String(n).padStart(2, "0"),
     dateKey = (d) =>
@@ -49,20 +111,20 @@
   }
   try {
     if (
-      !localStorage.getItem(guestEventsKey) &&
-      localStorage.getItem("daymark-events-v1")
+      !appStorage.getItem(guestEventsKey) &&
+      appStorage.getItem("daymark-events-v1")
     )
-      localStorage.setItem(
+      appStorage.setItem(
         guestEventsKey,
-        localStorage.getItem("daymark-events-v1"),
+        appStorage.getItem("daymark-events-v1"),
       );
     if (
-      !localStorage.getItem(guestSettingsKey) &&
-      localStorage.getItem("daymark-settings-v1")
+      !appStorage.getItem(guestSettingsKey) &&
+      appStorage.getItem("daymark-settings-v1")
     )
-      localStorage.setItem(
+      appStorage.setItem(
         guestSettingsKey,
-        localStorage.getItem("daymark-settings-v1"),
+        appStorage.getItem("daymark-settings-v1"),
       );
   } catch (_) {}
   function initSupabase() {
@@ -382,7 +444,7 @@
     syncFailToasted = false;
   const lsGet = (k, fallback) => {
       try {
-        const v = JSON.parse(localStorage.getItem(k));
+        const v = JSON.parse(appStorage.getItem(k));
         return v == null ? fallback : v;
       } catch (_) {
         return fallback;
@@ -390,7 +452,7 @@
     },
     lsSet = (k, v) => {
       try {
-        localStorage.setItem(k, JSON.stringify(v));
+        appStorage.setItem(k, JSON.stringify(v));
       } catch (_) {}
     },
     tombKey = (id) => "calex-tombstones-" + id,
@@ -625,7 +687,7 @@
     storageAvailable = true,
     hasStoredEvents = false;
   try {
-    const stored = localStorage.getItem(activeEventsKey());
+    const stored = appStorage.getItem(activeEventsKey());
     hasStoredEvents = stored !== null;
     events = stored ? JSON.parse(stored) : [];
     if (!Array.isArray(events)) events = [];
@@ -642,7 +704,7 @@
   function persist() {
     try {
       localRev++;
-      localStorage.setItem(activeEventsKey(), JSON.stringify(events));
+      appStorage.setItem(activeEventsKey(), JSON.stringify(events));
       scheduleCloudSync();
       return true;
     } catch (_) {
@@ -2826,7 +2888,7 @@
     ...defaultSettings,
   };
   try {
-    const saved = JSON.parse(localStorage.getItem(activeSettingsKey()) || "{}");
+    const saved = JSON.parse(appStorage.getItem(activeSettingsKey()) || "{}");
     if (saved && typeof saved === "object")
       appSettings = {
         ...defaultSettings,
@@ -2840,7 +2902,7 @@
   function saveAppSettings() {
     try {
       appSettings.updatedAt = Date.now();
-      localStorage.setItem(activeSettingsKey(), JSON.stringify(appSettings));
+      appStorage.setItem(activeSettingsKey(), JSON.stringify(appSettings));
       if (authUser) saveSettingsCloudNow();
       return true;
     } catch (_) {

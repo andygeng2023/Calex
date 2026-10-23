@@ -1,4 +1,4 @@
-(function () {
+window.CalexReady.then(() => (function () {
   "use strict";
   const C = window.Calex,
     $ = (id) => document.getElementById(id);
@@ -405,6 +405,34 @@
     });
     return sdkPromise;
   }
+  function activatePuterSession() {
+    puterReady = true;
+    $("puterConnection").hidden = true;
+    $("sendAssistant").disabled = false;
+    window.dispatchEvent(new CustomEvent("calex:puter-ready"));
+  }
+  async function restorePuterSession() {
+    if (!navigator.onLine) {
+      $("puterStatus").textContent =
+        "The assistant will connect when you are back online.";
+      return;
+    }
+    try {
+      const puter = await loadPuter();
+      if (puter.auth?.isSignedIn?.()) {
+        activatePuterSession();
+      } else {
+        $("connectPuter").textContent = "Sign in to Puter";
+        $("puterStatus").textContent =
+          "Puter is ready. Sign in once to enable the assistant.";
+      }
+    } catch (_) {
+      $("puterStatus").textContent =
+        "Puter sign-in will be available when you are online.";
+    }
+  }
+  restorePuterSession();
+
   $("connectPuter").onclick = async () => {
     $("connectPuter").disabled = true;
     try {
@@ -420,11 +448,9 @@
           "Ready. Click Sign in to open Puter's account window.";
         return; // Authentication must originate from a fresh click, not after SDK loading.
       }
-      await window.puter.auth.signIn();
-      puterReady = true;
-      $("puterConnection").hidden = true;
-      $("sendAssistant").disabled = false;
-      window.dispatchEvent(new CustomEvent("calex:puter-ready"));
+      if (!window.puter.auth?.isSignedIn?.())
+        await window.puter.auth.signIn();
+      activatePuterSession();
       $("assistantInput").focus();
     } catch (e) {
       $("puterStatus").textContent =
@@ -723,4 +749,4 @@
   if (query.get("view") === "calendar") C.switchScreen("calendar");
   if (query.get("action") === "new") C.newEvent();
   refresh();
-})();
+})());

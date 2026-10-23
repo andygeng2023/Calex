@@ -1,4 +1,4 @@
-(function () {
+window.CalexReady.then(() => (function () {
   "use strict";
 
   const $ = (id) => document.getElementById(id);
@@ -760,4 +760,4 @@
       if (hasToken()) loadMessages();
     },
   };
-})();
+})());
