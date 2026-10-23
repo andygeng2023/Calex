@@ -817,6 +817,31 @@ test("Gmail connects read-only, wraps message cards, and loads additional pages 
       });
       return;
     }
+    if (url.includes("/messages/mail-planning-1?format=full")) {
+      const body = Array.from(
+        { length: 45 },
+        (_, index) => `Full email body line ${index + 1}: details remain readable.`,
+      ).join("\n");
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          id: "mail-planning-1",
+          threadId: "thread-planning-1",
+          payload: {
+            mimeType: "text/plain",
+            headers: [
+              { name: "From", value: "Sam Example <sam@example.com>" },
+              { name: "To", value: "Alex Example <alex@example.com>" },
+              { name: "Subject", value: "Planning session" },
+              { name: "Date", value: "Mon, 2 Nov 2026 09:30:00 +0000" },
+            ],
+            body: { data: Buffer.from(body).toString("base64url") },
+          },
+        }),
+      });
+      return;
+    }
     const messageMatch = url.match(/\/messages\/(mail-planning-[12])\?/);
     if (messageMatch && url.includes("format=metadata")) {
       const second = messageMatch[1] === "mail-planning-2";
@@ -888,6 +913,26 @@ test("Gmail connects read-only, wraps message cards, and loads additional pages 
   await expect(planningEmail.locator(".gmail-email-snippet")).toHaveText(
     "Let's meet to plan the project timeline.",
   );
+
+  await planningEmail.locator(".gmail-view-email").click();
+  const detail = page.locator("#gmailDetailDialog");
+  await expect(detail).toBeVisible();
+  await expect(page.locator("#gmailDetailSubject")).toHaveText("Planning session");
+  await expect(page.locator("#gmailDetailBody")).toContainText(
+    "Full email body line 45: details remain readable.",
+  );
+  const layout = await detail.evaluate((dialog) => {
+    const body = dialog.querySelector("#gmailDetailBody");
+    const actions = dialog.querySelector(".gmail-detail-actions");
+    return {
+      dialogCanScroll: dialog.scrollHeight > dialog.clientHeight,
+      bodyOverflowY: getComputedStyle(body).overflowY,
+      bodyEndsBeforeActions: body.offsetTop + body.offsetHeight <= actions.offsetTop,
+    };
+  });
+  expect(layout.dialogCanScroll).toBe(true);
+  expect(layout.bodyOverflowY).toBe("visible");
+  expect(layout.bodyEndsBeforeActions).toBe(true);
 });
 
 test("Puter converts email content into a validated event draft without saving it", async ({ page }) => {
