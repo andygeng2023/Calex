@@ -2644,7 +2644,7 @@
   ],
   "Cc": [
     "抄送",
-    "Cc",
+    "同報",
     "참조"
   ],
   "Date": [
@@ -2768,7 +2768,7 @@
     ["MESSAGE DETAILS","Detalles del mensaje","Détails du message","Nachrichtendetails"],
     ["From","De","De","Von"],
     ["To","Para","À","An"],
-    ["Cc","Cc","Cc","Cc"],
+    ["Cc","Cc","同報","Cc"],
     ["Date","Fecha","Date","Datum"],
     ["Loading message…","Cargando mensaje…","Chargement du message…","Nachricht wird geladen…"],
     ["Loading full email…","Cargando el correo completo…","Chargement de l’e-mail complet…","Vollständige E-Mail wird geladen…"],
