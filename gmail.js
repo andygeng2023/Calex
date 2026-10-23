@@ -558,7 +558,16 @@
     if (html.length) {
       const doc = new DOMParser().parseFromString(html.join("\n"), "text/html");
       doc.querySelectorAll("script,style,head,noscript").forEach((node) => node.remove());
-      return (doc.body ? doc.body.textContent : doc.documentElement.textContent).replace(/\s+/g, " ").trim();
+      doc.querySelectorAll("br").forEach((node) => node.replaceWith("\n"));
+      doc.querySelectorAll("p,div,li,tr,h1,h2,h3,h4,blockquote,section,article").forEach((node) => {
+        node.append(doc.createTextNode("\n"));
+      });
+      return (doc.body ? doc.body.textContent : doc.documentElement.textContent)
+        .replace(/\u00a0/g, " ")
+        .replace(/[ \t]+\n/g, "\n")
+        .replace(/\n[ \t]+/g, "\n")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
     }
     return "";
   }
