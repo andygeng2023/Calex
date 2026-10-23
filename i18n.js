@@ -2626,6 +2626,174 @@
     "Connect Puter in the assistant first. This email will be processed after Puter is enabled.": ["请先在助手中连接 Puter。启用 Puter 后将处理此邮件。", "先にアシスタントで Puter を接続してください。Puter が有効になると、このメールが処理されます。", "먼저 어시스턴트에서 Puter를 연결하세요. Puter가 활성화되면 이 이메일을 처리합니다."]
   });
 
+  Object.assign(ASIAN_TRANSLATIONS, {
+  "MESSAGE DETAILS": [
+    "详情",
+    "メッセージの詳細",
+    "메시지 세부정보"
+  ],
+  "From": [
+    "发件人",
+    "差出人",
+    "보낸 사람"
+  ],
+  "To": [
+    "收件人",
+    "宛先",
+    "받는 사람"
+  ],
+  "Cc": [
+    "抄送",
+    "Cc",
+    "참조"
+  ],
+  "Date": [
+    "日期",
+    "日付",
+    "날짜"
+  ],
+  "Loading message…": [
+    "正在加载邮件…",
+    "メッセージを読み込み中…",
+    "메시지 불러오는 중…"
+  ],
+  "Loading full email…": [
+    "正在加载完整邮件…",
+    "メール全文を読み込み中…",
+    "전체 이메일을 불러오는 중…"
+  ],
+  "Full message text": [
+    "完整邮件正文",
+    "メール本文全体",
+    "전체 메시지 본문"
+  ],
+  "Preview only": [
+    "仅显示预览",
+    "プレビューのみ",
+    "미리보기만"
+  ],
+  "No readable text was found in this message.": [
+    "未找到此邮件中可读取的文本。",
+    "このメールに読み取り可能なテキストが見つかりませんでした。",
+    "이 메시지에서 읽을 수 있는 텍스트를 찾지 못했습니다."
+  ],
+  "Could not load the full email. Close this view and retry.": [
+    "无法加载完整邮件。请关闭此视图后重试。",
+    "メール全文を読み込めませんでした。この画面を閉じて再試行してください。",
+    "전체 이메일을 불러오지 못했습니다. 이 보기를 닫고 다시 시도하세요."
+  ],
+  "Close email details": [
+    "关闭邮件详情",
+    "メールの詳細を閉じる",
+    "이메일 세부정보 닫기"
+  ],
+  "View email": [
+    "查看邮件",
+    "メールを表示",
+    "이메일 보기"
+  ],
+  "Load more emails": [
+    "加载更多邮件",
+    "メールをさらに読み込む",
+    "이메일 더 불러오기"
+  ],
+  "Your messages will appear here shortly.": [
+    "邮件很快就会显示在这里。",
+    "まもなくメッセージがここに表示されます。",
+    "곧 메시지가 여기에 표시됩니다."
+  ],
+  "Open full email": [
+    "打开完整邮件",
+    "メール全文を開く",
+    "전체 이메일 열기"
+  ],
+  "Event draft ready. Review the details and save to add it to your calendar.": [
+    "日程草稿已准备好。请检查详情并保存，以将其添加到日历。",
+    "予定の下書きができました。内容を確認して保存するとカレンダーに追加されます。",
+    "일정 초안이 준비되었습니다. 세부정보를 확인하고 저장하면 캘린더에 추가됩니다."
+  ],
+  "Gmail disconnected from your Calex account.": [
+    "Gmail 已从你的 Calex 账户断开连接。",
+    "Gmail を Calex アカウントから切断しました。",
+    "Gmail이 Calex 계정에서 연결 해제되었습니다."
+  ],
+  "Make time for shortcuts": [
+    "使用快捷键节省时间",
+    "ショートカットで時間を節約",
+    "단축키로 시간을 절약하세요"
+  ],
+  "Search calendar": [
+    "搜索日历",
+    "カレンダーを検索",
+    "캘린더 검색"
+  ],
+  "Go to today": [
+    "转到今天",
+    "今日に移動",
+    "오늘로 이동"
+  ],
+  "Month / week / year": [
+    "月 / 周 / 年",
+    "月 / 週 / 年",
+    "월 / 주 / 연도"
+  ],
+  "Close dialog": [
+    "关闭对话框",
+    "ダイアログを閉じる",
+    "대화상자 닫기"
+  ],
+  "My calendars": [
+    "我的日历",
+    "マイカレンダー",
+    "내 캘린더"
+  ],
+  "Work & study": [
+    "工作与学习",
+    "仕事と学習",
+    "업무 및 학습"
+  ],
+  "Wellbeing": [
+    "身心健康",
+    "ウェルビーイング",
+    "웰빙"
+  ],
+  "AI can make mistakes. Review dates and times before saving.": [
+    "AI 可能会出错。保存前请检查日期和时间。",
+    "AI は間違えることがあります。保存する前に日付と時刻を確認してください。",
+    "AI는 실수할 수 있습니다. 저장하기 전에 날짜와 시간을 확인하세요."
+  ]
+});
+
+  ROWS.push(
+    ["MESSAGE DETAILS","Detalles del mensaje","Détails du message","Nachrichtendetails"],
+    ["From","De","De","Von"],
+    ["To","Para","À","An"],
+    ["Cc","Cc","Cc","Cc"],
+    ["Date","Fecha","Date","Datum"],
+    ["Loading message…","Cargando mensaje…","Chargement du message…","Nachricht wird geladen…"],
+    ["Loading full email…","Cargando el correo completo…","Chargement de l’e-mail complet…","Vollständige E-Mail wird geladen…"],
+    ["Full message text","Texto completo del mensaje","Texte intégral du message","Vollständiger Nachrichtentext"],
+    ["Preview only","Solo vista previa","Aperçu uniquement","Nur Vorschau"],
+    ["No readable text was found in this message.","No se encontró texto legible en este mensaje.","Aucun texte lisible n’a été trouvé dans ce message.","In dieser Nachricht wurde kein lesbarer Text gefunden."],
+    ["Could not load the full email. Close this view and retry.","No se pudo cargar el correo completo. Cierra esta vista e inténtalo de nuevo.","Impossible de charger l’e-mail complet. Fermez cette vue et réessayez.","Die vollständige E-Mail konnte nicht geladen werden. Schließe diese Ansicht und versuche es erneut."],
+    ["Close email details","Cerrar detalles del correo","Fermer les détails de l’e-mail","E-Mail-Details schließen"],
+    ["View email","Ver correo","Voir l’e-mail","E-Mail ansehen"],
+    ["Load more emails","Cargar más correos","Charger plus d’e-mails","Weitere E-Mails laden"],
+    ["Your messages will appear here shortly.","Tus mensajes aparecerán aquí en breve.","Vos messages apparaîtront ici sous peu.","Deine Nachrichten werden hier in Kürze angezeigt."],
+    ["Open full email","Abrir correo completo","Ouvrir l’e-mail complet","Vollständige E-Mail öffnen"],
+    ["Event draft ready. Review the details and save to add it to your calendar.","El borrador del evento está listo. Revisa los detalles y guárdalo para añadirlo al calendario.","Le brouillon de l’événement est prêt. Vérifiez les détails et enregistrez-le pour l’ajouter à votre calendrier.","Der Ereignisentwurf ist fertig. Prüfe die Details und speichere ihn, um ihn zum Kalender hinzuzufügen."],
+    ["Gmail disconnected from your Calex account.","Gmail se ha desconectado de tu cuenta de Calex.","Gmail a été déconnecté de votre compte Calex.","Gmail wurde von deinem Calex-Konto getrennt."],
+    ["Make time for shortcuts","Ahorra tiempo con los atajos","Gagnez du temps avec les raccourcis","Spare Zeit mit Tastenkürzeln"],
+    ["Search calendar","Buscar en el calendario","Rechercher dans le calendrier","Kalender durchsuchen"],
+    ["Go to today","Ir a hoy","Aller à aujourd’hui","Zu heute wechseln"],
+    ["Month / week / year","Mes / semana / año","Mois / semaine / année","Monat / Woche / Jahr"],
+    ["Close dialog","Cerrar diálogo","Fermer la boîte de dialogue","Dialog schließen"],
+    ["My calendars","Mis calendarios","Mes calendriers","Meine Kalender"],
+    ["Work & study","Trabajo y estudios","Travail et études","Arbeit und Studium"],
+    ["Wellbeing","Bienestar","Bien-être","Wohlbefinden"],
+    ["AI can make mistakes. Review dates and times before saving.","La IA puede cometer errores. Revisa las fechas y horas antes de guardar.","L’IA peut faire des erreurs. Vérifiez les dates et heures avant d’enregistrer.","KI kann Fehler machen. Überprüfe Datum und Uhrzeit vor dem Speichern."]
+  );
+
   const PHRASES = new Map();
     const REVERSE = new Map();
     const ORIGINAL_TEXT = new WeakMap();
