@@ -3613,3 +3613,27 @@ body.settings-dark .gmail-message-badge.is-starred { background:#42391f; color:#
   max-height: none;
   overflow: visible;
 }
+
+/* Keep the full email detail view in document order and let the dialog scroll.
+   Prevent flex shrinking from clipping message content or pulling actions upward. */
+.gmail-detail-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  max-height: calc(100dvh - 24px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.gmail-detail-dialog[open] .gmail-detail-head,
+.gmail-detail-dialog[open] .gmail-detail-meta,
+.gmail-detail-dialog[open] .gmail-detail-status,
+.gmail-detail-dialog[open] .gmail-detail-actions {
+  flex: 0 0 auto;
+}
+.gmail-detail-dialog[open] .gmail-detail-body {
+  flex: 0 0 auto;
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+}
