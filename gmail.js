@@ -5,6 +5,7 @@
   const GMAIL_SCOPE = "https://www.googleapis.com/auth/gmail.readonly";
   const GMAIL_API = "https://gmail.googleapis.com/gmail/v1/users/me";
   const MAX_MESSAGES = 20;
+  const CACHE_TTL_MS = 60 * 1000;
   const MAX_BODY_CHARS = 12000;
 
   let accessToken = "";
@@ -21,6 +22,12 @@
   let activeFilter = "inbox";
   let nextPageToken = "";
   let hasMoreMessages = false;
+  // Session-memory caches avoid repeat Gmail API and Puter requests without
+  // persisting message content to browser storage.
+  const queryPageCache = new Map();
+  const metadataCache = new Map();
+  const bodyCache = new Map();
+  const conversionCache = new Map();
 
   const emailScreen = $("emailScreen");
   const results = $("gmailEmails");
@@ -31,6 +38,19 @@
   const searchInput = $("gmailSearch");
   const searchButton = $("gmailSearchButton");
   const setupHelp = $("gmailSetupHelp");
+  const loadMoreHint = $("gmailLoadMore");
+  const detailDialog = $("gmailDetailDialog");
+  const detailSubject = $("gmailDetailSubject");
+  const detailFrom = $("gmailDetailFrom");
+  const detailTo = $("gmailDetailTo");
+  const detailCc = $("gmailDetailCc");
+  const detailCcRow = $("gmailDetailCcRow");
+  const detailDate = $("gmailDetailDate");
+  const detailStatus = $("gmailDetailStatus");
+  const detailBody = $("gmailDetailBody");
+  const detailOpenGmail = $("gmailDetailOpenGmail");
+  const detailMakeEvent = $("gmailDetailMakeEvent");
+  let detailMessageId = "";
 
   function clientId() {
     return String(window.CALEX_GMAIL_CLIENT_ID || "").trim();
@@ -301,40 +321,71 @@
         unread: "in:inbox is:unread",
         starred: "in:inbox is:starred",
       }[activeFilter] || "in:inbox";
-      const params = new URLSearchParams();
-      params.set("q", [filterQuery, query].filter(Boolean).join(" "));
-      params.set("maxResults", String(MAX_MESSAGES));
-      params.set("fields", "messages(id,threadId),nextPageToken,resultSizeEstimate");
-      if (!reset && nextPageToken) params.set("pageToken", nextPageToken);
-      const page = await gmailApi("/messages?" + params.toString());
-      const ids = Array.isArray(page.messages) ? page.messages : [];
-      const loaded = await Promise.all(ids.map(async (item) => {
-        const metadata = new URLSearchParams();
-        metadata.set("format", "metadata");
-        metadata.append("metadataHeaders", "From");
-        metadata.append("metadataHeaders", "Subject");
-        metadata.append("metadataHeaders", "Date");
-        metadata.set("fields", "id,threadId,internalDate,snippet,labelIds,payload(headers,mimeType)");
-        const data = await gmailApi("/messages/" + encodeURIComponent(item.id) + "?" + metadata.toString());
-        return {
-          id: data.id,
-          threadId: data.threadId || item.threadId || "",
-          from: headerValue(data.payload && data.payload.headers, "From") || "Unknown sender",
-          subject: headerValue(data.payload && data.payload.headers, "Subject") || "(No subject)",
-          date: headerValue(data.payload && data.payload.headers, "Date"),
-          internalDate: Number(data.internalDate) || 0,
-          snippet: String(data.snippet || ""),
-          labelIds: Array.isArray(data.labelIds) ? data.labelIds : [],
+      const gmailQuery = [filterQuery, query].filter(Boolean).join(" ");
+      const requestedPageToken = reset ? "" : nextPageToken;
+      const cacheKey = gmailQuery + "|" + requestedPageToken;
+      const cachedPage = queryPageCache.get(cacheKey);
+      let loaded;
+      let page;
+
+      if (cachedPage && Date.now() - cachedPage.timestamp < CACHE_TTL_MS) {
+        loaded = cachedPage.messages;
+        page = { nextPageToken: cachedPage.nextPageToken };
+      } else {
+        const params = new URLSearchParams();
+        params.set("q", gmailQuery);
+        params.set("maxResults", String(MAX_MESSAGES));
+        params.set("fields", "messages(id,threadId),nextPageToken,resultSizeEstimate");
+        if (requestedPageToken) params.set("pageToken", requestedPageToken);
+        page = await gmailApi("/messages?" + params.toString());
+        const ids = Array.isArray(page.messages) ? page.messages : [];
+        const pending = ids.filter((item) => {
+          const cached = metadataCache.get(item.id);
+          return !cached || Date.now() - cached.timestamp >= 5 * 60 * 1000;
+        });
+        const metadataById = new Map();
+        let cursor = 0;
+        const worker = async () => {
+          while (cursor < pending.length) {
+            const item = pending[cursor++];
+            const metadata = new URLSearchParams();
+            metadata.set("format", "metadata");
+            ["From", "To", "Cc", "Subject", "Date"].forEach((name) => metadata.append("metadataHeaders", name));
+            metadata.set("fields", "id,threadId,internalDate,snippet,labelIds,payload(headers,mimeType)");
+            const data = await gmailApi("/messages/" + encodeURIComponent(item.id) + "?" + metadata.toString());
+            const email = {
+              id: data.id,
+              threadId: data.threadId || item.threadId || "",
+              from: headerValue(data.payload && data.payload.headers, "From") || "Unknown sender",
+              to: headerValue(data.payload && data.payload.headers, "To"),
+              cc: headerValue(data.payload && data.payload.headers, "Cc"),
+              subject: headerValue(data.payload && data.payload.headers, "Subject") || "(No subject)",
+              date: headerValue(data.payload && data.payload.headers, "Date"),
+              internalDate: Number(data.internalDate) || 0,
+              snippet: String(data.snippet || ""),
+              labelIds: Array.isArray(data.labelIds) ? data.labelIds : [],
+            };
+            metadataCache.set(item.id, { timestamp: Date.now(), email });
+            metadataById.set(item.id, email);
+          }
         };
-      }));
+        await Promise.all(Array.from({ length: Math.min(4, pending.length) }, worker));
+        loaded = ids.map((item) => metadataById.get(item.id) || metadataCache.get(item.id)?.email).filter(Boolean);
+        queryPageCache.set(cacheKey, {
+          timestamp: Date.now(),
+          messages: loaded,
+          nextPageToken: page.nextPageToken || "",
+        });
+      }
+
       const existingIds = new Set(messages.map((message) => message.id));
       const uniqueLoaded = loaded.filter((message) => message && message.id && !existingIds.has(message.id));
-      messages = (reset ? uniqueLoaded : messages.concat(uniqueLoaded)).sort((a, b) => b.internalDate - a.internalDate);
+      messages = (reset ? loaded : messages.concat(uniqueLoaded)).sort((a, b) => b.internalDate - a.internalDate);
       nextPageToken = page.nextPageToken || "";
       hasMoreMessages = !!nextPageToken;
       renderMessages();
       setStatus(messages.length
-        ? "Showing " + messages.length + " email" + (messages.length === 1 ? "" : "s") + (hasMoreMessages ? ". Scroll down to load more." : ". All matching messages loaded.")
+        ? "Showing " + messages.length + " email" + (messages.length === 1 ? "" : "s") + "."
         : "No inbox messages matched that search.");
     } catch (error) {
       setStatus(error && error.message ? error.message : "Could not load Gmail messages.", true);
@@ -342,32 +393,29 @@
       loading = false;
       renderControls();
       updateLoadMoreHint();
-
-      // If the list is shorter than its scroll container, the sentinel may
-      // already be visible when loading finishes. IntersectionObserver won't
-      // necessarily fire again just because loading changed, so explicitly
-      // continue pagination while the sentinel remains in or near the viewport.
-      const sentinel = $("gmailLoadMore");
-      if (hasMoreMessages && sentinel && emailScreen.classList.contains("active")) {
-        const rootRect = emailScreen.getBoundingClientRect();
-        const sentinelRect = sentinel.getBoundingClientRect();
-        if (sentinelRect.top <= rootRect.bottom + 180 && sentinelRect.bottom >= rootRect.top) {
-          Promise.resolve().then(() => loadMessages(false));
-        }
-      }
     }
   }
 
   function updateLoadMoreHint() {
-    const hint = $("gmailLoadMore");
-    if (!hint) return;
-    hint.hidden = !hasToken() || (!loading && !hasMoreMessages);
+    if (!loadMoreHint) return;
+    loadMoreHint.replaceChildren();
+    loadMoreHint.hidden = !hasToken() || (!loading && !hasMoreMessages);
+    if (loadMoreHint.hidden) return;
     if (loading) {
-      hint.innerHTML = '<span class="gmail-spinner" aria-hidden="true"></span><span>' +
-        (messages.length ? "Loading more emails…" : "Loading emails…") + "</span>";
-    } else {
-      hint.textContent = hasMoreMessages ? "Scroll to load more" : "";
+      const spinner = document.createElement("span");
+      spinner.className = "gmail-spinner";
+      spinner.setAttribute("aria-hidden", "true");
+      const label = document.createElement("span");
+      label.textContent = messages.length ? "Loading more emails…" : "Loading emails…";
+      loadMoreHint.append(spinner, label);
+      return;
     }
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "gmail-load-more-button";
+    button.textContent = "Load more emails";
+    button.addEventListener("click", () => loadMessages(false));
+    loadMoreHint.append(button);
   }
 
   function renderMessages() {
@@ -376,11 +424,13 @@
       const empty = document.createElement("div");
       empty.className = "gmail-empty-state";
       const heading = document.createElement("strong");
-      heading.textContent = hasToken() ? "No matching messages" : "Connect Gmail to get started";
+      heading.textContent = loading ? "Loading your inbox…" : hasToken() ? "No matching messages" : "Connect Gmail to get started";
       const detail = document.createElement("p");
-      detail.textContent = hasToken()
-        ? "Try another search or choose a different inbox filter."
-        : "Your inbox will appear here after you grant read-only access.";
+      detail.textContent = loading
+        ? "Your messages will appear here shortly."
+        : hasToken()
+          ? "Try another search or choose a different inbox filter."
+          : "Your inbox will appear here after you grant read-only access.";
       empty.append(heading, detail);
       results.append(empty);
       return;
@@ -390,7 +440,18 @@
       card.className = "gmail-email";
       card.dataset.messageId = email.id;
       card.tabIndex = 0;
-      card.setAttribute("aria-label", "Email from " + email.from + ": " + email.subject);
+      card.setAttribute("aria-label", "Open email from " + email.from + ": " + email.subject);
+      card.title = "Open full email";
+      card.addEventListener("click", (event) => {
+        if (event.target.closest("a, button")) return;
+        openEmailDetail(email);
+      });
+      card.addEventListener("keydown", (event) => {
+        if ((event.key === "Enter" || event.key === " ") && !event.target.closest("a, button")) {
+          event.preventDefault();
+          openEmailDetail(email);
+        }
+      });
 
       const top = document.createElement("div");
       top.className = "gmail-email-top";
@@ -438,14 +499,20 @@
       makeEvent.addEventListener("click", () => {
         convertMessage(email.id);
       });
-      const openMessage = document.createElement("a");
+      const openMessage = document.createElement("button");
       openMessage.className = "gmail-open-message";
-      openMessage.href = "https://mail.google.com/mail/u/0/#all/" + encodeURIComponent(email.id);
-      openMessage.target = "_blank";
-      openMessage.rel = "noopener noreferrer";
-      openMessage.textContent = "Open in Gmail";
-      openMessage.dataset.i18n = "Open in Gmail";
-      actions.append(openMessage, makeEvent);
+      openMessage.type = "button";
+      openMessage.addEventListener("click", () => openEmailDetail(email));
+      openMessage.textContent = "View email";
+      openMessage.dataset.i18n = "View email";
+      const gmailLink = document.createElement("a");
+      gmailLink.className = "gmail-open-message";
+      gmailLink.href = "https://mail.google.com/mail/u/0/#all/" + encodeURIComponent(email.id);
+      gmailLink.target = "_blank";
+      gmailLink.rel = "noopener noreferrer";
+      gmailLink.textContent = "Open in Gmail";
+      gmailLink.dataset.i18n = "Open in Gmail";
+      actions.append(openMessage, gmailLink, makeEvent);
       card.append(top, subject, snippet, actions);
       results.append(card);
     });
@@ -491,17 +558,56 @@
   }
 
   async function getMessageBody(email) {
+    const cached = bodyCache.get(email.id);
+    if (cached && Date.now() - cached.timestamp < 10 * 60 * 1000) return cached.message;
     const data = await gmailApi(
       "/messages/" + encodeURIComponent(email.id) + "?format=full",
     );
-    const body = extractBody(data.payload).slice(0, MAX_BODY_CHARS);
-    return {
-      subject: email.subject,
-      from: email.from,
-      date: email.date,
+    const headers = data.payload && data.payload.headers;
+    const message = {
+      subject: headerValue(headers, "Subject") || email.subject,
+      from: headerValue(headers, "From") || email.from,
+      to: headerValue(headers, "To") || email.to || "",
+      cc: headerValue(headers, "Cc") || email.cc || "",
+      date: headerValue(headers, "Date") || email.date,
       snippet: email.snippet,
-      body,
+      body: extractBody(data.payload).slice(0, MAX_BODY_CHARS),
     };
+    bodyCache.set(email.id, { timestamp: Date.now(), message });
+    return message;
+  }
+
+  async function openEmailDetail(email) {
+    if (!detailDialog || !email) return;
+    detailMessageId = email.id;
+    detailSubject.textContent = email.subject || "(No subject)";
+    detailFrom.textContent = email.from || "Unknown sender";
+    detailTo.textContent = email.to || "—";
+    detailCc.textContent = email.cc || "";
+    detailCcRow.hidden = !email.cc;
+    detailDate.textContent = email.date || displayDate(email.internalDate, email.date) || "—";
+    detailBody.textContent = "";
+    detailStatus.classList.remove("is-error");
+    detailStatus.textContent = "Loading full email…";
+    detailOpenGmail.href = "https://mail.google.com/mail/u/0/#all/" + encodeURIComponent(email.id);
+    detailMakeEvent.disabled = false;
+    if (!detailDialog.open) detailDialog.showModal();
+    try {
+      const full = await getMessageBody(email);
+      if (detailMessageId !== email.id) return;
+      detailSubject.textContent = full.subject || "(No subject)";
+      detailFrom.textContent = full.from || "Unknown sender";
+      detailTo.textContent = full.to || "—";
+      detailCc.textContent = full.cc || "";
+      detailCcRow.hidden = !full.cc;
+      detailDate.textContent = full.date || "—";
+      detailBody.textContent = full.body || full.snippet || "No readable text was found in this message.";
+      detailStatus.textContent = full.body ? "Full message text" : "Preview only";
+    } catch (error) {
+      detailStatus.classList.add("is-error");
+      detailStatus.textContent = error?.message || "Could not load the full email. Close this view and retry.";
+      detailBody.textContent = email.snippet || "";
+    }
   }
 
   async function convertMessage(messageId) {
@@ -522,15 +628,21 @@
     renderMessages();
     setStatus("Reading the selected email and extracting event details with Puter…");
     try {
-      const emailContent = await getMessageBody(email);
-      if (!emailContent.body && !emailContent.snippet) {
-        setStatus("This email has no readable message text. Try another email.", true);
-        return;
+      let extracted = conversionCache.get(messageId);
+      if (!extracted) {
+        const emailContent = await getMessageBody(email);
+        if (!emailContent.body && !emailContent.snippet) {
+          setStatus("This email has no readable message text. Try another email.", true);
+          return;
+        }
+        extracted = await window.CalexPuter.convertEmailToEvent({
+          ...emailContent,
+          preferredDate: "",
+        });
+        // Cache the parsed result for this page session, including no-event
+        // results, so repeated clicks do not spend another Puter request.
+        if (extracted) conversionCache.set(messageId, extracted);
       }
-      const extracted = await window.CalexPuter.convertEmailToEvent({
-        ...emailContent,
-        preferredDate: "",
-      });
       if (!extracted || !extracted.event) {
         setStatus((extracted && extracted.reply) || "Puter could not identify a specific event in this email. Try another message or create the event manually.");
         return;
@@ -550,6 +662,16 @@
   }
 
   $("openGmail").addEventListener("click", () => window.Calex.switchScreen("email"));
+  $("gmailDetailClose").addEventListener("click", () => detailDialog.close());
+  detailDialog.addEventListener("click", (event) => {
+    if (event.target === detailDialog) detailDialog.close();
+  });
+  detailMakeEvent.addEventListener("click", () => {
+    const id = detailMessageId;
+    if (!id) return;
+    detailDialog.close();
+    convertMessage(id);
+  });
   window.addEventListener("calex:auth", () => restoreConnection());
   window.addEventListener("calex:screen", (event) => {
     if (event.detail !== "email") return;
@@ -565,7 +687,11 @@
     });
   });
   connectButton.addEventListener("click", connectGmail);
-  refreshButton.addEventListener("click", loadMessages);
+  refreshButton.addEventListener("click", () => {
+    queryPageCache.clear();
+    metadataCache.clear();
+    loadMessages(true);
+  });
   searchButton.addEventListener("click", loadMessages);
   searchInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
@@ -599,16 +725,6 @@
     pendingConversion = null;
     convertMessage(pending.messageId, pending.preferredDate);
   });
-  const loadMoreSentinel = $("gmailLoadMore");
-  if (loadMoreSentinel && "IntersectionObserver" in window) {
-    const loadObserver = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting) && hasToken() && hasMoreMessages && !loading) {
-        loadMessages(false);
-      }
-    }, { root: emailScreen, rootMargin: "0px 0px 180px 0px" });
-    loadObserver.observe(loadMoreSentinel);
-  }
-
   window.addEventListener("calex:language", () => {
     if (emailScreen.classList.contains("active")) renderMessages();
   });
