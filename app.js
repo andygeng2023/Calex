@@ -435,6 +435,7 @@
       guestSettingsSnapshot = JSON.parse(JSON.stringify(appSettings));
     }
     authUser = user;
+    window.dispatchEvent(new CustomEvent("calex:auth", { detail: !!authUser }));
     if (authUser) {
       const migrationKey = "calex-guest-migrated-" + authUser.id;
       const shouldMigrateGuest = lsGet(migrationKey, 0) !== 1;
@@ -3323,6 +3324,12 @@
   }
 
   window.Calex = {
+    getAuthAccessToken: async () => {
+      if (!supabaseClient) return "";
+      const { data } = await supabaseClient.auth.getSession();
+      return data?.session?.access_token || "";
+    },
+    isSignedIn: () => !!authUser,
     onDay,
     eventMarkup,
     bindEventActions,

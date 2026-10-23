@@ -40,7 +40,22 @@ Google documentation: https://supabase.com/docs/guides/auth/social-login/auth-go
 
 The app preserves guest data locally and offers a first-login merge into the signed-in account. Cloud sync requires a valid signed-in session.
 
-## 5. Deployment smoke test
+## 5. Persistent Gmail connection
+
+The dedicated Gmail integration uses the separate Google OAuth client configured in `gmail-config.js`. Gmail linking is tied to a signed-in Calex account and uses a Supabase Edge Function so the long-lived Google refresh token is not exposed to browser code.
+
+1. In Google Cloud Console, open the OAuth client matching the ID in `gmail-config.js`. Add `https://andygeng2023.github.io` to **Authorized JavaScript origins** (and `http://localhost:4173` only for local development).
+2. In Supabase Dashboard → **Edge Functions → Secrets**, add:
+   - `CALEX_GMAIL_CLIENT_ID`: the same web OAuth client ID as `gmail-config.js`.
+   - `CALEX_GMAIL_CLIENT_SECRET`: the secret for that same Google OAuth client. Keep it in Supabase only.
+   - `CALEX_GMAIL_TOKEN_ENCRYPTION_KEY`: a base64-encoded, randomly generated 32-byte key (for example, generate one locally with `openssl rand -base64 32`). Keep this key stable; rotating it without re-encrypting saved records will make existing connections unreadable.
+3. Confirm the `calex-gmail-auth` Edge Function is deployed with JWT verification enabled. The database table `public.calex_gmail_connections` has RLS enabled and no browser-role access.
+4. Sign in to Calex, open Email, and connect Gmail. Refresh the page and reopen Email; the saved account should restore without repeating Google consent.
+5. Disconnect Gmail in Calex and confirm the account is removed from the saved connections.
+
+The function and table can be deployed without the OAuth client secret, but Gmail linking will return a configuration error until all three secrets are set. Never add these secrets to this repository or a client-side JavaScript file.
+
+## 6. Deployment smoke test
 
 After changing Auth settings and deploying:
 
