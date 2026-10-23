@@ -1889,6 +1889,7 @@
   $("eventForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const id = $("eventForm").dataset.editId;
+    const fromPuterEmail = $("eventForm").dataset.source === "puter-email";
     const old = events.find((x) => x.id === id);
     const item = {
       id: id || crypto.randomUUID(),
@@ -1938,6 +1939,12 @@
     renderAll();
     showToast(id ? "Event updated" : "Event added");
     $("eventForm").dataset.editId = "";
+    $("eventForm").dataset.source = "";
+    if (fromPuterEmail) {
+      switchScreen("calendar");
+      renderAll();
+      showToast("Email event added to your calendar");
+    }
   });
   ["prevYear", "nextYear", "prevMonth", "nextMonth"].forEach((id) =>
     $(id).addEventListener("click", () => {
@@ -3376,6 +3383,7 @@
     quickAdd: () => openModal("quick"),
     draftEvent: (draft) => {
       openNormal();
+      $("eventForm").dataset.source = "puter-email";
       $("eventTitle").value = draft.title;
       $("eventDate").value = draft.date;
       $("eventStart").value = draft.start || "";
