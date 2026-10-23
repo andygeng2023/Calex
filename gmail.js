@@ -203,6 +203,12 @@
     accessToken = "";
     tokenExpiresAt = 0;
     tokenClient = null;
+    queryPageCache.clear();
+    metadataCache.clear();
+    bodyCache.clear();
+    conversionCache.clear();
+    if (detailDialog && detailDialog.open) detailDialog.close();
+    detailMessageId = "";
     messages = [];
     nextPageToken = "";
     hasMoreMessages = false;
