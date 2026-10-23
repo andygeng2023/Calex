@@ -1,21 +1,22 @@
-const CACHE_NAME = "calex-shell-v50";
+const CACHE_NAME = "calex-shell-v51";
+const SQLITE_ENGINE_URL = "https://cdn.jsdelivr.net/npm/sql.js@1.15.1/dist/sql-wasm-inline.js";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./privacy.html",
   "./terms.html",
-  "./styles.css?v=50",
-  "./workspace.css?v=50",
-  "./calendar.css?v=50",
-  "./workspace.js?v=50",
-  "./icons.js?v=50",
-  "./sync.js?v=50",
-  "./ics.js?v=50",
-  "./app.js?v=50",
-  "./i18n.js?v=50",
-  "./sqlite-store.js?v=50",
-  "./gmail-config.js?v=50",
-  "./gmail.js?v=50",
+  "./styles.css?v=51",
+  "./workspace.css?v=51",
+  "./calendar.css?v=51",
+  "./workspace.js?v=51",
+  "./icons.js?v=51",
+  "./sync.js?v=51",
+  "./ics.js?v=51",
+  "./app.js?v=51",
+  "./i18n.js?v=51",
+  "./sqlite-store.js?v=51",
+  "./gmail-config.js?v=51",
+  "./gmail.js?v=51",
   "./manifest.webmanifest",
   "./icon.svg",
   "./icon-192.png",
@@ -27,6 +28,7 @@ self.addEventListener("install", (event) => {
     caches
       .open(CACHE_NAME)
       .then((cache) => cache.addAll(APP_SHELL))
+      .then((cache) => cache.add(SQLITE_ENGINE_URL).catch(() => {}))
       .then(() => self.skipWaiting()),
   );
 });
@@ -50,11 +52,22 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;
-  if (
-    request.method !== "GET" ||
-    new URL(request.url).origin !== self.location.origin
-  )
+  if (request.method !== "GET") return;
+
+  if (request.url === SQLITE_ENGINE_URL) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then(async (cache) => {
+        const cached = await cache.match(request);
+        if (cached) return cached;
+        const response = await fetch(request);
+        if (response.ok) cache.put(request, response.clone()).catch(() => {});
+        return response;
+      }),
+    );
     return;
+  }
+
+  if (new URL(request.url).origin !== self.location.origin) return;
 
   if (request.mode === "navigate") {
     event.respondWith(
