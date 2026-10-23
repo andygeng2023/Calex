@@ -3637,3 +3637,17 @@ body.settings-dark .gmail-message-badge.is-starred { background:#42391f; color:#
   max-height: none;
   overflow: visible;
 }
+
+/* Use normal block flow for the detail dialog so only the dialog scrolls.
+   Flex sizing previously allowed a long message body to shrink and clip. */
+.gmail-detail-dialog[open] {
+  display: block;
+}
+.gmail-detail-dialog[open] .gmail-detail-body {
+  display: block;
+  height: auto;
+  flex: none;
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+}
