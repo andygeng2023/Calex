@@ -1522,6 +1522,7 @@
     switchScreen("calendar");
     openModal("normal");
     setNormalDefaults(e);
+    $("eventForm").dataset.source = "";
     setTimeout(() => $("eventTitle").focus(), 0);
     $("modalTitle").textContent = translateUiText(
       e ? "Edit event" : "New event",
