@@ -506,7 +506,7 @@
         convertMessage(email.id);
       });
       const openMessage = document.createElement("button");
-      openMessage.className = "gmail-open-message";
+      openMessage.className = "gmail-view-email";
       openMessage.type = "button";
       openMessage.addEventListener("click", () => openEmailDetail(email));
       openMessage.textContent = "View email";
