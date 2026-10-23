@@ -596,7 +596,7 @@
     detailStatus.classList.remove("is-error");
     detailStatus.textContent = "Loading full email…";
     detailOpenGmail.href = "https://mail.google.com/mail/u/0/#all/" + encodeURIComponent(email.id);
-    detailMakeEvent.disabled = false;
+    detailMakeEvent.disabled = true;
     if (!detailDialog.open) detailDialog.showModal();
     try {
       const full = await getMessageBody(email);
@@ -609,7 +609,9 @@
       detailDate.textContent = full.date || "—";
       detailBody.textContent = full.body || full.snippet || "No readable text was found in this message.";
       detailStatus.textContent = full.body ? "Full message text" : "Preview only";
+      detailMakeEvent.disabled = false;
     } catch (error) {
+      detailMakeEvent.disabled = false;
       detailStatus.classList.add("is-error");
       detailStatus.textContent = error?.message || "Could not load the full email. Close this view and retry.";
       detailBody.textContent = email.snippet || "";
