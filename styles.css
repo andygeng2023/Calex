@@ -3495,7 +3495,7 @@ body.settings-dark .modal #quickPreview {
 .gmail-detail-dialog[open] .gmail-detail-body { flex:1 1 auto; min-height:80px; }
 .gmail-detail-dialog .gmail-detail-status:empty { display:none; }
 .gmail-detail-dialog .gmail-detail-status.is-error { color:#ad332c; }
-.gmail-open-message { border:0; padding:0; background:transparent; cursor:pointer; font:inherit; }
+.gmail-open-message { border:0; padding:0; background:transparent; color:var(--green-dark); cursor:pointer; font:inherit; font-size:12px; font-weight:650; text-decoration:none; text-underline-offset:3px; }
 @media (max-width:600px) {
   #emailScreen.email-screen.active { gap:11px; padding:16px 12px 8px; }
   .gmail-detail-head, .gmail-detail-meta { padding-left:16px; padding-right:16px; }
