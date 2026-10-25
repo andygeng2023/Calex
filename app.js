@@ -3482,16 +3482,27 @@ window.CalexReady = (async function () {
       location.hostname === "localhost" ||
       location.hostname === "127.0.0.1")
   ) {
+    const hadController = Boolean(navigator.serviceWorker.controller);
+    if (hadController) {
+      navigator.serviceWorker.addEventListener(
+        "controllerchange",
+        () => window.location.reload(),
+        { once: true },
+      );
+    }
     window.addEventListener(
       "load",
-      () => {
-        navigator.serviceWorker.register("./sw.js").catch(() => {
+      async () => {
+        try {
+          const registration = await navigator.serviceWorker.register("./sw.js", {
+            updateViaCache: "none",
+          });
+          await registration.update();
+        } catch (_) {
           // The app remains usable when service-worker registration is unavailable.
-        });
+        }
       },
-      {
-        once: true,
-      },
+      { once: true },
     );
   }
 
