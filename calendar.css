@@ -498,12 +498,21 @@ body .modal #eventForm input::-webkit-calendar-picker-indicator {
 @media (min-width: 1100px) {
   body .app #calendarScreen.calendar-restored.active {
     display: grid;
-    grid-template-columns: minmax(300px, var(--drag-left-width, 56%)) minmax(320px, 1fr);
+    grid-template-columns: minmax(190px, var(--drag-left-width, 56%)) minmax(260px, 1fr);
     grid-template-rows: auto auto minmax(0, 1fr);
     column-gap: var(--space-4);
     row-gap: 0;
     padding: var(--space-3) var(--space-6) var(--space-4);
     overflow: hidden;
+  }
+  body .app #calendarScreen.calendar-restored.active:has(.calendar-scroller.week-mode) {
+    grid-template-columns: minmax(190px, var(--drag-left-width, 220px)) minmax(260px, 1fr);
+  }
+  body .app #calendarScreen.calendar-restored.active:has(.calendar-scroller.month-mode) {
+    grid-template-columns: minmax(190px, var(--drag-left-width, 340px)) minmax(260px, 1fr);
+  }
+  body .app #calendarScreen.calendar-restored.active:has(.calendar-scroller.all-mode) {
+    grid-template-columns: minmax(190px, var(--drag-left-width, 56%)) minmax(260px, 1fr);
   }
   body .app #calendarScreen.calendar-restored .search-wrap {
     grid-column: 1 / -1; grid-row: 1;
@@ -627,6 +636,6 @@ body .modal #eventForm input::-webkit-calendar-picker-indicator {
     max-height: none !important; overflow-y: auto;
   }
   body .app #calendarScreen.calendar-restored.is-view-dragging .selected-panel {
-    min-width: 320px; overflow: hidden;
+    min-width: 260px; overflow: hidden;
   }
 }
