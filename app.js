@@ -2436,7 +2436,7 @@ window.CalexReady = (async function () {
         minWidth = 300,
         maxWidth = Math.max(minWidth, availableWidth - 320),
         rawWidth = Math.max(minWidth, Math.min(maxWidth, handleStartScrollerWidth + delta)),
-        stops = [360, 560, 780, 1020, maxWidth].filter((n, i, arr) => n <= maxWidth || i === arr.length - 1),
+        stops = [360, 460, 620, 800, 1020, maxWidth].filter((n, i, arr) => n <= maxWidth || i === arr.length - 1),
         snapWidth = stops.reduce((best, stop) =>
           Math.abs(stop - rawWidth) < Math.abs(best - rawWidth) ? stop : best, stops[0]),
         snappedWidth = Math.max(minWidth, Math.min(maxWidth, snapWidth));
