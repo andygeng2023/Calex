@@ -28,7 +28,6 @@ self.addEventListener("install", (event) => {
     caches
       .open(CACHE_NAME)
       .then((cache) => cache.addAll(APP_SHELL))
-      .then((cache) => cache.add(SQLITE_ENGINE_URL).catch(() => {}))
       .then(() => self.skipWaiting()),
   );
 });
