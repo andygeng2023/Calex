@@ -2277,7 +2277,6 @@ window.CalexReady = (async function () {
       );
       calendarScreen.style.setProperty(
         "--drag-scroller-height",
-        "--drag-left-width",
         targetHeight + "px",
       );
     }
@@ -2317,7 +2316,6 @@ window.CalexReady = (async function () {
     } else if (handleStartView !== "all") {
       calendarScreen.style.setProperty(
         "--drag-scroller-height",
-        "--drag-left-width",
         handleStartScrollerHeight + "px",
       );
     }
