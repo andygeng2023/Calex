@@ -1411,23 +1411,35 @@ window.CalexReady = (async function () {
           timelineBusy = false;
         });
       });
+    } else if (view === "month") {
+      // Month mode is a vertically scrolling timeline of month groups.
+      // Desktop CSS places two month groups on each row.
+      grid.style.display = "grid";
+      grid.innerHTML = "";
+      const start = new Date(cursor.getFullYear(), cursor.getMonth() - 5, 1, 12);
+      for (let i = 0; i < 12; i++) {
+        grid.insertAdjacentHTML(
+          "beforeend",
+          makeMonth(new Date(start.getFullYear(), start.getMonth() + i, 1, 12)),
+        );
+      }
+      bindDateCells(grid);
+      requestAnimationFrame(() => {
+        const target = grid.querySelector('[data-month="' + monthKey(cursor) + '"]');
+        if (target) {
+          const sr = sc.getBoundingClientRect(), tr = target.getBoundingClientRect();
+          sc.scrollTop += tr.top - sr.top - 12;
+        }
+      });
     } else {
       grid.style.display = "grid";
-      const first = monthStart(cursor);
-      let start;
-      if (view === "week") {
-        start = new Date(selected);
-        start = addDays(start, -((start.getDay() + 6) % 7));
-      } else start = addDays(first, -((first.getDay() + 6) % 7));
-      const count = view === "week" ? 7 : 42;
+      const start = new Date(selected);
+      const weekStart = addDays(start, -((start.getDay() + 6) % 7));
       let out = "";
-      for (let i = 0; i < count; i++) {
-        const d = addDays(start, i),
-          inside = d.getMonth() === cursor.getMonth(),
-          items = onDay(d);
+      for (let i = 0; i < 7; i++) {
+        const d = addDays(weekStart, i), items = onDay(d);
         out +=
           '<button class="date-cell ' +
-          (!inside && view !== "week" ? "outside " : "") +
           (sameDay(d, today) ? "today " : "") +
           (sameDay(d, selected) ? "selected" : "") +
           '" data-date="' +
@@ -1438,10 +1450,7 @@ window.CalexReady = (async function () {
           '"><span>' +
           d.getDate() +
           '</span><span class="dots">' +
-          items
-            .slice(0, 3)
-            .map(() => "<i></i>")
-            .join("") +
+          items.slice(0, 3).map(() => "<i></i>").join("") +
           "</span>" +
           cellEvents(items) +
           "</button>";
