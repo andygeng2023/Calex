@@ -1112,8 +1112,8 @@ window.CalexReady = (async function () {
         "--drag-scroller-max",
         "--drag-scroller-scale",
         "--drag-scroller-height",
-        "--drag-left-width",
       ].forEach((k) => screen.style.removeProperty(k));
+      if (!horizontalCalendarLayout()) screen.style.removeProperty("--drag-left-width");
       $("selectedPanel").style.removeProperty("--panel-drag-y");
       void sc.offsetWidth;
       const afterScroller = sc.getBoundingClientRect(),
@@ -2417,6 +2417,33 @@ window.CalexReady = (async function () {
       crossDelta = horizontal ? dy : dx,
       axisSize = horizontal ? window.innerWidth : window.innerHeight,
       threshold = Math.max(40, Math.min(64, axisSize * 0.06));
+    if (horizontal) {
+      // The release position selects the snap point; the divider no longer
+      // resets to its default width after every drag.
+      const style = window.getComputedStyle(calendarScreen),
+        availableWidth =
+          calendarScreen.clientWidth -
+          parseFloat(style.paddingLeft || "0") -
+          parseFloat(style.paddingRight || "0") -
+          parseFloat(style.columnGap || "0"),
+        minWidth = 300,
+        maxWidth = Math.max(minWidth, availableWidth - 320),
+        rawWidth = Math.max(minWidth, Math.min(maxWidth, handleStartScrollerWidth + delta)),
+        stops = [360, 560, 780, 1020, maxWidth].filter((n, i, arr) => n <= maxWidth || i === arr.length - 1),
+        snapWidth = stops.reduce((best, stop) =>
+          Math.abs(stop - rawWidth) < Math.abs(best - rawWidth) ? stop : best, stops[0]),
+        snappedWidth = Math.max(minWidth, Math.min(maxWidth, snapWidth));
+      const valid = Math.abs(delta) >= 8 && Math.abs(delta) >= Math.abs(crossDelta) * 1.15;
+      if (valid) {
+        calendarScreen.style.setProperty("--drag-left-width", snappedWidth + "px");
+        const columns = snappedWidth < 560 ? 1 : snappedWidth < 780 ? 2 : snappedWidth < 1020 ? 3 : 4;
+        calendarScreen.style.setProperty("--month-columns", String(columns));
+        settleHandleDrag(snappedWidth < 400 ? "week" : snappedWidth >= 1020 ? "all" : "month");
+      } else {
+        settleHandleDrag(handleStartView);
+      }
+      return;
+    }
     const valid =
       Math.abs(delta) >= threshold &&
       Math.abs(delta) >= Math.abs(crossDelta) * 1.15 &&
