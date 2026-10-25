@@ -2317,8 +2317,8 @@ window.CalexReady = (async function () {
           parseFloat(style.paddingLeft || "0") -
           parseFloat(style.paddingRight || "0") -
           parseFloat(style.columnGap || "0"),
-        minLeft = 280,
-        maxLeft = Math.max(minLeft, availableWidth - 320),
+        minLeft = 190,
+        maxLeft = Math.max(minLeft, availableWidth - 260),
         targetWidth = Math.max(
           minLeft,
           Math.min(maxLeft, handleStartScrollerWidth + delta),
@@ -2433,18 +2433,21 @@ window.CalexReady = (async function () {
           parseFloat(style.paddingLeft || "0") -
           parseFloat(style.paddingRight || "0") -
           parseFloat(style.columnGap || "0"),
-        minWidth = 300,
-        maxWidth = Math.max(minWidth, availableWidth - 320),
+        minWidth = 190,
+        maxWidth = Math.max(minWidth, availableWidth - 260),
         rawWidth = Math.max(minWidth, Math.min(maxWidth, handleStartScrollerWidth + delta)),
-        stops = [360, 460, 620, 800, 1020, maxWidth].filter((n, i, arr) => n <= maxWidth || i === arr.length - 1),
+        stops = [220, 340, 500, 660, 800, maxWidth]
+          .filter((n, i, arr) => n <= maxWidth || i === arr.length - 1)
+          .filter((n, i, arr) => i === 0 || n > arr[i - 1]),
         snapWidth = stops.reduce((best, stop) =>
           Math.abs(stop - rawWidth) < Math.abs(best - rawWidth) ? stop : best, stops[0]),
         snappedWidth = Math.max(minWidth, Math.min(maxWidth, snapWidth));
       const valid = Math.abs(delta) >= 8 && Math.abs(delta) >= Math.abs(crossDelta) * 1.15;
       if (valid) {
-        const columns = snappedWidth < 560 ? 1 : snappedWidth < 780 ? 2 : snappedWidth < 1020 ? 3 : 4;
+        const columns = snappedWidth < 400 ? 1 : snappedWidth < 580 ? 1 : snappedWidth < 740 ? 2 : 3;
+        const isWidestStop = snappedWidth === maxWidth || snappedWidth >= 800;
         pendingDesktopSnap = { width: snappedWidth, columns };
-        settleHandleDrag(snappedWidth < 400 ? "week" : snappedWidth >= 1020 ? "all" : "month");
+        settleHandleDrag(snappedWidth < 280 ? "week" : isWidestStop ? "all" : "month");
       } else {
         settleHandleDrag(handleStartView);
       }
