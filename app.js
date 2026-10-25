@@ -2266,7 +2266,12 @@ window.CalexReady = (async function () {
     // the pointer. The actual view is committed once, on pointerup.
     handlePreviewView = previewTarget;
   }
+  function isWideCalendarLayout() {
+    return window.matchMedia("(min-width: 701px)").matches;
+  }
+
   handle.addEventListener("pointerdown", (e) => {
+    if (isWideCalendarLayout()) return;
     if (e.button !== undefined && e.button !== 0) return;
     handleY = e.clientY;
     handleX = e.clientX;
@@ -2289,6 +2294,7 @@ window.CalexReady = (async function () {
     handle.setPointerCapture?.(e.pointerId);
   });
   handle.addEventListener("pointermove", (e) => {
+    if (isWideCalendarLayout()) return;
     if (!handleDragging) return;
     handleLastY = e.clientY;
     const dy = Math.max(
@@ -2330,6 +2336,41 @@ window.CalexReady = (async function () {
   handle.addEventListener("lostpointercapture", () => {
     if (handleDragging) settleHandleDrag(handleStartView);
   });
+
+  // On tablets and desktops, the same grip divides the date grid from the
+  // selected-day agenda. Drag it horizontally to adjust the two-pane layout.
+  let horizontalHandlePointer = null;
+  handle.addEventListener("pointerdown", (event) => {
+    if (!isWideCalendarLayout() || (event.button !== undefined && event.button !== 0)) return;
+    horizontalHandlePointer = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startWidth: calendarScreen.querySelector(".calendar-scroller").getBoundingClientRect().width,
+      screenWidth: calendarScreen.getBoundingClientRect().width,
+    };
+    calendarScreen.classList.add("is-horizontal-resizing");
+    handle.classList.add("dragging");
+    handle.setPointerCapture?.(event.pointerId);
+    event.preventDefault();
+  });
+  handle.addEventListener("pointermove", (event) => {
+    const state = horizontalHandlePointer;
+    if (!state || state.pointerId !== event.pointerId || !isWideCalendarLayout()) return;
+    const minDateWidth = Math.max(280, state.screenWidth * 0.34);
+    const maxDateWidth = state.screenWidth * 0.72;
+    const nextWidth = Math.max(minDateWidth, Math.min(maxDateWidth, state.startWidth + event.clientX - state.startX));
+    calendarScreen.style.setProperty("--calendar-date-pane", nextWidth + "px");
+    event.preventDefault();
+  });
+  function finishHorizontalHandleDrag(event) {
+    if (!horizontalHandlePointer || horizontalHandlePointer.pointerId !== event.pointerId) return;
+    horizontalHandlePointer = null;
+    calendarScreen.classList.remove("is-horizontal-resizing");
+    handle.classList.remove("dragging");
+  }
+  handle.addEventListener("pointerup", finishHorizontalHandleDrag);
+  handle.addEventListener("pointercancel", finishHorizontalHandleDrag);
+  handle.addEventListener("lostpointercapture", finishHorizontalHandleDrag);
   let timelineBusy = false,
     viewWheelLock = false,
     viewSettleTimer = null;
