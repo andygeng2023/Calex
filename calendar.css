@@ -492,3 +492,177 @@ body .modal #eventForm input::-webkit-calendar-picker-indicator {
   margin: 0;
   padding: 0;
 }
+
+
+/* Wide calendar: keep dates left and the selected day's events on the right. */
+@media (min-width: 1100px) {
+  body .app #calendarScreen.calendar-restored.active {
+    display: grid;
+    grid-template-columns: minmax(280px, 1.45fr) minmax(320px, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    column-gap: var(--space-6);
+    row-gap: 0;
+    padding: var(--space-3) var(--space-6) var(--space-4);
+    overflow: hidden;
+  }
+
+  body .app #calendarScreen.calendar-restored.active[data-view="month"] {
+    grid-template-columns: minmax(280px, 1fr) minmax(320px, 1fr);
+  }
+
+  body .app #calendarScreen.calendar-restored.active[data-view="week"] {
+    grid-template-columns: minmax(260px, 0.85fr) minmax(340px, 1.15fr);
+  }
+
+  body .app #calendarScreen.calendar-restored.active.is-view-dragging {
+    grid-template-columns:
+      minmax(280px, var(--drag-left-width, 58%))
+      minmax(320px, 1fr);
+  }
+
+  body .app #calendarScreen.calendar-restored .search-wrap {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  body .app #calendarScreen.calendar-restored .calendar-toolbar {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  body .app #calendarScreen.calendar-restored .calendar-scroller {
+    grid-column: 1;
+    grid-row: 3;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    max-height: none !important;
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  body .app #calendarScreen.calendar-restored.panel-open .calendar-scroller.month-mode,
+  body .app #calendarScreen.calendar-restored.panel-open .calendar-scroller.week-mode {
+    height: 100% !important;
+    max-height: none !important;
+    flex: 1 1 auto !important;
+  }
+
+  body .app #calendarScreen.calendar-restored .selected-panel,
+  body .app #calendarScreen.calendar-restored:not(.panel-open) .selected-panel,
+  body .app #calendarScreen.calendar-restored.panel-open .selected-panel {
+    grid-column: 2;
+    grid-row: 3;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex: 1 1 auto !important;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    padding: var(--space-3) var(--space-3) var(--space-3) 36px;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    border: 0;
+    border-left: 1px solid var(--line);
+    border-radius: 0;
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  body .app #calendarScreen.calendar-restored .selected-panel .panel-handle {
+    position: absolute;
+    inset: 0 auto 0 0;
+    z-index: 2;
+    display: flex;
+    width: 28px;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    flex: 0 0 28px;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  body .app #calendarScreen.calendar-restored .selected-panel .handle-grip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    width: 28px;
+    height: clamp(120px, 28vh, 190px);
+    min-height: 120px;
+    margin: 0;
+    padding: var(--space-2) 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    color: var(--muted);
+    cursor: col-resize;
+    touch-action: none;
+  }
+
+  body .app #calendarScreen.calendar-restored .selected-panel .handle-grip span {
+    width: 18px;
+    height: 4px;
+    min-height: 4px;
+    flex: 0 0 4px;
+    border-radius: 4px;
+    background: var(--muted);
+  }
+
+  body .app #calendarScreen.calendar-restored .selected-panel .handle-grip:after {
+    content: "Drag to change view";
+    writing-mode: vertical-rl;
+    font-size: var(--text-xs);
+    line-height: 1.2;
+  }
+
+  body .app #calendarScreen.calendar-restored:not(.panel-open) .selected-panel .panel-head,
+  body .app #calendarScreen.calendar-restored.panel-open .selected-panel .panel-head {
+    display: flex !important;
+    flex: 0 0 auto;
+    min-height: 36px;
+    margin: 0 0 var(--space-3);
+  }
+
+  body .app #calendarScreen.calendar-restored:not(.panel-open) .selected-panel #panelEvents,
+  body .app #calendarScreen.calendar-restored.panel-open .selected-panel #panelEvents {
+    display: block !important;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 0;
+  }
+
+  body .app #calendarScreen.calendar-restored #dateGrid {
+    width: 100%;
+    min-width: 0;
+  }
+
+  body .app #calendarScreen.calendar-restored.is-view-dragging:not(.panel-open) .selected-panel,
+  body .app #calendarScreen.calendar-restored.is-view-dragging.panel-open .selected-panel {
+    flex: 1 1 auto !important;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  body .app #calendarScreen.calendar-restored.is-view-dragging.panel-open .calendar-scroller,
+  body .app #calendarScreen.calendar-restored.is-view-dragging:not(.panel-open) .calendar-scroller {
+    height: 100% !important;
+    max-height: none !important;
+    flex: 1 1 auto !important;
+  }
+}
