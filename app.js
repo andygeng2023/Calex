@@ -2260,6 +2260,7 @@ window.CalexReady = (async function () {
           Math.min(maxLeft, handleStartScrollerWidth + delta),
         );
       calendarScreen.style.setProperty("--drag-left-width", targetWidth + "px");
+      calendarScreen.style.setProperty("--drag-progress", String(progress));
     } else if (handleStartView !== "all") {
       const maxHeight = Math.max(
         150,
