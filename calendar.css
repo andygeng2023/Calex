@@ -596,6 +596,16 @@ body .modal #eventForm input::-webkit-calendar-picker-indicator {
     display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start; gap: var(--space-4);
   }
+  body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode .timeline-month {
+    min-width: 0; align-self: start;
+  }
+  body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode .timeline-month .date-grid {
+    display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px;
+  }
+  body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode .timeline-title {
+    position: sticky; top: 0; z-index: 1; padding: var(--space-2);
+    background: var(--paper);
+  }
   body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode .weekdays {
     display: grid; grid-template-columns: repeat(7, minmax(0, 1fr));
   }
