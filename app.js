@@ -1462,6 +1462,54 @@ window.CalexReady = (async function () {
     window.dispatchEvent(new CustomEvent("calex:render"));
   }
 
+  // Extend the month timeline in both directions as the user scrolls.
+  // Add months in even batches so the desktop two-column month grid stays aligned.
+  let calendarTimelineLoading = false;
+  $("calendarScroller").addEventListener("scroll", () => {
+    if (calendarTimelineLoading || (view !== "all" && view !== "month")) return;
+    const scroller = $("calendarScroller");
+    const grid = $("dateGrid");
+    if (!grid.firstElementChild || !grid.lastElementChild) return;
+    const nearTop = scroller.scrollTop < 180;
+    const nearBottom =
+      scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 240;
+    if (!nearTop && !nearBottom) return;
+    calendarTimelineLoading = true;
+    const oldHeight = scroller.scrollHeight;
+    const firstMonth = grid.querySelector(".timeline-month:first-child");
+    const lastMonth = grid.querySelector(".timeline-month:last-child");
+    if (nearTop && firstMonth) {
+      const parts = firstMonth.dataset.month.split("-").map(Number);
+      const firstDate = new Date(parts[0], parts[1] - 1, 1, 12);
+      const fragment = document.createDocumentFragment();
+      const holder = document.createElement("div");
+      for (let i = 6; i >= 1; i--) {
+        holder.insertAdjacentHTML(
+          "beforeend",
+          makeMonth(new Date(firstDate.getFullYear(), firstDate.getMonth() - i, 1, 12)),
+        );
+      }
+      while (holder.firstElementChild) fragment.appendChild(holder.firstElementChild);
+      grid.insertBefore(fragment, grid.firstElementChild);
+      bindDateCells(grid);
+      scroller.scrollTop += scroller.scrollHeight - oldHeight;
+    } else if (nearBottom && lastMonth) {
+      const parts = lastMonth.dataset.month.split("-").map(Number);
+      const lastDate = new Date(parts[0], parts[1] - 1, 1, 12);
+      let markup = "";
+      for (let i = 1; i <= 6; i++) {
+        markup += makeMonth(
+          new Date(lastDate.getFullYear(), lastDate.getMonth() + i, 1, 12),
+        );
+      }
+      grid.insertAdjacentHTML("beforeend", markup);
+      bindDateCells(grid);
+    }
+    requestAnimationFrame(() => {
+      calendarTimelineLoading = false;
+    });
+  }, { passive: true });
+
   function renderPanel() {
     $("panelDate").textContent = fmtDate(selected, {
       weekday: "long",
