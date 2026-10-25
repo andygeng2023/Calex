@@ -1076,6 +1076,8 @@ window.CalexReady = (async function () {
     });
   }
 
+  let pendingDesktopSnap = null;
+
   function renderCalendar(settleTransition = false) {
     // Ordinary navigation updates immediately. The restored drag-release path
     // retains the original FLIP animation without ghosting over other screens.
@@ -1096,6 +1098,11 @@ window.CalexReady = (async function () {
         !reduced;
       const beforeScroller = sc.getBoundingClientRect(),
         beforePanel = $("selectedPanel").getBoundingClientRect();
+      if (pendingDesktopSnap && horizontalCalendarLayout()) {
+        screen.style.setProperty("--drag-left-width", pendingDesktopSnap.width + "px");
+        screen.style.setProperty("--month-columns", String(pendingDesktopSnap.columns));
+        pendingDesktopSnap = null;
+      }
       clearTimeout(viewSettleTimer);
       screen.classList.add("is-view-settling", "is-release-flip");
       // Keep the pointer-driven layout in place until the destination DOM exists.
@@ -2435,9 +2442,8 @@ window.CalexReady = (async function () {
         snappedWidth = Math.max(minWidth, Math.min(maxWidth, snapWidth));
       const valid = Math.abs(delta) >= 8 && Math.abs(delta) >= Math.abs(crossDelta) * 1.15;
       if (valid) {
-        calendarScreen.style.setProperty("--drag-left-width", snappedWidth + "px");
         const columns = snappedWidth < 560 ? 1 : snappedWidth < 780 ? 2 : snappedWidth < 1020 ? 3 : 4;
-        calendarScreen.style.setProperty("--month-columns", String(columns));
+        pendingDesktopSnap = { width: snappedWidth, columns };
         settleHandleDrag(snappedWidth < 400 ? "week" : snappedWidth >= 1020 ? "all" : "month");
       } else {
         settleHandleDrag(handleStartView);
