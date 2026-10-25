@@ -318,7 +318,7 @@ test("fortnightly recurrence does not appear every day or every week", async ({
   );
 });
 
-test("blocked browser storage warns clearly and the calendar remains usable", async ({
+test("blocked browser storage falls back to SQLite and the calendar remains usable", async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -331,12 +331,18 @@ test("blocked browser storage warns clearly and the calendar remains usable", as
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
-  await expect(page.locator("#runtimeNotice")).toContainText(
+  await expect(page.locator("#runtimeNotice")).not.toContainText(
     "Events last only for this session",
   );
-  await addEvent(page, "Session-only event");
+  await expect.poll(() => page.evaluate(() => !!window.CalexSQLite)).toBe(true);
+  await addEvent(page, "SQLite fallback event");
   await expect(page.locator("#panelEvents")).toContainText(
-    "Session-only event",
+    "SQLite fallback event",
+  );
+  await page.evaluate(() => window.CalexSQLite.flush());
+  await page.reload();
+  await expect(page.locator("#panelEvents")).toContainText(
+    "SQLite fallback event",
   );
   expect(errors).toEqual([]);
 });
@@ -927,7 +933,8 @@ test("Gmail connects read-only, wraps message cards, and loads additional pages 
     return {
       dialogCanScroll: dialog.scrollHeight > dialog.clientHeight,
       bodyOverflowY: getComputedStyle(body).overflowY,
-      bodyEndsBeforeActions: body.offsetTop + body.offsetHeight <= actions.offsetTop,
+      bodyEndsBeforeActions:
+        body.getBoundingClientRect().bottom <= actions.getBoundingClientRect().top,
     };
   });
   expect(layout.dialogCanScroll).toBe(true);
