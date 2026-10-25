@@ -1112,6 +1112,7 @@ window.CalexReady = (async function () {
         "--drag-scroller-max",
         "--drag-scroller-scale",
         "--drag-scroller-height",
+        "--drag-left-width",
       ].forEach((k) => screen.style.removeProperty(k));
       $("selectedPanel").style.removeProperty("--panel-drag-y");
       void sc.offsetWidth;
@@ -2172,11 +2173,15 @@ window.CalexReady = (async function () {
   let handleY = 0,
     handleX = 0,
     handleLastY = 0,
+    handleLastX = 0,
     handleStartView = "all",
     handleStartScrollerHeight = 0,
+    handleStartScrollerWidth = 0,
     handleDragging = false,
     handlePreviewView = null;
-  const handle = $("selectedPanel").querySelector(".handle-grip"),
+  const horizontalCalendarLayout = () =>
+      window.matchMedia("(min-width: 1100px)").matches,
+    handle = $("selectedPanel").querySelector(".handle-grip"),
     selectedPanel = $("selectedPanel"),
     calendarScreen = $("calendarScreen");
 
@@ -2198,6 +2203,7 @@ window.CalexReady = (async function () {
       "--drag-scroller-max",
       "--drag-scroller-scale",
       "--drag-scroller-height",
+      "--drag-left-width",
     ].forEach((k) => calendarScreen.style.removeProperty(k));
     selectedPanel.style.removeProperty("--panel-drag-y");
   }
@@ -2224,43 +2230,63 @@ window.CalexReady = (async function () {
     );
   }
 
-  function updateDragPreview(dy) {
-    const canPreview = handleDragCanChange(handleStartView, dy);
-    const distance = Math.max(140, Math.min(220, window.innerHeight * 0.28));
-    const progress = canPreview ? Math.min(1, Math.abs(dy) / distance) : 0;
+  function updateDragPreview(delta) {
+    const horizontal = horizontalCalendarLayout(),
+      canPreview = handleDragCanChange(handleStartView, delta),
+      axisSize = horizontal ? window.innerWidth : window.innerHeight,
+      distance = Math.max(140, Math.min(220, axisSize * 0.28)),
+      progress = canPreview ? Math.min(1, Math.abs(delta) / distance) : 0,
+      maxDrag = Math.min(axisSize * 0.55, 420);
     calendarScreen.style.setProperty("--drag-progress", String(progress));
     calendarScreen.style.setProperty(
       "--drag-panel-size",
-      Math.max(0, Math.min(-dy, Math.min(window.innerHeight * 0.55, 420))) +
-        "px",
+      Math.max(0, Math.min(-delta, maxDrag)) + "px",
     );
     calendarScreen.style.setProperty(
       "--drag-close-size",
-      Math.max(
-        0,
-        Math.min(Math.abs(dy), Math.min(window.innerHeight * 0.55, 420)),
-      ) + "px",
+      Math.max(0, Math.min(Math.abs(delta), maxDrag)) + "px",
     );
-    const previewTarget =
-      canPreview && progress >= 0.42
-        ? nextDragView(handleStartView, dy)
-        : handleStartView;
-    if (handleStartView !== "all") {
+    if (horizontal) {
+      const style = window.getComputedStyle(calendarScreen),
+        availableWidth =
+          calendarScreen.clientWidth -
+          parseFloat(style.paddingLeft || "0") -
+          parseFloat(style.paddingRight || "0") -
+          parseFloat(style.columnGap || "0"),
+        minLeft = 280,
+        maxLeft = Math.max(minLeft, availableWidth - 320),
+        targetWidth = Math.max(
+          minLeft,
+          Math.min(maxLeft, handleStartScrollerWidth + delta),
+        );
+      calendarScreen.style.setProperty("--drag-left-width", targetWidth + "px");
+    } else if (handleStartView !== "all") {
       const maxHeight = Math.max(
         150,
         calendarScreen.clientHeight -
           (calendarScreen.querySelector(".search-wrap")?.offsetHeight || 0) -
           80,
       );
-      const base = Math.min(maxHeight, Math.max(78, handleStartScrollerHeight));
-      const targetHeight = Math.max(78, Math.min(maxHeight, base + dy));
+      const base = Math.min(
+        maxHeight,
+        Math.max(78, handleStartScrollerHeight),
+      );
+      const targetHeight = Math.max(
+        78,
+        Math.min(maxHeight, base + delta),
+      );
       calendarScreen.style.setProperty(
         "--drag-scroller-height",
+        "--drag-left-width",
         targetHeight + "px",
       );
     }
-    calendarScreen.classList.toggle("drag-toward-open", canPreview && dy < 0);
-    calendarScreen.classList.toggle("drag-toward-closed", canPreview && dy > 0);
+    const previewTarget =
+      canPreview && progress >= 0.42
+        ? nextDragView(handleStartView, delta)
+        : handleStartView;
+    calendarScreen.classList.toggle("drag-toward-open", canPreview && delta < 0);
+    calendarScreen.classList.toggle("drag-toward-closed", canPreview && delta > 0);
     // Preview only the layout while dragging. Re-rendering here replaces the grid
     // and resets panel-open, which causes the drag to snap instead of following
     // the pointer. The actual view is committed once, on pointerup.
@@ -2271,31 +2297,47 @@ window.CalexReady = (async function () {
     handleY = e.clientY;
     handleX = e.clientX;
     handleLastY = e.clientY;
+    handleLastX = e.clientX;
     handleStartView = view;
     handlePreviewView = view;
-    handleStartScrollerHeight =
-      $("calendarScroller").getBoundingClientRect().height;
+    const scrollerRect = $("calendarScroller").getBoundingClientRect();
+    handleStartScrollerHeight = scrollerRect.height;
+    handleStartScrollerWidth = scrollerRect.width;
     handleDragging = true;
     selectedPanel.classList.add("is-dragging");
     calendarScreen.classList.add("is-view-dragging");
     handle.classList.add("dragging");
     calendarScreen.style.setProperty("--drag-progress", "0");
     selectedPanel.style.setProperty("--panel-drag-y", "0px");
-    if (handleStartView !== "all")
+    if (horizontalCalendarLayout()) {
+      calendarScreen.style.setProperty(
+        "--drag-left-width",
+        handleStartScrollerWidth + "px",
+      );
+    } else if (handleStartView !== "all") {
       calendarScreen.style.setProperty(
         "--drag-scroller-height",
+        "--drag-left-width",
         handleStartScrollerHeight + "px",
       );
+    }
     handle.setPointerCapture?.(e.pointerId);
   });
   handle.addEventListener("pointermove", (e) => {
     if (!handleDragging) return;
     handleLastY = e.clientY;
-    const dy = Math.max(
-      -Math.min(window.innerHeight * 0.55, 420),
-      Math.min(window.innerHeight * 0.45, handleLastY - handleY),
-    );
-    updateDragPreview(dy);
+    handleLastX = e.clientX;
+    const horizontal = horizontalCalendarLayout(),
+      delta = horizontal
+        ? Math.max(
+            -Math.min(window.innerWidth * 0.55, 420),
+            Math.min(window.innerWidth * 0.55, handleLastX - handleX),
+          )
+        : Math.max(
+            -Math.min(window.innerHeight * 0.55, 420),
+            Math.min(window.innerHeight * 0.45, handleLastY - handleY),
+          );
+    updateDragPreview(delta);
   });
 
   function settleHandleDrag(target) {
@@ -2312,15 +2354,19 @@ window.CalexReady = (async function () {
 
   function finishHandleDrag(e) {
     if (!handleDragging) return;
-    const dy = (e.clientY ?? handleLastY) - handleY,
-      dx = (e.clientX ?? handleX) - handleX;
-    const threshold = Math.max(40, Math.min(64, window.innerHeight * 0.06));
+    const horizontal = horizontalCalendarLayout(),
+      dy = (e.clientY ?? handleLastY) - handleY,
+      dx = (e.clientX ?? handleLastX) - handleX,
+      delta = horizontal ? dx : dy,
+      crossDelta = horizontal ? dy : dx,
+      axisSize = horizontal ? window.innerWidth : window.innerHeight,
+      threshold = Math.max(40, Math.min(64, axisSize * 0.06));
     const valid =
-      Math.abs(dy) >= threshold &&
-      Math.abs(dy) >= Math.abs(dx) * 1.15 &&
-      handleDragCanChange(handleStartView, dy);
+      Math.abs(delta) >= threshold &&
+      Math.abs(delta) >= Math.abs(crossDelta) * 1.15 &&
+      handleDragCanChange(handleStartView, delta);
     settleHandleDrag(
-      valid ? nextDragView(handleStartView, dy) : handleStartView,
+      valid ? nextDragView(handleStartView, delta) : handleStartView,
     );
   }
   handle.addEventListener("pointerup", finishHandleDrag);
