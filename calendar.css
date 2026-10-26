@@ -945,3 +945,8 @@ body .app #calendarScreen.calendar-restored .calendar-scroller .date-grid {
 body .app #calendarScreen.calendar-restored[data-view="month"] #monthTitle {
   visibility: hidden;
 }
+
+body .app #calendarScreen.calendar-restored .calendar-scroller.week-mode .date-cell .dots,
+body .app #calendarScreen.calendar-restored .calendar-scroller.week-mode .date-cell .cell-events {
+  display: none !important;
+}
