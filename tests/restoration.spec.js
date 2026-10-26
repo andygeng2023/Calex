@@ -53,7 +53,7 @@ for (const [width, height] of [
       "month",
     );
     await expect(page.locator("#dateGrid .timeline-month")).toHaveCount(13);
-    await expect(page.locator('#dateGrid [data-date="' + (await page.locator("#dateGrid .date-cell.selected").getAttribute("data-date")) + '"]')).toBeVisible();
+    await expect(page.locator('#dateGrid [data-date="' + (await page.locator("#dateGrid .date-cell.selected:not(.outside)").getAttribute("data-date")) + '"]')).toBeVisible();
     await expect(page.locator("#panelAdd")).toBeVisible();
     await dragView(page, width >= 1100 ? -180 : -70);
     await expect(page.locator("#calendarScreen")).toHaveAttribute(
@@ -157,7 +157,7 @@ test("ordinary calendar dates are unboxed and the redundant view switch is absen
   for (const cell of await appearance())
     expect(cell.background).toBe("rgba(0, 0, 0, 0)");
   await page.keyboard.press("w");
-  await expect(page.locator("#dateGrid .date-cell")).toHaveCount(7);
+  await expect(page.locator("#dateGrid .date-cell")).toHaveCount(49);
   await page.keyboard.press("y");
   await expect(page.locator("#calendarScreen")).toHaveAttribute(
     "data-view",
