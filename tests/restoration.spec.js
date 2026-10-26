@@ -1,6 +1,6 @@
 const { test, expect } = require("@playwright/test");
 
-async function dragView(page, dy) {
+async function dragView(page, delta) {
   await page.waitForFunction(
     () =>
       !document
@@ -12,7 +12,7 @@ async function dragView(page, dy) {
     y = box.y + box.height / 2;
   await page.mouse.move(x, y);
   await page.mouse.down();
-  await page.mouse.move(x, y + dy, { steps: 12 });
+  const horizontal = await page.evaluate(() => matchMedia("(min-width: 1100px)").matches);\n  await page.mouse.move(horizontal ? x + delta : x, horizontal ? y : y + delta, { steps: 12 });
   await page.mouse.up();
 }
 
@@ -47,7 +47,7 @@ for (const [width, height] of [
     );
     await expect(page.locator("#dateGrid .date-cell")).toHaveCount(42);
     await expect(page.locator("#panelAdd")).toBeVisible();
-    await dragView(page, -70);
+    await dragView(page, width >= 1100 ? -180 : -70);
     await expect(page.locator("#calendarScreen")).toHaveAttribute(
       "data-view",
       "week",
@@ -58,12 +58,12 @@ for (const [width, height] of [
       .last()
       .boundingBox();
     expect(rightmost.x + rightmost.width).toBeLessThanOrEqual(width);
-    await dragView(page, 70);
+    await dragView(page, width >= 1100 ? 180 : 70);
     await expect(page.locator("#calendarScreen")).toHaveAttribute(
       "data-view",
       "month",
     );
-    await dragView(page, 90);
+    await dragView(page, width >= 1100 ? 360 : 90);
     await expect(page.locator("#calendarScreen")).toHaveAttribute(
       "data-view",
       "all",
