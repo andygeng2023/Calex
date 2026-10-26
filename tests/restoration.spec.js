@@ -52,14 +52,15 @@ for (const [width, height] of [
       "data-view",
       "month",
     );
-    await expect(page.locator("#dateGrid .date-cell")).toHaveCount(42);
+    await expect(page.locator("#dateGrid .timeline-month")).toHaveCount(13);
+    await expect(page.locator('#dateGrid [data-date="' + (await page.locator("#dateGrid .date-cell.selected").getAttribute("data-date")) + '"]')).toBeVisible();
     await expect(page.locator("#panelAdd")).toBeVisible();
     await dragView(page, width >= 1100 ? -180 : -70);
     await expect(page.locator("#calendarScreen")).toHaveAttribute(
       "data-view",
       "week",
     );
-    await expect(page.locator("#dateGrid .date-cell")).toHaveCount(7);
+    await expect(page.locator("#dateGrid .date-cell")).toHaveCount(49);
     const rightmost = await page
       .locator("#dateGrid .date-cell")
       .last()
@@ -70,7 +71,7 @@ for (const [width, height] of [
       "data-view",
       "month",
     );
-    await dragView(page, width >= 1100 ? 360 : 90);
+    await dragView(page, width >= 1100 ? 500 : 90);
     await expect(page.locator("#calendarScreen")).toHaveAttribute(
       "data-view",
       "all",
@@ -84,6 +85,33 @@ for (const [width, height] of [
     ).toBeTruthy();
   });
 }
+
+
+test("the view handle can switch through all three views without dragging", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("/");
+  await page.locator('[data-screen="calendar"]').click();
+  for (const view of ["month", "week", "all"]) {
+    await page.locator("#viewHandle").click();
+    await expect(page.locator("#calendarScreen")).toHaveAttribute("data-view", view);
+  }
+});
+
+test("Full dates contains no event chips inside date cells and all calendar panes scroll vertically", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("/");
+  await page.locator('[data-screen="calendar"]').click();
+  await expect(page.locator("#calendarScreen")).toHaveAttribute("data-view", "all");
+  await expect(page.locator("#dateGrid .cell-events, #dateGrid .cell-event, #dateGrid .cell-more")).toHaveCount(0);
+  const scroller = page.locator("#calendarScroller");
+  await expect.poll(() => scroller.evaluate((el) => el.scrollHeight > el.clientHeight)).toBeTruthy();
+  await page.locator("#viewHandle").click();
+  await expect(page.locator("#calendarScreen")).toHaveAttribute("data-view", "month");
+  await expect.poll(() => scroller.evaluate((el) => el.scrollHeight > el.clientHeight)).toBeTruthy();
+  await page.locator("#viewHandle").click();
+  await expect(page.locator("#calendarScreen")).toHaveAttribute("data-view", "week");
+  await expect.poll(() => scroller.evaluate((el) => el.scrollHeight > el.clientHeight)).toBeTruthy();
+});
 
 test("month and year arrows each work independently", async ({ page }) => {
   await page.goto("/");
