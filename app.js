@@ -2551,10 +2551,15 @@ window.CalexReady = (async function () {
         snappedWidth = Math.max(minWidth, Math.min(maxWidth, snapWidth));
       const valid = Math.abs(delta) >= 8 && Math.abs(delta) >= Math.abs(crossDelta) * 1.15;
       if (valid) {
-        const columns = snappedWidth < 600 ? 1 : snappedWidth < 820 ? 2 : 3;
+        const isWeekStop = snappedWidth < 180;
         const isWidestStop = snappedWidth === maxWidth || snappedWidth >= 800;
-        pendingDesktopSnap = { width: snappedWidth, columns };
-        settleHandleDrag(snappedWidth < 180 ? "week" : isWidestStop || snappedWidth >= 800 ? "all" : "month");
+        const targetView = isWeekStop ? "week" : isWidestStop || snappedWidth >= 800 ? "all" : "month";
+        const snappedColumns = targetView === "all" ? (snappedWidth < 820 ? 2 : 3) : 1;
+        pendingDesktopSnap = {
+          width: isWeekStop ? 48 : snappedWidth,
+          columns: snappedColumns,
+        };
+        settleHandleDrag(targetView);
       } else {
         settleHandleDrag(handleStartView);
       }
