@@ -1418,13 +1418,31 @@ window.CalexReady = (async function () {
         });
       });
     } else if (view === "month") {
-      // Standard month view renders only the selected month. The all view owns
-      // the multi-month timeline; keeping it out of month mode avoids excessive
-      // DOM, distant dates, and confusing repeated month headings.
+      // Start with a buffered month timeline so vertical scrolling works
+      // immediately, then extend it in both directions as the user scrolls.
+      timelineBusy = true;
+      const anchorKey = monthKey(cursor);
       grid.style.display = "grid";
-      grid.innerHTML = makeMonth(monthStart(cursor));
+      grid.innerHTML = "";
+      const start = new Date(cursor.getFullYear(), cursor.getMonth() - 6, 1, 12);
+      for (let i = 0; i < 13; i++) {
+        grid.insertAdjacentHTML(
+          "beforeend",
+          makeMonth(new Date(start.getFullYear(), start.getMonth() + i, 1, 12)),
+        );
+      }
       bindDateCells(grid);
-      sc.scrollTop = 0;
+      requestAnimationFrame(() => {
+        const target = grid.querySelector('[data-month="' + anchorKey + '"]');
+        if (target) {
+          const sr = sc.getBoundingClientRect();
+          const tr = target.getBoundingClientRect();
+          sc.scrollTop += tr.top - sr.top - 44;
+        }
+        requestAnimationFrame(() => {
+          timelineBusy = false;
+        });
+      });
     } else {
       grid.style.display = "grid";
       const start = new Date(selected);
@@ -1504,6 +1522,85 @@ window.CalexReady = (async function () {
     }
     requestAnimationFrame(() => {
       calendarTimelineLoading = false;
+    });
+  }, { passive: true });
+
+
+  // Keep Month and Week views vertically continuous as well as Full dates.
+  // Month mode extends by whole months; Week mode extends by whole seven-day rows.
+  let compactTimelineLoading = false;
+  $("calendarScroller").addEventListener("scroll", () => {
+    if (compactTimelineLoading || (view !== "month" && view !== "week")) return;
+    const scroller = $("calendarScroller");
+    const grid = $("dateGrid");
+    if (!grid.firstElementChild || !grid.lastElementChild) return;
+    const nearTop = scroller.scrollTop < 120;
+    const nearBottom =
+      scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 180;
+    if (!nearTop && !nearBottom) return;
+    compactTimelineLoading = true;
+    const oldHeight = scroller.scrollHeight;
+    if (view === "month") {
+      const firstMonth = grid.querySelector(".timeline-month:first-child");
+      const lastMonth = grid.querySelector(".timeline-month:last-child");
+      if (nearTop && firstMonth) {
+        const [year, month] = firstMonth.dataset.month.split("-").map(Number);
+        const holder = document.createElement("div");
+        holder.innerHTML = makeMonth(new Date(year, month - 2, 1, 12));
+        const added = holder.firstElementChild;
+        if (added) grid.insertBefore(added, grid.firstElementChild);
+        scroller.scrollTop += scroller.scrollHeight - oldHeight;
+      } else if (nearBottom && lastMonth) {
+        const [year, month] = lastMonth.dataset.month.split("-").map(Number);
+        grid.insertAdjacentHTML(
+          "beforeend",
+          makeMonth(new Date(year, month, 1, 12)),
+        );
+      }
+      bindDateCells(grid);
+    } else {
+      const edgeCell = nearTop
+        ? grid.querySelector(".date-cell[data-date]")
+        : [...grid.querySelectorAll(".date-cell[data-date]")].pop();
+      if (edgeCell) {
+        const edgeDate = new Date(edgeCell.dataset.date + "T12:00:00");
+        const base = addDays(edgeDate, nearTop ? -7 : 1);
+        let markup = "";
+        for (let i = 0; i < 7; i++) {
+          const d = addDays(base, i);
+          const items = onDay(d);
+          markup +=
+            '<button class="date-cell ' +
+            (sameDay(d, today) ? "today " : "") +
+            (sameDay(d, selected) ? "selected" : "") +
+            '" data-date="' +
+            dateKey(d) +
+            '" aria-label="' +
+            esc(fmtDate(d)) +
+            (items.length ? ", " + items.length + " events" : "") +
+            '"><span>' +
+            d.getDate() +
+            '</span><span class="dots">' +
+            items.slice(0, 3).map(() => "<i></i>").join("") +
+            "</span>" +
+            cellEvents(items) +
+            "</button>";
+        }
+        if (nearTop) {
+          const holder = document.createElement("div");
+          holder.innerHTML = markup;
+          const fragment = document.createDocumentFragment();
+          while (holder.firstElementChild) fragment.appendChild(holder.firstElementChild);
+          grid.insertBefore(fragment, grid.firstElementChild);
+          scroller.scrollTop += scroller.scrollHeight - oldHeight;
+        } else {
+          grid.insertAdjacentHTML("beforeend", markup);
+        }
+        bindDateCells(grid);
+      }
+    }
+    requestAnimationFrame(() => {
+      compactTimelineLoading = false;
     });
   }, { passive: true });
 
