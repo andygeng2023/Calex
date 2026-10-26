@@ -1419,25 +1419,13 @@ window.CalexReady = (async function () {
         });
       });
     } else if (view === "month") {
-      // Month mode is a vertically scrolling timeline of month groups.
-      // Desktop CSS places two month groups on each row.
+      // Standard month view renders only the selected month. The all view owns
+      // the multi-month timeline; keeping it out of month mode avoids excessive
+      // DOM, distant dates, and confusing repeated month headings.
       grid.style.display = "grid";
-      grid.innerHTML = "";
-      const start = new Date(cursor.getFullYear(), cursor.getMonth() - 5, 1, 12);
-      for (let i = 0; i < 12; i++) {
-        grid.insertAdjacentHTML(
-          "beforeend",
-          makeMonth(new Date(start.getFullYear(), start.getMonth() + i, 1, 12)),
-        );
-      }
+      grid.innerHTML = makeMonth(monthStart(cursor));
       bindDateCells(grid);
-      requestAnimationFrame(() => {
-        const target = grid.querySelector('[data-month="' + monthKey(cursor) + '"]');
-        if (target) {
-          const sr = sc.getBoundingClientRect(), tr = target.getBoundingClientRect();
-          sc.scrollTop += tr.top - sr.top - 12;
-        }
-      });
+      sc.scrollTop = 0;
     } else {
       grid.style.display = "grid";
       const start = new Date(selected);
