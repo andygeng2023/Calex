@@ -903,6 +903,23 @@ body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .date-ce
   }
   body
     .app
+    #calendarScreen.calendar-restored
+    .calendar-scroller.week-mode
+    > #dateGrid {
+    display: flex !important;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  body
+    .app
+    #calendarScreen.calendar-restored
+    .calendar-scroller.week-mode
+    .date-cell {
+    flex: 0 0 54px;
+    width: 100%;
+  }
+  body
+    .app
     #calendarScreen.calendar-restored.active:has(.calendar-scroller.month-mode),
   body
     .app
