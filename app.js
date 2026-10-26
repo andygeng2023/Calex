@@ -2308,8 +2308,8 @@ window.CalexReady = (async function () {
           parseFloat(style.paddingLeft || "0") -
           parseFloat(style.paddingRight || "0") -
           parseFloat(style.columnGap || "0"),
-        minLeft = 190,
-        maxLeft = Math.max(minLeft, availableWidth - 260),
+        minLeft = 320,
+        maxLeft = Math.max(minLeft, availableWidth - 280),
         targetWidth = Math.max(
           minLeft,
           Math.min(maxLeft, handleStartScrollerWidth + delta),
@@ -2426,8 +2426,10 @@ window.CalexReady = (async function () {
           parseFloat(style.paddingLeft || "0") -
           parseFloat(style.paddingRight || "0") -
           parseFloat(style.columnGap || "0"),
-        minWidth = 190,
-        maxWidth = Math.max(minWidth, availableWidth - 260),
+        // A seven-column calendar needs real width; 190px squeezed each day
+        // to ~25px and made headings/date labels collide.
+        minWidth = 320,
+        maxWidth = Math.max(minWidth, availableWidth - 280),
         rawWidth = Math.max(minWidth, Math.min(maxWidth, handleStartScrollerWidth + delta)),
         stops = [220, 340, 500, 660, 800, maxWidth]
           .filter((n, i, arr) => n <= maxWidth || i === arr.length - 1)
@@ -2437,7 +2439,7 @@ window.CalexReady = (async function () {
         snappedWidth = Math.max(minWidth, Math.min(maxWidth, snapWidth));
       const valid = Math.abs(delta) >= 8 && Math.abs(delta) >= Math.abs(crossDelta) * 1.15;
       if (valid) {
-        const columns = snappedWidth < 400 ? 1 : snappedWidth < 580 ? 1 : snappedWidth < 740 ? 2 : 3;
+        const columns = snappedWidth < 600 ? 1 : snappedWidth < 820 ? 2 : 3;
         const isWidestStop = snappedWidth === maxWidth || snappedWidth >= 800;
         pendingDesktopSnap = { width: snappedWidth, columns };
         settleHandleDrag(snappedWidth < 280 ? "week" : isWidestStop ? "all" : "month");
