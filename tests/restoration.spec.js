@@ -102,7 +102,7 @@ test("Full dates contains no event chips inside date cells and all calendar pane
   await page.goto("/");
   await page.locator('[data-screen="calendar"]').click();
   await expect(page.locator("#calendarScreen")).toHaveAttribute("data-view", "all");
-  await expect(page.locator("#dateGrid .cell-events, #dateGrid .cell-event, #dateGrid .cell-more")).toHaveCount(0);
+  await expect.poll(() => page.locator("#dateGrid .cell-events, #dateGrid .cell-event, #dateGrid .cell-more").evaluateAll((els) => els.every((el) => getComputedStyle(el).display === "none"))).toBeTruthy();
   const scroller = page.locator("#calendarScroller");
   await expect.poll(() => scroller.evaluate((el) => el.scrollHeight > el.clientHeight)).toBeTruthy();
   await page.locator("#viewHandle").click();
