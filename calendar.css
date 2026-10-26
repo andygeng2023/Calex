@@ -893,12 +893,24 @@ body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .date-ce
 
 /* v64: preserve drag-controlled widths while keeping the Week rail number-fit. */
 @media (min-width: 1100px) {
-  body .app #calendarScreen.calendar-restored.active:has(.calendar-scroller.week-mode) {
-    grid-template-columns: minmax(48px, var(--drag-left-width, 48px)) minmax(280px, 1fr);
+  body
+    .app
+    #calendarScreen.calendar-restored.active:has(.calendar-scroller.week-mode) {
+    grid-template-columns: minmax(48px, var(--drag-left-width, 48px)) minmax(
+        280px,
+        1fr
+      );
   }
-  body .app #calendarScreen.calendar-restored.active:has(.calendar-scroller.month-mode),
-  body .app #calendarScreen.calendar-restored.active:has(.calendar-scroller.all-mode) {
-    grid-template-columns: minmax(48px, var(--drag-left-width, min(42vw, 440px))) minmax(280px, 1fr);
+  body
+    .app
+    #calendarScreen.calendar-restored.active:has(.calendar-scroller.month-mode),
+  body
+    .app
+    #calendarScreen.calendar-restored.active:has(.calendar-scroller.all-mode) {
+    grid-template-columns: minmax(
+        48px,
+        var(--drag-left-width, min(42vw, 440px))
+      ) minmax(280px, 1fr);
   }
   body .app #calendarScreen.calendar-restored .calendar-scroller,
   body .app #calendarScreen.calendar-restored .selected-panel,
@@ -911,21 +923,46 @@ body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .date-ce
     overflow-x: hidden !important;
     overscroll-behavior-y: contain;
   }
-  body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode #dateGrid {
+  body
+    .app
+    #calendarScreen.calendar-restored
+    .calendar-scroller.all-mode
+    #dateGrid {
     grid-template-columns: repeat(var(--month-columns, 2), minmax(0, 1fr));
   }
 }
-body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .cell-events,
-body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .cell-event,
-body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .cell-more {
+body
+  .app
+  #calendarScreen.calendar-restored
+  .calendar-scroller.all-mode
+  .cell-events,
+body
+  .app
+  #calendarScreen.calendar-restored
+  .calendar-scroller.all-mode
+  .cell-event,
+body
+  .app
+  #calendarScreen.calendar-restored
+  .calendar-scroller.all-mode
+  .cell-more {
   display: none !important;
 }
-body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .date-cell {
+body
+  .app
+  #calendarScreen.calendar-restored
+  .calendar-scroller.all-mode
+  .date-cell {
   min-height: 42px;
   height: auto;
   padding: 4px;
 }
-body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .date-cell > span:first-child {
+body
+  .app
+  #calendarScreen.calendar-restored
+  .calendar-scroller.all-mode
+  .date-cell
+  > span:first-child {
   display: block;
   margin: 0;
   text-align: center;
@@ -945,24 +982,43 @@ body .app #calendarScreen.calendar-restored .calendar-scroller .date-grid {
 body .app #calendarScreen.calendar-restored[data-view="month"] #monthTitle {
   visibility: hidden;
 }
- 
+
 @media (min-width: 1100px) {
-  body .app #calendarScreen.calendar-restored .calendar-scroller.week-mode .date-cell .dots,
-  body .app #calendarScreen.calendar-restored .calendar-scroller.week-mode .date-cell .cell-events {
+  body
+    .app
+    #calendarScreen.calendar-restored
+    .calendar-scroller.week-mode
+    .date-cell
+    .dots,
+  body
+    .app
+    #calendarScreen.calendar-restored
+    .calendar-scroller.week-mode
+    .date-cell
+    .cell-events {
     display: none !important;
   }
 }
 
 /* Month mode now contains many stacked month sections. Do not distribute them
    into the single-month fixed-height grid tracks used by the original layout. */
-body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode > #dateGrid {
+body
+  .app
+  #calendarScreen.calendar-restored
+  .calendar-scroller.month-mode
+  > #dateGrid {
   flex: 0 0 auto !important;
   min-height: auto !important;
   grid-auto-rows: auto !important;
   align-content: start;
   height: auto;
 }
-body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode > #dateGrid > .timeline-month {
+body
+  .app
+  #calendarScreen.calendar-restored
+  .calendar-scroller.month-mode
+  > #dateGrid
+  > .timeline-month {
   height: auto;
   min-height: 0;
   align-self: start;
