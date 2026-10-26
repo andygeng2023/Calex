@@ -1473,7 +1473,10 @@ window.CalexReady = (async function () {
   // Add months in even batches so the desktop two-column month grid stays aligned.
   let calendarTimelineLoading = false;
   $("calendarScroller").addEventListener("scroll", () => {
-    if (calendarTimelineLoading || (view !== "all" && view !== "month")) return;
+    // Keep month mode bounded to the 12 months rendered on entry. Only the
+    // full timeline grows indefinitely; this avoids runaway DOM growth in the
+    // compact month view while scrolling.
+    if (calendarTimelineLoading || view !== "all") return;
     const scroller = $("calendarScroller");
     const grid = $("dateGrid");
     if (!grid.firstElementChild || !grid.lastElementChild) return;
@@ -2423,7 +2426,9 @@ window.CalexReady = (async function () {
       delta = horizontal ? dx : dy,
       crossDelta = horizontal ? dy : dx,
       axisSize = horizontal ? window.innerWidth : window.innerHeight,
-      threshold = Math.max(40, Math.min(64, axisSize * 0.06));
+      threshold = horizontal
+        ? Math.max(24, Math.min(40, axisSize * 0.035))
+        : Math.max(28, Math.min(44, axisSize * 0.045));
     if (horizontal) {
       // The release position selects the snap point; the divider no longer
       // resets to its default width after every drag.
