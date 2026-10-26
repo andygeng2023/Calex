@@ -891,14 +891,14 @@ body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .date-ce
 }
 
 
-/* v63: desktop calendar sizing and Full dates semantics. */
+/* v64: preserve drag-controlled widths while keeping the Week rail number-fit. */
 @media (min-width: 1100px) {
   body .app #calendarScreen.calendar-restored.active:has(.calendar-scroller.week-mode) {
-    grid-template-columns: 48px minmax(0, 1fr);
+    grid-template-columns: minmax(48px, var(--drag-left-width, 48px)) minmax(280px, 1fr);
   }
   body .app #calendarScreen.calendar-restored.active:has(.calendar-scroller.month-mode),
   body .app #calendarScreen.calendar-restored.active:has(.calendar-scroller.all-mode) {
-    grid-template-columns: minmax(0, min(42vw, 440px)) minmax(0, 1fr);
+    grid-template-columns: minmax(48px, var(--drag-left-width, min(42vw, 440px))) minmax(280px, 1fr);
   }
   body .app #calendarScreen.calendar-restored .calendar-scroller,
   body .app #calendarScreen.calendar-restored .selected-panel,
@@ -911,10 +911,10 @@ body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .date-ce
     overflow-x: hidden !important;
     overscroll-behavior-y: contain;
   }
+  body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode #dateGrid {
+    grid-template-columns: repeat(var(--month-columns, 2), minmax(0, 1fr));
+  }
 }
-
-/* Full dates is a date-only timeline: event chips/rectangles must never render
-   in the date cells or beneath the date numbers. Events remain in the details panel. */
 body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .cell-events,
 body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .cell-event,
 body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .cell-more {
@@ -930,8 +930,6 @@ body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .date-ce
   margin: 0;
   text-align: center;
 }
-
-/* All calendar modes scroll vertically within their own pane and never sideways. */
 body .app #calendarScreen.calendar-restored .calendar-scroller {
   min-width: 0;
   overflow-y: auto;
@@ -944,9 +942,6 @@ body .app #calendarScreen.calendar-restored .calendar-scroller .date-grid {
   min-width: 0;
   max-width: 100%;
 }
-
-
-/* Month mode is a continuous month timeline; each month has its own heading. */
 body .app #calendarScreen.calendar-restored[data-view="month"] #monthTitle {
   visibility: hidden;
 }
