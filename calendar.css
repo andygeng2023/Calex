@@ -663,3 +663,32 @@ body .modal #eventForm input::-webkit-calendar-picker-indicator {
     min-width: 260px; overflow: hidden;
   }
 }
+
+/* Mobile month view: the outer #dateGrid contains one month section, not seven
+   day columns. Keep the month full-width; only its nested date-grid has 7 columns. */
+@media (max-width: 1099px) {
+  body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode {
+    width: 100%;
+    min-width: 0;
+    align-self: stretch;
+  }
+  body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode > #dateGrid {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+  }
+  body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode > #dateGrid > .timeline-month {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    grid-column: 1 / -1;
+  }
+  body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode .timeline-month > .date-grid {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+}
