@@ -1021,7 +1021,6 @@ window.CalexReady = (async function () {
   function makeMonth(d) {
     const first = monthStart(d),
       offset = (first.getDay() + 6) % 7,
-      days = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(),
       count = 42,
       start = addDays(first, -offset);
     let out =
