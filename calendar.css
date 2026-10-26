@@ -666,7 +666,7 @@ body .modal #eventForm input::-webkit-calendar-picker-indicator {
 
 /* Mobile month view: the outer #dateGrid contains one month section, not seven
    day columns. Keep the month full-width; only its nested date-grid has 7 columns. */
-@media (max-width: 1099px) {
+@media (max-width: 700px) {
   body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode {
     width: 100%;
     min-width: 0;
