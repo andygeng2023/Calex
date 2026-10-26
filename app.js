@@ -2577,6 +2577,14 @@ window.CalexReady = (async function () {
     }
     view = view === "all" ? "month" : view === "month" ? "week" : "all";
     if (view === "all") cursor = new Date(selected);
+    if (horizontalCalendarLayout()) {
+      const defaultWidth = Math.min(window.innerWidth * 0.42, 440);
+      calendarScreen.style.setProperty(
+        "--drag-left-width",
+        (view === "week" ? 48 : defaultWidth) + "px",
+      );
+      calendarScreen.style.setProperty("--month-columns", view === "all" ? "2" : "1");
+    }
     renderCalendar();
   });
   handle.addEventListener("pointerup", finishHandleDrag);
