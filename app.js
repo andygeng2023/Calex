@@ -1036,12 +1036,13 @@ window.CalexReady = (async function () {
       '</div><div class="date-grid">';
     for (let i = 0; i < count; i++) {
       const day = addDays(start, i),
-        items = onDay(day);
+        items = onDay(day),
+        outside = day.getMonth() !== first.getMonth() || day.getFullYear() !== first.getFullYear();
       out +=
         '<button class="date-cell ' +
-        (day.getMonth() !== first.getMonth() ? "outside " : "") +
-        (sameDay(day, today) ? "today " : "") +
-        (sameDay(day, selected) ? "selected" : "") +
+        (outside ? "outside " : "") +
+        (!outside && sameDay(day, today) ? "today " : "") +
+        (!outside && sameDay(day, selected) ? "selected" : "") +
         '" data-date="' +
         dateKey(day) +
         '" aria-label="' +
@@ -1494,7 +1495,7 @@ window.CalexReady = (async function () {
     // Keep month mode bounded to the 12 months rendered on entry. Only the
     // full timeline grows indefinitely; this avoids runaway DOM growth in the
     // compact month view while scrolling.
-    if (calendarTimelineLoading || view !== "all") return;
+    if (calendarTimelineLoading || timelineBusy || view !== "all") return;
     const scroller = $("calendarScroller");
     const grid = $("dateGrid");
     if (!grid.firstElementChild || !grid.lastElementChild) return;
@@ -1543,7 +1544,7 @@ window.CalexReady = (async function () {
   // Month mode extends by whole months; Week mode extends by whole seven-day rows.
   let compactTimelineLoading = false;
   $("calendarScroller").addEventListener("scroll", () => {
-    if (compactTimelineLoading || (view !== "month" && view !== "week")) return;
+    if (compactTimelineLoading || timelineBusy || (view !== "month" && view !== "week")) return;
     const scroller = $("calendarScroller");
     const grid = $("dateGrid");
     if (!grid.firstElementChild || !grid.lastElementChild) return;
