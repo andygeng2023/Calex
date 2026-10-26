@@ -1036,12 +1036,13 @@ window.CalexReady = (async function () {
       '</div><div class="date-grid">';
     for (let i = 0; i < count; i++) {
       const day = addDays(start, i),
-        items = onDay(day);
+        items = onDay(day),
+        outside = day.getMonth() !== first.getMonth() || day.getFullYear() !== first.getFullYear();
       out +=
         '<button class="date-cell ' +
-        (day.getMonth() !== first.getMonth() ? "outside " : "") +
-        (sameDay(day, today) ? "today " : "") +
-        (sameDay(day, selected) ? "selected" : "") +
+        (outside ? "outside " : "") +
+        (!outside && sameDay(day, today) ? "today " : "") +
+        (!outside && sameDay(day, selected) ? "selected" : "") +
         '" data-date="' +
         dateKey(day) +
         '" aria-label="' +
@@ -1444,12 +1445,16 @@ window.CalexReady = (async function () {
         });
       });
     } else {
-      grid.style.display = "grid";
-      const start = new Date(selected);
-      const weekStart = addDays(start, -((start.getDay() + 6) % 7));
+      // A scrollable date rail: render seven weeks around the selected week so
+      // the scroller has real vertical extent, then extend it in both directions.
+      timelineBusy = true;
+      grid.style.display = window.matchMedia("(min-width: 1100px)").matches ? "flex" : "grid";
+      const selectedDate = new Date(selected);
+      const weekStart = addDays(selectedDate, -((selectedDate.getDay() + 6) % 7));
+      const start = addDays(weekStart, -21);
       let out = "";
-      for (let i = 0; i < 7; i++) {
-        const d = addDays(weekStart, i), items = onDay(d);
+      for (let i = 0; i < 49; i++) {
+        const d = addDays(start, i), items = onDay(d);
         out +=
           '<button class="date-cell ' +
           (sameDay(d, today) ? "today " : "") +
@@ -1469,6 +1474,15 @@ window.CalexReady = (async function () {
       }
       grid.innerHTML = out;
       bindDateCells(grid);
+      requestAnimationFrame(() => {
+        const selectedCell = grid.querySelector('[data-date="' + dateKey(selectedDate) + '"]');
+        if (selectedCell) {
+          const sr = sc.getBoundingClientRect();
+          const cr = selectedCell.getBoundingClientRect();
+          sc.scrollTop += cr.top - sr.top - (sc.clientHeight - cr.height) / 2;
+        }
+        requestAnimationFrame(() => { timelineBusy = false; });
+      });
     }
     renderPanel();
     window.dispatchEvent(new CustomEvent("calex:render"));
@@ -1481,7 +1495,7 @@ window.CalexReady = (async function () {
     // Keep month mode bounded to the 12 months rendered on entry. Only the
     // full timeline grows indefinitely; this avoids runaway DOM growth in the
     // compact month view while scrolling.
-    if (calendarTimelineLoading || view !== "all") return;
+    if (calendarTimelineLoading || timelineBusy || view !== "all") return;
     const scroller = $("calendarScroller");
     const grid = $("dateGrid");
     if (!grid.firstElementChild || !grid.lastElementChild) return;
@@ -1530,7 +1544,7 @@ window.CalexReady = (async function () {
   // Month mode extends by whole months; Week mode extends by whole seven-day rows.
   let compactTimelineLoading = false;
   $("calendarScroller").addEventListener("scroll", () => {
-    if (compactTimelineLoading || (view !== "month" && view !== "week")) return;
+    if (compactTimelineLoading || timelineBusy || (view !== "month" && view !== "week")) return;
     const scroller = $("calendarScroller");
     const grid = $("dateGrid");
     if (!grid.firstElementChild || !grid.lastElementChild) return;
@@ -2329,7 +2343,8 @@ window.CalexReady = (async function () {
     handleStartScrollerHeight = 0,
     handleStartScrollerWidth = 0,
     handleDragging = false,
-    handlePreviewView = null;
+    handlePreviewView = null,
+    handleDragMoved = false;
   const horizontalCalendarLayout = () =>
       window.matchMedia("(min-width: 1100px)").matches,
     handle = $("selectedPanel").querySelector(".handle-grip"),
@@ -2404,8 +2419,8 @@ window.CalexReady = (async function () {
           parseFloat(style.paddingLeft || "0") -
           parseFloat(style.paddingRight || "0") -
           parseFloat(style.columnGap || "0"),
-        minLeft = 320,
-        maxLeft = Math.max(minLeft, availableWidth - 280),
+        minLeft = 48,
+        maxLeft = Math.max(320, availableWidth - 280),
         targetWidth = Math.max(
           minLeft,
           Math.min(maxLeft, handleStartScrollerWidth + delta),
@@ -2447,6 +2462,7 @@ window.CalexReady = (async function () {
     if (e.button !== undefined && e.button !== 0) return;
     handleY = e.clientY;
     handleX = e.clientX;
+    handleDragMoved = false;
     handleLastY = e.clientY;
     handleLastX = e.clientX;
     handleStartView = view;
@@ -2477,6 +2493,7 @@ window.CalexReady = (async function () {
     if (!handleDragging) return;
     handleLastY = e.clientY;
     handleLastX = e.clientX;
+    if (Math.abs(handleLastX - handleX) > 8 || Math.abs(handleLastY - handleY) > 8) handleDragMoved = true;
     const horizontal = horizontalCalendarLayout(),
       delta = horizontal
         ? Math.max(
@@ -2524,10 +2541,10 @@ window.CalexReady = (async function () {
           parseFloat(style.columnGap || "0"),
         // A seven-column calendar needs real width; 190px squeezed each day
         // to ~25px and made headings/date labels collide.
-        minWidth = 320,
-        maxWidth = Math.max(minWidth, availableWidth - 280),
+        minWidth = 48,
+        maxWidth = Math.max(320, availableWidth - 280),
         rawWidth = Math.max(minWidth, Math.min(maxWidth, handleStartScrollerWidth + delta)),
-        stops = [...new Set([320, 340, 400, 500, 660, 800, maxWidth])]
+        stops = [...new Set([48, 64, 84, 120, 320, 400, 500, 660, 800, maxWidth])]
           .map((n) => Math.max(minWidth, Math.min(maxWidth, n)))
           .sort((a, b) => a - b),
         snapWidth = stops.reduce((best, stop) =>
@@ -2535,10 +2552,15 @@ window.CalexReady = (async function () {
         snappedWidth = Math.max(minWidth, Math.min(maxWidth, snapWidth));
       const valid = Math.abs(delta) >= 8 && Math.abs(delta) >= Math.abs(crossDelta) * 1.15;
       if (valid) {
-        const columns = snappedWidth < 600 ? 1 : snappedWidth < 820 ? 2 : 3;
+        const isWeekStop = snappedWidth < 180;
         const isWidestStop = snappedWidth === maxWidth || snappedWidth >= 800;
-        pendingDesktopSnap = { width: snappedWidth, columns };
-        settleHandleDrag(snappedWidth < 360 ? "week" : isWidestStop ? "all" : "month");
+        const targetView = isWeekStop ? "week" : isWidestStop || snappedWidth >= 800 ? "all" : "month";
+        const snappedColumns = targetView === "all" ? (snappedWidth < 820 ? 2 : 3) : 1;
+        pendingDesktopSnap = {
+          width: isWeekStop ? 48 : snappedWidth,
+          columns: snappedColumns,
+        };
+        settleHandleDrag(targetView);
       } else {
         settleHandleDrag(handleStartView);
       }
@@ -2552,6 +2574,25 @@ window.CalexReady = (async function () {
       valid ? nextDragView(handleStartView, delta) : handleStartView,
     );
   }
+  handle.addEventListener("click", (event) => {
+    // The divider is also a reliable non-drag control for cycling all three views.
+    if (handleDragMoved) {
+      handleDragMoved = false;
+      event.preventDefault();
+      return;
+    }
+    view = view === "all" ? "month" : view === "month" ? "week" : "all";
+    if (view === "all") cursor = new Date(selected);
+    if (horizontalCalendarLayout()) {
+      const defaultWidth = Math.min(window.innerWidth * 0.42, 440);
+      calendarScreen.style.setProperty(
+        "--drag-left-width",
+        (view === "week" ? 48 : defaultWidth) + "px",
+      );
+      calendarScreen.style.setProperty("--month-columns", view === "all" ? "2" : "1");
+    }
+    renderCalendar();
+  });
   handle.addEventListener("pointerup", finishHandleDrag);
   handle.addEventListener("pointercancel", () => {
     if (handleDragging) settleHandleDrag(handleStartView);
