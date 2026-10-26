@@ -23,9 +23,6 @@ jobs:
         run: npm ci
       - name: Format source files
         run: npm run format
-      - name: Temporary CSS formatting diagnostic
-        run: |
-          sed -n '/v64: preserve drag-controlled widths/,$p' calendar.css
       - name: Verify formatting
         run: npm run format:check
       - name: Validate JavaScript syntax
