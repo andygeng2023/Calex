@@ -1021,8 +1021,7 @@ window.CalexReady = (async function () {
   function makeMonth(d) {
     const first = monthStart(d),
       offset = (first.getDay() + 6) % 7,
-      days = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(),
-      count = Math.ceil((offset + days) / 7) * 7,
+      count = 42,
       start = addDays(first, -offset);
     let out =
       '<section class="timeline-month" data-month="' +
@@ -2431,9 +2430,9 @@ window.CalexReady = (async function () {
         minWidth = 320,
         maxWidth = Math.max(minWidth, availableWidth - 280),
         rawWidth = Math.max(minWidth, Math.min(maxWidth, handleStartScrollerWidth + delta)),
-        stops = [220, 340, 500, 660, 800, maxWidth]
-          .filter((n, i, arr) => n <= maxWidth || i === arr.length - 1)
-          .filter((n, i, arr) => i === 0 || n > arr[i - 1]),
+        stops = [...new Set([320, 340, 400, 500, 660, 800, maxWidth])]
+          .map((n) => Math.max(minWidth, Math.min(maxWidth, n)))
+          .sort((a, b) => a - b),
         snapWidth = stops.reduce((best, stop) =>
           Math.abs(stop - rawWidth) < Math.abs(best - rawWidth) ? stop : best, stops[0]),
         snappedWidth = Math.max(minWidth, Math.min(maxWidth, snapWidth));
@@ -2442,7 +2441,7 @@ window.CalexReady = (async function () {
         const columns = snappedWidth < 600 ? 1 : snappedWidth < 820 ? 2 : 3;
         const isWidestStop = snappedWidth === maxWidth || snappedWidth >= 800;
         pendingDesktopSnap = { width: snappedWidth, columns };
-        settleHandleDrag(snappedWidth < 280 ? "week" : isWidestStop ? "all" : "month");
+        settleHandleDrag(snappedWidth < 360 ? "week" : isWidestStop ? "all" : "month");
       } else {
         settleHandleDrag(handleStartView);
       }
