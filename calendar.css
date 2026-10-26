@@ -889,3 +889,58 @@ body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .date-ce
     min-height: 28px;
   }
 }
+
+
+/* v63: desktop calendar sizing and Full dates semantics. */
+@media (min-width: 1100px) {
+  body .app #calendarScreen.calendar-restored.active:has(.calendar-scroller.week-mode) {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+  body .app #calendarScreen.calendar-restored.active:has(.calendar-scroller.month-mode),
+  body .app #calendarScreen.calendar-restored.active:has(.calendar-scroller.all-mode) {
+    grid-template-columns: minmax(0, min(42vw, 440px)) minmax(0, 1fr);
+  }
+  body .app #calendarScreen.calendar-restored .calendar-scroller,
+  body .app #calendarScreen.calendar-restored .selected-panel,
+  body .app #calendarScreen.calendar-restored .selected-panel #panelEvents {
+    min-width: 0;
+    max-width: 100%;
+  }
+  body .app #calendarScreen.calendar-restored .calendar-scroller {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: contain;
+  }
+}
+
+/* Full dates is a date-only timeline: event chips/rectangles must never render
+   in the date cells or beneath the date numbers. Events remain in the details panel. */
+body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .cell-events,
+body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .cell-event,
+body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .cell-more {
+  display: none !important;
+}
+body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .date-cell {
+  min-height: 42px;
+  height: auto;
+  padding: 4px;
+}
+body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .date-cell > span:first-child {
+  display: block;
+  margin: 0;
+  text-align: center;
+}
+
+/* All calendar modes scroll vertically within their own pane and never sideways. */
+body .app #calendarScreen.calendar-restored .calendar-scroller {
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+}
+body .app #calendarScreen.calendar-restored .calendar-scroller #dateGrid,
+body .app #calendarScreen.calendar-restored .calendar-scroller .timeline-month,
+body .app #calendarScreen.calendar-restored .calendar-scroller .date-grid {
+  min-width: 0;
+  max-width: 100%;
+}
