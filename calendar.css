@@ -600,7 +600,7 @@ body .modal #eventForm input::-webkit-calendar-picker-indicator {
   body .app #calendarScreen.calendar-restored .calendar-scroller.week-mode .date-cell .cell-events {
     grid-column: 2; width: 100%; min-width: 0;
   }
-  /* Month mode shows two month groups per row, with vertical scrolling. */
+  /* Month mode is a single compact month; all mode is the multi-month timeline. */
   body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode #dateGrid,
   body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode #dateGrid {
     display: grid !important;
@@ -635,8 +635,9 @@ body .modal #eventForm input::-webkit-calendar-picker-indicator {
   body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode .date-cell {
     min-width: 0; padding: 2px; font-size: var(--text-xs);
   }
-  body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode .cell-events {
-    display: none;
+  body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode .cell-events,
+  body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .cell-events {
+    display: none !important;
   }
   body .app #calendarScreen.calendar-restored.is-view-dragging .calendar-scroller {
     flex: 1 1 auto !important; min-height: 0; height: 100% !important;
