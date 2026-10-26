@@ -23,6 +23,8 @@ jobs:
         run: npm ci
       - name: Format source files
         run: npm run format
+      - name: Temporary CSS formatting diagnostic
+        run: sed -n '/v63: desktop calendar sizing/,$p' calendar.css
       - name: Verify formatting
         run: npm run format:check
       - name: Validate JavaScript syntax
