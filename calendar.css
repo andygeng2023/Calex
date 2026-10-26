@@ -944,3 +944,9 @@ body .app #calendarScreen.calendar-restored .calendar-scroller .date-grid {
   min-width: 0;
   max-width: 100%;
 }
+
+
+/* Month mode is a continuous month timeline; each month has its own heading. */
+body .app #calendarScreen.calendar-restored[data-view="month"] #monthTitle {
+  visibility: hidden;
+}
