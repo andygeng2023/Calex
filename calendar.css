@@ -604,9 +604,16 @@ body .modal #eventForm input::-webkit-calendar-picker-indicator {
   body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode #dateGrid,
   body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode #dateGrid {
     display: grid !important;
-    grid-template-columns: repeat(var(--month-columns, 2), minmax(0, 1fr));
     align-items: start;
     gap: var(--space-4);
+  }
+  body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode #dateGrid {
+    /* A single month per row prevents day labels from collapsing into each other
+       when the calendar pane is narrow. */
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode #dateGrid {
+    grid-template-columns: repeat(var(--month-columns, 2), minmax(0, 1fr));
   }
   body .app #calendarScreen.calendar-restored .calendar-scroller.all-mode .timeline-month {
     min-width: 0;
