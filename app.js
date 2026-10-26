@@ -1418,13 +1418,31 @@ window.CalexReady = (async function () {
         });
       });
     } else if (view === "month") {
-      // Standard month view renders only the selected month. The all view owns
-      // the multi-month timeline; keeping it out of month mode avoids excessive
-      // DOM, distant dates, and confusing repeated month headings.
+      // Start with a buffered month timeline so vertical scrolling works
+      // immediately, then extend it in both directions as the user scrolls.
+      timelineBusy = true;
+      const anchorKey = monthKey(cursor);
       grid.style.display = "grid";
-      grid.innerHTML = makeMonth(monthStart(cursor));
+      grid.innerHTML = "";
+      const start = new Date(cursor.getFullYear(), cursor.getMonth() - 6, 1, 12);
+      for (let i = 0; i < 13; i++) {
+        grid.insertAdjacentHTML(
+          "beforeend",
+          makeMonth(new Date(start.getFullYear(), start.getMonth() + i, 1, 12)),
+        );
+      }
       bindDateCells(grid);
-      sc.scrollTop = 0;
+      requestAnimationFrame(() => {
+        const target = grid.querySelector('[data-month="' + anchorKey + '"]');
+        if (target) {
+          const sr = sc.getBoundingClientRect();
+          const tr = target.getBoundingClientRect();
+          sc.scrollTop += tr.top - sr.top - 44;
+        }
+        requestAnimationFrame(() => {
+          timelineBusy = false;
+        });
+      });
     } else {
       grid.style.display = "grid";
       const start = new Date(selected);
