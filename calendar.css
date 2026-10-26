@@ -952,3 +952,18 @@ body .app #calendarScreen.calendar-restored[data-view="month"] #monthTitle {
     display: none !important;
   }
 }
+
+/* Month mode now contains many stacked month sections. Do not distribute them
+   into the single-month fixed-height grid tracks used by the original layout. */
+body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode > #dateGrid {
+  flex: 0 0 auto !important;
+  min-height: auto !important;
+  grid-auto-rows: auto !important;
+  align-content: start;
+  height: auto;
+}
+body .app #calendarScreen.calendar-restored .calendar-scroller.month-mode > #dateGrid > .timeline-month {
+  height: auto;
+  min-height: 0;
+  align-self: start;
+}
