@@ -12,7 +12,14 @@ async function dragView(page, delta) {
     y = box.y + box.height / 2;
   await page.mouse.move(x, y);
   await page.mouse.down();
-  const horizontal = await page.evaluate(() => matchMedia("(min-width: 1100px)").matches);\n  await page.mouse.move(horizontal ? x + delta : x, horizontal ? y : y + delta, { steps: 12 });
+  const horizontal = await page.evaluate(() =>
+    matchMedia("(min-width: 1100px)").matches,
+  );
+  await page.mouse.move(
+    horizontal ? x + delta : x,
+    horizontal ? y : y + delta,
+    { steps: 12 },
+  );
   await page.mouse.up();
 }
 
