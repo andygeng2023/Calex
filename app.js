@@ -1448,7 +1448,7 @@ window.CalexReady = (async function () {
       // A scrollable date rail: render seven weeks around the selected week so
       // the scroller has real vertical extent, then extend it in both directions.
       timelineBusy = true;
-      grid.style.display = "flex";
+      grid.style.display = window.matchMedia("(min-width: 1100px)").matches ? "flex" : "grid";
       const selectedDate = new Date(selected);
       const weekStart = addDays(selectedDate, -((selectedDate.getDay() + 6) % 7));
       const start = addDays(weekStart, -21);
