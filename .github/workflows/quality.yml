@@ -25,7 +25,7 @@ jobs:
         run: npm run format
       - name: Temporary CSS formatting diagnostic
         run: |
-          sed -n '/v63: desktop calendar sizing/,$p' calendar.css
+          sed -n '/v64: preserve drag-controlled widths/,$p' calendar.css
       - name: Verify formatting
         run: npm run format:check
       - name: Validate JavaScript syntax
