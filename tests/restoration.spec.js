@@ -53,6 +53,25 @@ for (const [width, height] of [
       "month",
     );
     await expect(page.locator("#dateGrid .date-cell")).toHaveCount(42);
+    if (width < 1100) {
+      const monthGrid = await page.locator("#dateGrid").boundingBox();
+      const monthSection = await page
+        .locator("#dateGrid > .timeline-month")
+        .boundingBox();
+      const dayGrid = await page
+        .locator("#dateGrid > .timeline-month > .date-grid")
+        .boundingBox();
+      expect(monthGrid).not.toBeNull();
+      expect(monthSection).not.toBeNull();
+      expect(dayGrid).not.toBeNull();
+      expect(Math.abs(monthSection.x - monthGrid.x)).toBeLessThanOrEqual(1);
+      expect(Math.abs(monthSection.width - monthGrid.width)).toBeLessThanOrEqual(2);
+      expect(Math.abs(dayGrid.width - monthSection.width)).toBeLessThanOrEqual(2);
+      const dayColumns = await page
+        .locator("#dateGrid > .timeline-month > .date-grid")
+        .evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
+      expect(dayColumns).toBe(7);
+    }
     await expect(page.locator("#panelAdd")).toBeVisible();
     await dragView(page, width >= 1100 ? -180 : -70);
     await expect(page.locator("#calendarScreen")).toHaveAttribute(
