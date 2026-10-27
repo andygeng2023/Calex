@@ -99,3 +99,21 @@ test("completed task can be undone from the task toolbar", async ({ page }) => {
   await page.locator("#productUndo").click();
   await expect(page.locator("#productTaskRows .product-task").filter({ hasText: "Undo test" }).locator('[data-action="toggle"]')).not.toBeChecked();
 });
+
+
+test("day, week, agenda and year views render and navigate", async ({ page }) => {
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/");
+  await page.locator('[data-screen="productivity"]').click();
+  const view = page.locator("#productView");
+  for (const value of ["day", "week", "agenda", "year", "calendar"]) {
+    await view.selectOption(value);
+    await expect(page.locator("#productivityContent")).not.toBeEmpty();
+    await expect(page.locator("#productCalendarNext")).toBeVisible();
+    await page.locator("#productCalendarNext").click();
+    await page.locator("#productCalendarToday").click();
+  }
+  await view.selectOption("list");
+  expect(errors).toEqual([]);
+});
