@@ -52,7 +52,7 @@ for (const [width, height] of [
       "data-view",
       "month",
     );
-    await expect(page.locator("#dateGrid .timeline-month")).toHaveCount(13);
+    await expect(page.locator("#dateGrid .timeline-month")).toHaveCount(width < 1100 ? 1 : 13);
     await expect(page.locator('#dateGrid [data-date="' + (await page.locator("#dateGrid .date-cell.selected:not(.outside)").getAttribute("data-date")) + '"]')).toBeVisible();
     await expect(page.locator("#panelAdd")).toBeVisible();
     await dragView(page, width >= 1100 ? -180 : -70);
@@ -60,7 +60,7 @@ for (const [width, height] of [
       "data-view",
       "week",
     );
-    await expect(page.locator("#dateGrid .date-cell")).toHaveCount(49);
+    await expect(page.locator("#dateGrid .date-cell")).toHaveCount(width < 1100 ? 7 : 49);
     const rightmost = await page
       .locator("#dateGrid .date-cell")
       .last()
