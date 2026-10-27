@@ -3,9 +3,10 @@
 const KEY="calex.productivity.v1", $=id=>document.getElementById(id), today=()=>new Date().toISOString().slice(0,10);
 const uid=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
 const fresh=()=>({tasks:[],lists:[{id:"inbox",name:"Inbox",folder:"Personal",color:"#28654a"}],habits:[],notes:[],countdowns:[],sessions:[],settings:{view:"list"}});
-let data;try{data=Object.assign(fresh(),JSON.parse(localStorage.getItem(KEY)||"{}"));}catch(_){data=fresh();}
+let data;try{let saved=null;try{saved=localStorage.getItem(KEY);}catch(_){}if(saved===null)saved=window.CalexSQLite?.getItem(KEY)||null;data=Object.assign(fresh(),JSON.parse(saved||"{}"));}catch(_){try{data=Object.assign(fresh(),JSON.parse(window.CalexSQLite?.getItem(KEY)||"{}"));}catch(__){data=fresh();}}
 let tab="tasks",filter="all",query="",timer=null,remaining=1500;
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data));}catch(_){status("Storage is full. Export a backup.");}};
+const save=()=>{const raw=JSON.stringify(data);let persisted=false;try{localStorage.setItem(KEY,raw);persisted=true;}catch(_){}try{if(window.CalexSQLite){window.CalexSQLite.setItem(KEY,raw);persisted=true;}}catch(_){}if(!persisted)status("Storage unavailable. Export a backup.");};
+window.CalexSQLiteReady?.then(store=>{if(store){try{store.setItem(KEY,JSON.stringify(data));}catch(_){}}});
 const status=s=>{if($("productivityStatus"))$("productivityStatus").textContent=s;};
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const listName=id=>(data.lists.find(l=>l.id===id)||{}).name||"Inbox";
