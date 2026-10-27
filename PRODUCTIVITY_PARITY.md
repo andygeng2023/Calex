@@ -31,7 +31,7 @@ This branch keeps the current Calex design and adds a local-first productivity w
 - Kept the original Calex design tokens and theme variables. FLOWSTACK-specific components were not introduced because the repository does not currently show a FLOWSTACK package dependency; the improvements use the app's existing CSS layer instead.
 
 ## Automated verification
-- Playwright tests cover task creation and persistence, archive/restore, and opening the productivity views without runtime errors.
+- Playwright coverage now includes task creation/persistence, task editing with notes/recurrence/checklists/subtasks/location, archive/restore, advanced-tab runtime checks, calendar month navigation, day/week/agenda/year navigation, inline natural-language quick add, completion undo, task sorting/list filtering, and safe Markdown note previews.
 - Existing Calex tests cover the calendar, mobile layouts, offline shell and other application workflows.
 - GitHub Actions results must be checked on the latest branch commit before merging. Browser coverage is not exhaustive for every new action, and no local Playwright run was possible in the editing environment.
 
