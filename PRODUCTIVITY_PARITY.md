@@ -23,6 +23,11 @@ This branch keeps the current Calex design and adds a local-first productivity w
 - Eisenhower matrix, task timeline with manual progress, reusable task templates, local completion statistics, preference settings.
 - JSON backup import/export; local storage is mirrored to Calex SQLite fallback storage where available. A separate per-user Supabase JSONB sync path and RLS migration are included on this branch, but require the migration to be applied in the Calex Supabase project before cloud sync works.
 
+## Recent UX and workflow improvements
+- Reworked task editing into the existing inline form instead of a sequence of blocking browser prompts; the form now includes notes, checklist/subtask entry, location, a related link, recurrence, and a reminder timestamp.
+- Added an undo-completion action, local-date handling, a navigable 6-week month calendar that respects the configured week start, inline natural-language quick capture, keyboard shortcuts (`N`, `Q`, `/`), richer task metadata, and responsive/focus-visible styling.
+- Kept the original Calex design tokens and theme variables. FLOWSTACK-specific components were not introduced because the repository does not currently show a FLOWSTACK package dependency; the improvements use the app's existing CSS layer instead.
+
 ## Automated verification
 - Playwright tests cover task creation and persistence, archive/restore, and opening the productivity views without runtime errors.
 - Existing Calex tests cover the calendar, mobile layouts, offline shell and other application workflows.
