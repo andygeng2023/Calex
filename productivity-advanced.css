@@ -60,3 +60,7 @@
 @media(max-width:900px){.product-year-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:650px){.product-year-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.product-agenda-row{grid-template-columns:1fr auto;gap:6px}.product-agenda-row time{grid-column:1/-1}.product-period-grid .product-calendar-day{min-height:110px}}
 @media(max-width:380px){.product-year-grid{gap:8px}.product-year-month{padding:10px;min-height:85px}}
+
+.product-voice-button{justify-self:start;min-height:38px}
+#productSort{max-width:160px}
+@media(max-width:650px){#productSort,#productListFilter,#productFilter,#productView{flex:1 1 44%;width:100%;max-width:none}}
