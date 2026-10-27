@@ -155,6 +155,7 @@ window.CalexReady = (async function () {
         },
       },
     );
+    window.CalexSupabaseClient = supabaseClient;
     $("authForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       await authAction("signin");
