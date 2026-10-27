@@ -13,20 +13,20 @@ grant select, insert, update, delete on table public.calex_productivity to authe
 drop policy if exists "Users can read their Calex productivity data" on public.calex_productivity;
 create policy "Users can read their Calex productivity data"
   on public.calex_productivity for select to authenticated
-  using (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can create their Calex productivity data" on public.calex_productivity;
 create policy "Users can create their Calex productivity data"
   on public.calex_productivity for insert to authenticated
-  with check (auth.uid() = user_id);
+  with check ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can update their Calex productivity data" on public.calex_productivity;
 create policy "Users can update their Calex productivity data"
   on public.calex_productivity for update to authenticated
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can delete their Calex productivity data" on public.calex_productivity;
 create policy "Users can delete their Calex productivity data"
   on public.calex_productivity for delete to authenticated
-  using (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id);
