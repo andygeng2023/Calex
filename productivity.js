@@ -28,7 +28,7 @@ root.querySelectorAll("[data-action]").forEach(b=>b.addEventListener("click",()=
 function renderTaskRows(tasks){
 if(!tasks.length)return '<div class="product-empty">Nothing here yet. Add a task to get started.</div>';
 if(data.settings.view==="board")return '<div class="product-board">'+["todo","doing","done"].map(s=>'<section><h3>'+({todo:"To do",doing:"In progress",done:"Completed"}[s])+'</h3>'+tasks.filter(t=>(t.status||(t.done?"done":"todo"))===s).map(taskCard).join("")+'</section>').join("")+'</div>';
-if(data.settings.view==="calendar")return '<div class="product-calendar-grid">'+Array.from({length:35},(_,i)=>{let d=new Date();d.setDate(1);d.setDate(d.getDate()-((d.getDay()+6)%7)+i);let k=d.toISOString().slice(0,10);return '<div class="product-calendar-day"><small>'+d.getDate()+'</small>'+tasks.filter(t=>t.due===k).map(t=>'<button data-action="edit" data-id="'+esc(t.id)+'">'+esc(t.title)+'</button>').join("")+'</div>';}).join("")+'</div>';
+if(data.settings.view==="calendar")return '<div class="product-calendar-grid">'+Array.from({length:35},(_,i)=>{let d=new Date();d.setDate(1);d.setDate(d.getDate()-((d.getDay()+6)%7)+i);let k=d.toISOString().slice(0,10);return '<div class="product-calendar-day" data-calendar-date="'+k+'"><small>'+d.getDate()+'</small>'+tasks.filter(t=>t.due===k).map(t=>'<button data-action="edit" data-id="'+esc(t.id)+'">'+esc(t.title)+'</button>').join("")+'</div>';}).join("")+'</div>';
 return tasks.map(taskCard).join("");
 }
 function taskAction(id,action,index){let t=data.tasks.find(x=>x.id===id);if(!t)return;
