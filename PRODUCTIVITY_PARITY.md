@@ -18,7 +18,7 @@ This branch keeps the current Calex design and adds a local-first productivity w
 ### Additional productivity tools
 - Habits with daily/weekly schedule labels, check-ins, streak counts and local history.
 - Focus timer with configurable 15/25/45/60-minute sessions, task association and local session history.
-- Standalone notes, note search through the notes UI/browser controls, and note-to-task conversion.
+- Standalone notes and note-to-task conversion; full in-app note search remains outstanding.
 - Countdown dates for deadlines, birthdays, exams and other events.
 - Eisenhower matrix, task timeline with manual progress, reusable task templates, local completion statistics, preference settings.
 - JSON backup import/export; all productivity objects are currently stored in browser local storage.
