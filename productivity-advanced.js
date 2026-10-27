@@ -40,7 +40,7 @@ if(action==="link"){const v=prompt("Related URL (https://…)");if(v){try{const 
 persist();a.render();});
 function scheduleReminders(){const d=api()?.data;if(!d)return;const now=Date.now();d.tasks.filter(t=>!t.done).forEach(t=>(t.reminders||[]).forEach(r=>{const at=Date.parse(r.at),last=Date.parse(r.lastNotifiedAt||"");if(!r.delivered&&at<=now&&(!last||now-last>=300000)&&notify("Calex task reminder",t.title)){r.lastNotifiedAt=stamp();if(!d.settings?.persistentReminders)r.delivered=true;persist();}}));}
 function recurringComplete(e){const b=e.target.closest('[data-action="toggle"]');if(!b)return;const t=getTask(b.dataset.id);if(!t)return;setTimeout(()=>{if(t.done&&t.recurrence&&!t.nextCreated){const next=new Date((t.due||today())+"T12:00:00");if(t.recurrence==="daily")next.setDate(next.getDate()+1);if(t.recurrence==="weekly")next.setDate(next.getDate()+7);if(t.recurrence==="monthly")next.setMonth(next.getMonth()+1);const due=next.getFullYear()+"-"+String(next.getMonth()+1).padStart(2,"0")+"-"+String(next.getDate()).padStart(2,"0");t.nextCreated=true;api().addTask({title:t.title,list:t.list,due,priority:t.priority,description:t.description,tags:[...(t.tags||[])],recurrence:t.recurrence,checklist:(t.checklist||[]).map(c=>({title:c.title,done:false}))});}},0);}
-document.addEventListener("change",recurringComplete);
+
 window.addEventListener("calex:productivity-rendered",augmentCards);
 document.addEventListener("DOMContentLoaded",()=>{addTabs();augmentCards();scheduleReminders();setInterval(scheduleReminders,30000);});
 })();
