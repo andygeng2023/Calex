@@ -150,3 +150,14 @@ test("notes support safe Markdown preview without task-only controls", async ({ 
   await expect(preview.locator("li")).toHaveCount(2);
   await expect(preview.locator("strong")).toHaveText("Important");
 });
+
+
+test("agenda navigation changes the displayed date window", async ({ page }) => {
+  await page.goto("/");
+  await page.locator('[data-screen="productivity"]').click();
+  await page.locator("#productView").selectOption("agenda");
+  const heading = page.locator(".product-calendar-head h3");
+  const first = await heading.textContent();
+  await page.locator("#productCalendarNext").click();
+  await expect(heading).not.toHaveText(first);
+});
