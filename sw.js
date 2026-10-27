@@ -13,6 +13,7 @@ const APP_SHELL = [
   "./workspace.js?v=51",
   "./productivity.js?v=51",
   "./productivity-advanced.js?v=51",
+  "./productivity-sync.js?v=51",
   "./icons.js?v=51",
   "./sync.js?v=51",
   "./ics.js?v=51",
