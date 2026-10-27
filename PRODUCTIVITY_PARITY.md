@@ -21,7 +21,7 @@ This branch keeps the current Calex design and adds a local-first productivity w
 - Standalone notes and note-to-task conversion; full in-app note search remains outstanding.
 - Countdown dates for deadlines, birthdays, exams and other events.
 - Eisenhower matrix, task timeline with manual progress, reusable task templates, local completion statistics, preference settings.
-- JSON backup import/export; all productivity objects are currently stored in browser local storage.
+- JSON backup import/export; local storage is mirrored to Calex SQLite fallback storage where available. A separate per-user Supabase JSONB sync path and RLS migration are included on this branch, but require the migration to be applied in the Calex Supabase project before cloud sync works.
 
 ## Automated verification
 - Playwright tests cover task creation and persistence, archive/restore, and opening the productivity views without runtime errors.
@@ -32,7 +32,7 @@ This branch keeps the current Calex design and adds a local-first productivity w
 
 | Capability group | Remaining work |
 |---|---|
-| Sync and accounts | Sync productivity objects to a backend; cross-device task/list/folder/tag/reminder sync; conflict resolution and offline reconciliation for the new data model |
+| Sync and accounts | Per-user JSONB sync is implemented behind the included RLS migration; the migration must be applied in Supabase. Robust transactional conflict resolution, offline queue reconciliation, and cross-device concurrent-edit testing remain outstanding |
 | Collaboration | Shared lists, invitations, member permissions, assignments, shared comments, live updates, responsibility coordination and audit trail |
 | Notifications | Guaranteed background push, email delivery, location/geofence triggers, native notification sounds, configurable notification channels and daily planning prompts |
 | Calendar integration | Google Calendar OAuth and bidirectional synchronization, subscribed external calendars, external event overlays, full timezone/DST-safe scheduling, recurring exceptions, year and true multi-day views |
@@ -45,7 +45,7 @@ This branch keeps the current Calex design and adds a local-first productivity w
 | Security/operations | Server-side access control, attachment quotas/scanning, data retention controls, robust migrations, import validation for every format, performance and accessibility audits |
 
 ## Data and privacy notes
-- Productivity records are local to this browser/profile. JSON import/export is the manual backup/transfer mechanism. Existing Calex calendar sync does not automatically imply these new task objects sync.
+- Productivity records are local to this browser/profile. JSON import/export is the manual backup/transfer mechanism. Existing Calex calendar sync does not automatically imply these new task objects sync. The new productivity sync requires the migration in `supabase/migrations/20261027000000_calex_productivity.sql` to be applied.
 - Local attachment data is stored as data URLs and limited to 1 MB per file to reduce browser-storage risk. Large or sensitive files should not be attached in this prototype.
 - Browser reminders depend on permission and the page being open; they are not a substitute for a server-backed or native background notification service.
 - Recurrence supports only daily, weekly and monthly next-occurrence generation and does not yet handle exception dates, missed runs, timezone rules or edits to a recurring series.
