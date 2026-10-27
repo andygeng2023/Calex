@@ -117,3 +117,19 @@ test("day, week, agenda and year views render and navigate", async ({ page }) =>
   await view.selectOption("list");
   expect(errors).toEqual([]);
 });
+
+
+test("list filter and task sorting controls are usable", async ({ page }) => {
+  await page.goto("/");
+  await page.locator('[data-screen="productivity"]').click();
+  for (const title of ["Zebra task", "Alpha task"]) {
+    await page.locator("#productAddTask").click();
+    await page.locator('#productTaskForm [name="title"]').fill(title);
+    await page.locator('#productTaskForm button[type="submit"]').click();
+  }
+  await page.locator("#productSort").selectOption("title");
+  const titles = await page.locator("#productTaskRows .product-task-title").allTextContents();
+  expect(titles.slice(0, 2)).toEqual(["Alpha task", "Zebra task"]);
+  await page.locator("#productListFilter").selectOption("inbox");
+  await expect(page.locator("#productTaskRows")).toContainText("Alpha task");
+});
