@@ -66,3 +66,8 @@ After changing Auth settings and deploying:
 5. Test Google sign-in after provider setup, then sign out and confirm account data isn't visible under another user.
 
 If confirmation links or OAuth redirects fail, check the Site URL and exact additional redirect URL above first.
+## 7. Enable productivity cloud sync (feature branch)
+
+The productivity workspace uses a separate per-user JSONB row and does not reuse the calendar event table. Before testing cloud sync, apply the SQL migration in `supabase/migrations/20261027000000_calex_productivity.sql` in the Supabase SQL editor. It creates `public.calex_productivity` with row-level security and policies restricting every row to `auth.uid() = user_id`. Do not disable RLS or grant anonymous access.
+
+After the migration is applied, sign in to Calex and open Tasks. Productivity data will merge with the account row and sync when online. If the migration is not installed, Calex keeps local data and displays a cloud-sync setup message. This initial implementation merges local and remote records by per-item timestamps; it is not a transactional collaboration engine, so concurrent edits across devices still need additional conflict-resolution testing before production claims.
