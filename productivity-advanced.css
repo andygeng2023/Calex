@@ -45,3 +45,18 @@
 @media(max-width:760px){.productivity-screen{padding:16px}.productivity-intro{align-items:flex-start}.productivity-intro>div:last-child{width:100%}.product-form{grid-template-columns:1fr}.product-form .product-wide{grid-column:auto}.product-toolbar{align-items:stretch}.product-toolbar>*{min-width:0}.product-toolbar input[type=search]{flex-basis:100%;width:100%}.product-board{grid-template-columns:repeat(3,minmax(220px,1fr));overflow-x:auto;overscroll-behavior-inline:contain}.product-task-actions{max-width:100%;flex-direction:row}.product-calendar-day{min-height:76px}.product-calendar-day button{font-size:.72rem}.product-select-task{width:20px;height:20px}}
 @media(max-width:420px){.productivity-intro h2{font-size:1.45rem}.product-calendar-day{min-height:62px}.product-calendar-day small{min-width:20px;min-height:22px}.product-calendar-day button{padding:2px;font-size:.62rem}.product-calendar-head{gap:4px}.product-calendar-head .secondary{padding:6px 8px}.product-task{gap:7px;padding:10px}.product-task-actions button{min-width:32px;min-height:32px}}
 @media(prefers-reduced-motion:reduce){.product-task{transition:none}}
+
+.product-year-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.product-year-month{display:grid;gap:6px;text-align:left;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);min-height:100px}
+.product-year-month strong{font-size:1rem}
+.product-year-month span,.product-year-month small{color:var(--muted);font-size:.82rem}
+.product-agenda{display:grid;gap:8px}
+.product-agenda-row{display:grid;grid-template-columns:minmax(90px,150px) minmax(0,1fr) auto;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+.product-agenda-row time{font-size:.82rem;color:var(--muted)}
+.product-agenda-row button{border:0;background:transparent;text-align:left;color:var(--ink);font-weight:650;overflow-wrap:anywhere}
+.product-period-grid{min-height:140px}
+.product-period-grid .product-calendar-day{min-height:170px}
+.product-task-note{font-size:.88rem;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:900px){.product-year-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:650px){.product-year-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.product-agenda-row{grid-template-columns:1fr auto;gap:6px}.product-agenda-row time{grid-column:1/-1}.product-period-grid .product-calendar-day{min-height:110px}}
+@media(max-width:380px){.product-year-grid{gap:8px}.product-year-month{padding:10px;min-height:85px}}
