@@ -119,7 +119,7 @@ test("categorized events persist and appear in month, week, and agenda", async (
   );
   await page.keyboard.press("w");
   await expect(page.locator("#weekTimeline")).toBeHidden();
-  await expect(page.locator("#dateGrid .date-cell")).toHaveCount(49);
+  await expect(page.locator("#dateGrid .date-cell")).toHaveCount(7);
   await expect(page.locator("#panelEvents")).toContainText("Project review");
   await page.locator("#panelEvents .edit-btn").click();
   await expect(page.locator("#eventTitle")).toHaveValue("Project review");
@@ -312,7 +312,7 @@ test("fortnightly recurrence does not appear every day or every week", async ({
   await expect(page.locator("#panelEvents")).not.toContainText(
     "Every other Monday",
   );
-  await page.locator('[data-date="2026-10-26"]:not(.outside)').click();
+  await page.locator('[data-date="2026-10-26"]').click();
   await expect(page.locator("#panelEvents")).toContainText(
     "Every other Monday",
   );

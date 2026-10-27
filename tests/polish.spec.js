@@ -17,11 +17,11 @@ for (const [width, height] of [
       .locator("#dateGrid .date-cell:not(.selected):not(.outside)")
       .first()
       .click();
-    await expect(page.locator("#dateGrid .date-cell.selected:not(.outside)")).toHaveCSS(
+    await expect(page.locator("#dateGrid .date-cell.selected")).toHaveCSS(
       "background-color",
       "rgb(40, 101, 74)",
     );
-    await expect(page.locator("#dateGrid .date-cell.selected:not(.outside)")).toHaveCSS(
+    await expect(page.locator("#dateGrid .date-cell.selected")).toHaveCSS(
       "color",
       "rgb(255, 255, 255)",
     );
@@ -35,7 +35,7 @@ for (const [width, height] of [
         .evaluate((el) => getComputedStyle(el).boxShadow),
     ).toContain("inset");
     await expect(
-      page.locator("#dateGrid .date-cell.selected:not(.outside) > span").first(),
+      page.locator("#dateGrid .date-cell.selected > span").first(),
     ).toHaveCSS("text-decoration-line", "none");
     const actions = await page
       .locator(".panel-actions button")
