@@ -10,7 +10,9 @@ This branch keeps the current Calex design and adds a local-first productivity w
 - Add checklist items and subtasks; add comments/activity notes, URL links, locations, file/image attachments (local files up to 1 MB each).
 - Set task tags, move tasks between lists, choose task status, mark urgency/importance, use recurrence rules (daily/weekly/monthly) to create a next occurrence after completion.
 - Search task title/description/notes/tags/list; filter active/today/overdue/high-priority/completed; batch-edit selected tasks; natural-language quick-add for today/tomorrow/next week, simple times, #tags and !high/!low.
-- List, board and month-grid views; drag-reorder task cards; drag tasks to a board column to change status; drag tasks onto calendar dates to reschedule.
+- List, board, month, week, day, agenda and year overview views; calendar navigation, configurable week start, drag-reorder task cards, drag tasks to board columns to change status, and drag tasks onto calendar dates to reschedule.
+- Filter by list, due date, upcoming/next 7 days, overdue, priority, completion and missing due date; sort by smart order, due date, priority, title or creation time.
+- Optional browser speech recognition for task-title capture where supported, plus inline natural-language quick add and keyboard shortcuts.
 - Create lists and folders, edit list name/folder/color, review tags in use.
 - Export tasks as JSON, CSV and iCalendar; import/restore JSON backups.
 - Local browser notifications for reminders, when permission is granted and Calex is open; multiple reminder timestamps can be added to a task.
