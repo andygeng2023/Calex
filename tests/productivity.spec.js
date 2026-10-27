@@ -133,3 +133,20 @@ test("list filter and task sorting controls are usable", async ({ page }) => {
   await page.locator("#productListFilter").selectOption("inbox");
   await expect(page.locator("#productTaskRows")).toContainText("Alpha task");
 });
+
+
+test("notes support safe Markdown preview without task-only controls", async ({ page }) => {
+  await page.goto("/");
+  await page.locator('[data-screen="productivity"]').click();
+  await page.locator('[data-product-tab="notes"]').click();
+  await expect(page.locator("#productQuickAdd")).toHaveCount(0);
+  await page.locator("#newNote").click();
+  const note = page.locator("#productivityContent .product-note").first();
+  await note.locator("textarea[data-body]").fill("# Project notes\n\n- First item\n- Second item\n\n**Important**");
+  await note.getByRole("button", { name: "Markdown preview" }).click();
+  const preview = note.locator(".product-note-preview");
+  await expect(preview).toBeVisible();
+  await expect(preview.locator("h1")).toHaveText("Project notes");
+  await expect(preview.locator("li")).toHaveCount(2);
+  await expect(preview.locator("strong")).toHaveText("Important");
+});
