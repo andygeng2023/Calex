@@ -1419,41 +1419,45 @@ window.CalexReady = (async function () {
         });
       });
     } else if (view === "month") {
-      // Start with a buffered month timeline so vertical scrolling works
-      // immediately, then extend it in both directions as the user scrolls.
       timelineBusy = true;
-      const anchorKey = monthKey(cursor);
       grid.style.display = "grid";
       grid.innerHTML = "";
-      const start = new Date(cursor.getFullYear(), cursor.getMonth() - 6, 1, 12);
-      for (let i = 0; i < 13; i++) {
-        grid.insertAdjacentHTML(
-          "beforeend",
-          makeMonth(new Date(start.getFullYear(), start.getMonth() + i, 1, 12)),
-        );
-      }
-      bindDateCells(grid);
-      requestAnimationFrame(() => {
-        const target = grid.querySelector('[data-month="' + anchorKey + '"]');
-        if (target) {
-          const sr = sc.getBoundingClientRect();
-          const tr = target.getBoundingClientRect();
-          sc.scrollTop += tr.top - sr.top - 44;
+      const mobileCalendar = window.matchMedia("(max-width: 1099px)").matches;
+      if (mobileCalendar) {
+        // Mobile Month is a single horizontally swipe-navigable month.
+        grid.insertAdjacentHTML("beforeend", makeMonth(new Date(cursor.getFullYear(), cursor.getMonth(), 1, 12)));
+        bindDateCells(grid);
+        requestAnimationFrame(() => { timelineBusy = false; });
+      } else {
+        // Desktop Month remains a vertically scrollable, buffered timeline.
+        const anchorKey = monthKey(cursor);
+        const start = new Date(cursor.getFullYear(), cursor.getMonth() - 6, 1, 12);
+        for (let i = 0; i < 13; i++) {
+          grid.insertAdjacentHTML("beforeend", makeMonth(new Date(start.getFullYear(), start.getMonth() + i, 1, 12)));
         }
+        bindDateCells(grid);
         requestAnimationFrame(() => {
-          timelineBusy = false;
+          const target = grid.querySelector('[data-month="' + anchorKey + '"]');
+          if (target) {
+            const sr = sc.getBoundingClientRect();
+            const tr = target.getBoundingClientRect();
+            sc.scrollTop += tr.top - sr.top - 44;
+          }
+          requestAnimationFrame(() => { timelineBusy = false; });
         });
-      });
+      }
     } else {
-      // A scrollable date rail: render seven weeks around the selected week so
-      // the scroller has real vertical extent, then extend it in both directions.
+      // Mobile Week is a single week navigated by horizontal swipe. Desktop
+      // Week keeps its tall, vertically scrollable date rail.
       timelineBusy = true;
-      grid.style.display = window.matchMedia("(min-width: 1100px)").matches ? "flex" : "grid";
+      const mobileCalendar = window.matchMedia("(max-width: 1099px)").matches;
+      grid.style.display = mobileCalendar ? "grid" : "flex";
       const selectedDate = new Date(selected);
       const weekStart = addDays(selectedDate, -((selectedDate.getDay() + 6) % 7));
-      const start = addDays(weekStart, -21);
+      const start = mobileCalendar ? weekStart : addDays(weekStart, -21);
       let out = "";
-      for (let i = 0; i < 49; i++) {
+      const dayCount = mobileCalendar ? 7 : 49;
+      for (let i = 0; i < dayCount; i++) {
         const d = addDays(start, i), items = onDay(d);
         out +=
           '<button class="date-cell ' +
