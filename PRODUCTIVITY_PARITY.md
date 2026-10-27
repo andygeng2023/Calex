@@ -12,7 +12,7 @@ This branch keeps the current Calex design and adds a local-first productivity w
 - Search task title/description/notes/tags/list; filter active/today/overdue/high-priority/completed; batch-edit selected tasks; natural-language quick-add for today/tomorrow/next week, simple times, #tags and !high/!low.
 - List, board, month, week, day, agenda and year overview views; calendar navigation, configurable week start, drag-reorder task cards, drag tasks to board columns to change status, and drag tasks onto calendar dates to reschedule.
 - Filter by list, due date, upcoming/next 7 days, overdue, priority, completion and missing due date; sort by smart order, due date, priority, title or creation time.
-- Optional browser speech recognition for task-title capture where supported, plus inline natural-language quick add and keyboard shortcuts.
+- Optional browser speech recognition for task-title capture where supported, plus inline natural-language quick add and keyboard shortcuts. Voice recognition is browser-dependent and is not available on every device.
 - Create lists and folders, edit list name/folder/color, review tags in use.
 - Export tasks as JSON, CSV and iCalendar; import/restore JSON backups.
 - Local browser notifications for reminders, when permission is granted and Calex is open; multiple reminder timestamps can be added to a task.
@@ -20,7 +20,7 @@ This branch keeps the current Calex design and adds a local-first productivity w
 ### Additional productivity tools
 - Habits with daily/weekly schedule labels, check-ins, streak counts and local history.
 - Focus timer with configurable 15/25/45/60-minute sessions, task association and local session history.
-- Standalone notes and note-to-task conversion; full in-app note search remains outstanding.
+- Standalone notes with full-text title/body search and note-to-task conversion; a rich-text/Markdown editing surface and preview remain outstanding.
 - Countdown dates for deadlines, birthdays, exams and other events.
 - Eisenhower matrix, task timeline with manual progress, reusable task templates, local completion statistics, preference settings.
 - JSON backup import/export; local storage is mirrored to Calex SQLite fallback storage where available. A separate per-user Supabase JSONB sync path and RLS migration are included on this branch, but require the migration to be applied in the Calex Supabase project before cloud sync works.
