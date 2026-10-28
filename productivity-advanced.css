@@ -78,3 +78,12 @@
 .product-note-preview ul,.product-note-preview ol{padding-left:1.5rem}
 .product-note-preview code{padding:2px 4px;border-radius:4px;background:var(--green-pale);font-size:.9em}
 .product-note-preview a{color:var(--green-dark);text-decoration:underline}
+
+
+/* Markdown preview is the primary note view; the editor opens on request. */
+.product-note-preview[hidden] { display: none !important; }
+.product-note textarea[data-body][hidden] { display: none !important; }
+.product-note-preview { min-height: 54px; }
+.product-note-preview h1 { font-size: 1.35rem; }
+.product-note-preview h2 { font-size: 1.15rem; }
+.product-note-preview h3 { font-size: 1rem; }
