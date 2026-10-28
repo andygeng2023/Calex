@@ -3544,6 +3544,18 @@ window.CalexReady = (async function () {
     selected: () => new Date(selected),
     cursor: () => new Date(cursor),
     events: () => events.map((e) => ({ ...e })),
+    calendarTasks: () => events.filter((event) => event.isTask).map((event) => ({ ...event })),
+    updateCalendarTask: (id, patch) => {
+      const event = events.find((item) => item.id === id && item.isTask);
+      if (!event || !patch || typeof patch !== "object") return false;
+      ["urgent", "important"].forEach((key) => {
+        if (typeof patch[key] === "boolean") event[key] = patch[key];
+      });
+      touch(event);
+      persist();
+      renderAll();
+      return true;
+    },
     getView: () => view,
     storageAvailable: () => storageAvailable,
     syncStatus: () => ({ signedIn: !!authUser, state: syncState }),
