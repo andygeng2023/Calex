@@ -1085,8 +1085,28 @@ window.CalexReady = (async function () {
         const timelineTasks = activeTasks.filter((task) => task.date && task.date >= todayKey)
           .sort((a, b) => a.date.localeCompare(b.date) || String(a.start || "").localeCompare(String(b.start || "")) || String(a.title).localeCompare(String(b.title))).slice(0, 8);
         timelineRoot.innerHTML = timelineTasks.length
-          ? timelineTasks.map((task) => '<div class="home-task-row"><span class="home-task-marker"></span><div><strong>' + esc(task.title) + '</strong><small>' + esc(task.date) + (task.start ? ' · ' + esc(task.start) : '') + '</small></div><span class="home-task-priority">' + (task.done ? 'Done' : 'Open') + '</span></div>').join("")
+          ? timelineTasks.map((task) => {
+              const progress = Math.max(0, Math.min(100, Number(task.progress) || 0));
+              return '<article class="home-timeline-row"><time>' + esc(task.date) + '</time><div class="home-timeline-main"><strong>' + esc(task.title) + '</strong><div class="home-timeline-track"><span style="width:' + progress + '%"></span></div></div><label class="home-timeline-progress"><span>' + progress + '% complete</span><input type="range" min="0" max="100" value="' + progress + '" data-task-progress="' + esc(task.id) + '" aria-label="Progress for ' + esc(task.title) + '"></label></article>';
+            }).join("")
           : '<div class="home-muted-empty">Tasks you schedule will appear here.</div>';
+        timelineRoot.querySelectorAll("[data-task-progress]").forEach((input) => {
+          input.addEventListener("input", () => {
+            const row = input.closest(".home-timeline-row");
+            const progress = Math.max(0, Math.min(100, Number(input.value) || 0));
+            row?.querySelector(".home-timeline-track span")?.style.setProperty("width", progress + "%");
+            const label = row?.querySelector(".home-timeline-progress span");
+            if (label) label.textContent = progress + "% complete";
+          });
+          input.addEventListener("change", () => {
+            const task = events.find((item) => item.id === input.dataset.taskProgress && item.isTask);
+            if (!task) return;
+            task.progress = Math.max(0, Math.min(100, Number(input.value) || 0));
+            touch(task);
+            persist();
+            renderHome();
+          });
+        });
       }
 
       const insightsRoot = $("homeInsights");
@@ -2103,6 +2123,9 @@ window.CalexReady = (async function () {
             ? "Timed"
             : "",
       isTask: isTask || old?.isTask || false,
+      progress: Number(old?.progress) || 0,
+      urgent: !!old?.urgent,
+      important: !!old?.important,
       subtasks: old?.subtasks || [],
     };
     if (!item.title) {
