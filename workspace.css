@@ -1851,3 +1851,6 @@ body .app.settings-dark .panel-text-btn.primary-action {
  .home-insight-grid strong{font-size:1.25rem}
  .event-subtasks{padding-left:7px}
 }
+
+#calendarScreen:not(.panel-open) .panel-overdue{display:none}
+#calendarScreen.panel-open .panel-overdue{display:block}
