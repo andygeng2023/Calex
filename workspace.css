@@ -1854,3 +1854,5 @@ body .app.settings-dark .panel-text-btn.primary-action {
 
 #calendarScreen:not(.panel-open) .panel-overdue{display:none}
 #calendarScreen.panel-open .panel-overdue{display:block}
+
+@media(max-width:760px){#calendarScreen #panelTask{width:34px;min-width:34px;padding:0;font-size:0}#calendarScreen #panelTask::before{content:"+";font-size:1rem;line-height:1}}
