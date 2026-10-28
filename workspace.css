@@ -1973,3 +1973,43 @@ body .app #calendarScreen .calendar-toolbar { margin-top: 18px; }
   body .app .event-card-tools { gap: 5px; }
   body .app .event-add-subtask { font-size: .7rem; }
 }
+
+
+/* Shared page canvas: keep the main workspace width consistent between tabs and give each view top breathing room. */
+body .app main > .screen:not(#calendarScreen) {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  padding: 28px 30px 32px;
+}
+body .app #agendaList {
+  width: 100%;
+  max-width: none;
+}
+body .app #settingsScreen > * {
+  width: 100%;
+  max-width: none;
+}
+body .app .productivity-screen {
+  width: 100%;
+  max-width: none !important;
+  margin-inline: 0 !important;
+  padding-top: 28px;
+}
+body .app #calendarScreen .search-wrap {
+  margin-top: 28px;
+}
+body .app #calendarScreen .calendar-toolbar {
+  margin-top: 12px;
+}
+@media (max-width: 700px) {
+  body .app main > .screen:not(#calendarScreen) {
+    padding: 20px 16px 24px;
+  }
+  body .app .productivity-screen {
+    padding-top: 20px;
+  }
+  body .app #calendarScreen .search-wrap {
+    margin-top: 16px;
+  }
+}
