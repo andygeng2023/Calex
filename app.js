@@ -965,6 +965,43 @@ window.CalexReady = (async function () {
           openNormal(events.find((x) => x.id === el.dataset.edit)),
         ),
       );
+    root.querySelectorAll("[data-add-subtask]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const event = events.find((item) => item.id === button.dataset.addSubtask);
+        if (!event) return;
+        const title = window.prompt("Subtask title");
+        if (!title || !title.trim()) return;
+        const path = (button.dataset.subtaskPath || "").split(".").filter(Boolean).map(Number);
+        let siblings = event.subtasks || (event.subtasks = []);
+        for (const index of path) {
+          if (!siblings[index]) return;
+          siblings[index].subtasks = siblings[index].subtasks || [];
+          siblings = siblings[index].subtasks;
+        }
+        siblings.push({ id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random(), title: title.trim(), done: false, subtasks: [] });
+        touch(event);
+        persist();
+        renderAll();
+      });
+    });
+    root.querySelectorAll("[data-subtask-toggle]").forEach((checkbox) => {
+      checkbox.addEventListener("change", () => {
+        const event = events.find((item) => item.id === checkbox.dataset.subtaskEvent);
+        if (!event) return;
+        const path = checkbox.dataset.subtaskToggle.split(".").filter(Boolean).map(Number);
+        let siblings = event.subtasks || [];
+        let task = null;
+        for (const index of path) {
+          task = siblings[index];
+          if (!task) return;
+          siblings = task.subtasks || [];
+        }
+        task.done = checkbox.checked;
+        touch(event);
+        persist();
+        renderAll();
+      });
+    });
   }
 
   function upcomingMarkup(from) {
