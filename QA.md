@@ -33,3 +33,12 @@ Calex remains a static GitHub Pages PWA. Existing guarded browser storage is ret
 - Sync merge unit tests include stale-device edits/deletes, local and remote newer edits, tombstones, legacy timestamps, first sync, settings merge, and equal-timestamp conflict convergence.
 - Responsive checks should cover 375px, 820px, and 1440px, with no page-level horizontal overflow. On mobile, preserve the existing calendar gesture model and use internal scrolling only where intended.
 - Before release, run the full workflow on the pull request and manually verify cross-device sync against the configured Supabase project. The repository's browser tests do not substitute for real account/RLS, concurrent-user, physical-device Safari, OAuth-provider, notification-delivery, or security sign-off.
+
+## Calendar task UX regression checks
+
+- Add a task from Home and from the calendar panel; confirm the compact form hides event-only fields and saves the task into the calendar.
+- Add a subtask under a task, then a further nested subtask; confirm each level persists after re-render and can be completed independently.
+- Confirm Home shows overdue items, the upcoming task timeline, and completion/due-date insights.
+- Expand the bottom calendar panel and verify its overdue section; confirm the collapsed panel still preserves the existing compact handle behaviour.
+- Confirm Special features contains only Focus, Notes, Countdowns, and Matrix, and that there is no redundant Tasks/Agenda navigation item.
+- Run the 375px mobile viewport test and inspect WebKit/Safari layouts for horizontal overflow, clipped controls, and calendar gesture regressions.
