@@ -1785,3 +1785,69 @@ body .app.settings-dark .panel-text-btn.primary-action {
     scroll-behavior: auto !important;
   }
 }
+
+
+/* Focused task hierarchy and Home widgets; retain the existing CALEX design tokens. */
+.home-widget{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);min-width:0}
+.home-widget .section-heading{margin:0;font-size:1.05rem}
+.home-widget-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.home-widget-hint,.home-muted-empty{font-size:.85rem;color:var(--muted)}
+.home-muted-empty{padding:12px 0}
+.home-overdue-tasks{margin-top:8px;border-top:1px solid var(--line)}
+.home-task-row{display:flex;align-items:center;gap:10px;min-width:0;padding:10px 2px;border-bottom:1px solid var(--line)}
+.home-task-marker{width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:var(--green)}
+.home-task-row>div{min-width:0;flex:1}
+.home-task-row strong,.home-task-row small{display:block;overflow-wrap:anywhere}
+.home-task-row strong{font-size:.9rem;font-weight:650}
+.home-task-row small{margin-top:2px;font-size:.78rem;color:var(--muted)}
+.home-task-priority{font-size:.75rem;color:var(--muted);text-transform:capitalize}
+.home-insight-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.home-insight-grid article{min-width:0;display:grid;gap:5px;padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.home-insight-grid span{font-size:.78rem;color:var(--muted);overflow-wrap:anywhere}
+.home-insight-grid strong{font-size:1.45rem;line-height:1.2;font-variant-numeric:tabular-nums}
+.event-content{min-width:0}
+.event-subtask-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+.event-add-subtask{border:0;background:transparent;color:var(--green);padding:3px 0;font:inherit;font-size:.78rem;font-weight:650;cursor:pointer;text-align:left}
+.event-add-subtask:hover{text-decoration:underline}
+.event-subtask-count{font-size:.75rem;color:var(--muted)}
+.event-subtasks{display:grid;gap:4px;margin-top:5px;padding-left:12px;border-left:1px solid var(--line)}
+.event-subtask{display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:start;gap:7px;padding:5px 0;min-width:0}
+.event-subtask .event-subtasks{grid-column:2/-1;width:calc(100% - 2px)}
+.event-subtask .event-subtask-check{width:16px;height:16px;border-radius:5px;margin:2px 0 0}
+.event-subtask-title{font-size:.84rem;overflow-wrap:anywhere}
+.event-subtask.done>.event-subtask-title{text-decoration:line-through;color:var(--muted)}
+.panel-overdue{padding:8px 0 12px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.panel-overdue h3{font-size:.85rem;color:var(--muted);margin:0 0 4px}
+.panel-overdue-empty{font-size:.8rem;color:var(--muted);margin:6px 0}
+.panel-overdue .event{padding-top:7px;padding-bottom:7px}
+.home-hero-actions{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+#homeScreen .day-hero{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left}
+#homeScreen .day-hero>div:first-child{min-width:0}
+#homeScreen .weekday{font-size:clamp(30px,5vw,46px);letter-spacing:-1.8px}
+#homeScreen .day-hero>button{flex:0 0 auto}
+#calendarScreen .panel-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#calendarScreen .panel-text-btn{white-space:nowrap}
+.modal-backdrop[data-mode="task"] #eventForm .description-field,
+.modal-backdrop[data-mode="task"] #eventForm .field:has(#eventLocation),
+.modal-backdrop[data-mode="task"] #eventForm .field:has(#eventRepeat),
+.modal-backdrop[data-mode="task"] #eventForm .field:has(#eventPeople),
+.modal-backdrop[data-mode="task"] #eventForm .field:has(#eventCategory),
+.modal-backdrop[data-mode="task"] #eventForm .field:has(#eventNotes){display:none!important}
+.modal-backdrop[data-mode="task"] #eventForm .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:760px){
+ .home-insight-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #homeScreen .day-hero{align-items:flex-start;flex-wrap:wrap}
+ #homeScreen .day-hero>div:first-child{flex:1 1 100%}
+ #homeScreen .day-hero>button{flex:1 1 auto}
+ .event-subtask{grid-template-columns:18px minmax(0,1fr)}
+ .event-subtask>.event-add-subtask{grid-column:2;justify-self:start}
+ .event-subtask .event-subtasks{grid-column:1/-1;margin-left:5px}
+ #calendarScreen .panel-actions{gap:5px}
+ #calendarScreen .panel-text-btn{padding:7px 8px;font-size:.8rem}
+ .modal-backdrop[data-mode="task"] #eventForm .form-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:380px){
+ .home-insight-grid article{padding:10px}
+ .home-insight-grid strong{font-size:1.25rem}
+ .event-subtasks{padding-left:7px}
+}
