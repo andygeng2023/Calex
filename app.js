@@ -879,9 +879,9 @@ window.CalexReady = (async function () {
         : "") +
       "</div>" +
       (e.tag ? '<span class="tag">' + esc(e.tag) + "</span>" : "") +
-      '<div class="event-subtask-actions"><button type="button" class="event-add-subtask" data-add-subtask="' + esc(e.id) + '" data-subtask-path="" aria-label="Add subtask to ' + esc(e.title) + '">+ Add subtask</button>' +
+      ((e.isTask || (e.subtasks || []).length) ? '<div class="event-subtask-actions"><button type="button" class="event-add-subtask" data-add-subtask="' + esc(e.id) + '" data-subtask-path="" aria-label="Add subtask to ' + esc(e.title) + '">+ Add subtask</button>' +
       ((e.subtasks || []).length ? '<span class="event-subtask-count">' + countNestedSubtasks(e.subtasks) + ' subtask' + (countNestedSubtasks(e.subtasks) === 1 ? "" : "s") + '</span>' : "") +
-      '</div>' + renderEventSubtasks(e) + '</div><button class="icon-btn edit-btn" data-edit="' +
+      '</div>' + renderEventSubtasks(e) : "") + '</div><button class="icon-btn edit-btn" data-edit="' +
       esc(e.id) +
       '" aria-label="Edit ' +
       esc(e.title) +
@@ -2102,6 +2102,8 @@ window.CalexReady = (async function () {
           : $("eventStart").value
             ? "Timed"
             : "",
+      isTask: isTask || old?.isTask || false,
+      subtasks: old?.subtasks || [],
     };
     if (!item.title) {
       showToast("Add an event title.");
