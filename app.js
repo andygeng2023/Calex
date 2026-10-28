@@ -899,10 +899,11 @@ window.CalexReady = (async function () {
           "</span>"
         : "") +
       "</div>" +
+      '<div class="event-card-tools">' +
       (e.tag ? '<span class="tag">' + esc(e.tag) + "</span>" : "") +
       '<div class="event-subtask-actions"><button type="button" class="event-add-subtask" data-add-subtask="' + esc(e.id) + '" data-subtask-path="" aria-label="Add subtask to ' + esc(e.title) + '">+ Add subtask</button>' +
       ((e.subtasks || []).length ? '<span class="event-subtask-count">' + countNestedSubtasks(e.subtasks) + ' subtask' + (countNestedSubtasks(e.subtasks) === 1 ? "" : "s") + '</span>' : "") +
-      '</div>' + renderEventSubtasks(e, e.subtasks || [], [], occurrenceDate, isRecurring(e)) + '</div><button class="icon-btn edit-btn" data-edit="' +
+      '</div></div>' + renderEventSubtasks(e, e.subtasks || [], [], occurrenceDate, isRecurring(e)) + '</div><button class="icon-btn edit-btn" data-edit="' +
       esc(e.id) +
       '" aria-label="Edit ' +
       esc(e.title) +
