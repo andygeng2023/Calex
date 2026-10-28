@@ -26,3 +26,10 @@ Live Puter authentication and paid/allowance-backed inference require an actual 
 ## Storage and hosting
 
 Calex remains a static GitHub Pages PWA. Existing guarded browser storage is retained for backwards compatibility and offline persistence. A sandboxed preview can block storage, service workers, or popup authentication; Calex must remain usable and warn about unavailable persistence. Full PWA and live assistant testing should use the top-level GitHub Pages origin, not an opaque iframe.
+
+## Productivity workspace and sync regression coverage
+
+- Productivity workspace: create/persist tasks, edit notes and recurrence, checklist/subtask capture, archive/restore, completion undo, calendar navigation, natural-language quick add, list filters/sorting, advanced-tab rendering, and safe Markdown note previews.
+- Sync merge unit tests include stale-device edits/deletes, local and remote newer edits, tombstones, legacy timestamps, first sync, settings merge, and equal-timestamp conflict convergence.
+- Responsive checks should cover 375px, 820px, and 1440px, with no page-level horizontal overflow. On mobile, preserve the existing calendar gesture model and use internal scrolling only where intended.
+- Before release, run the full workflow on the pull request and manually verify cross-device sync against the configured Supabase project. The repository's browser tests do not substitute for real account/RLS, concurrent-user, physical-device Safari, OAuth-provider, notification-delivery, or security sign-off.
