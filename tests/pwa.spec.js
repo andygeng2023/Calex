@@ -268,3 +268,52 @@ test("completing one recurring occurrence leaves other dates and their subtasks 
   await expect(parent).toBeVisible();
   await expect(parent.locator("[data-check]")).not.toBeChecked();
 });
+
+
+test("Special features tabs fit without horizontal scrolling and notes default to Markdown preview", async ({ page }) => {
+  await page.setViewportSize({ width: 900, height: 800 });
+  await page.goto("/");
+  await page.locator('[data-screen="productivity"]').click();
+  const tabs = page.locator(".product-tabs");
+  await expect(tabs.locator('[data-product-tab="focus"]')).toBeVisible();
+  await expect(tabs.locator('[data-product-tab="notes"]')).toBeVisible();
+  await expect(tabs.locator('[data-product-tab="countdowns"]')).toBeVisible();
+  await expect(tabs.locator('[data-product-tab="matrix"]')).toBeVisible();
+  const dimensions = await tabs.evaluate(el => ({ scroll: el.scrollWidth, client: el.clientWidth }));
+  expect(dimensions.scroll).toBeLessThanOrEqual(dimensions.client + 1);
+  await tabs.locator('[data-product-tab="notes"]').click();
+  await page.locator("#newNote").click();
+  const note = page.locator(".product-note").first();
+  await expect(note.locator(".product-note-preview")).toBeVisible();
+  await expect(note.locator("textarea[data-body]")).toBeHidden();
+  await expect(note.locator("[data-note-preview-toggle]")).toContainText("Edit note");
+});
+
+test("calendar overdue is first in the same scrollable selected-day panel and sidebar category selection is removed", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const panel = page.locator("#selectedPanel");
+  const order = await panel.evaluate(el => Array.from(el.children).map(child => child.id || child.className));
+  expect(order.indexOf("panel-overdue")).toBeLessThan(order.indexOf("panelEvents"));
+  const overflow = await panel.evaluate(el => getComputedStyle(el).overflowY);
+  expect(["auto", "scroll"]).toContain(overflow);
+  await expect(page.locator(".bottom-nav .category-filters")).toHaveCount(0);
+});
+
+test("task cards are list rows with top-right tags and subtask actions", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.locator("#homeAddTask").click();
+  const now = new Date();
+  const date = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("-");
+  await page.locator("#eventTitle").fill("List row smoke");
+  await page.locator("#eventDate").fill(date);
+  await page.locator('#eventForm button[type="submit"]').click();
+  await page.locator('[data-date="' + date + '"]').click();
+  const card = page.locator("#panelEvents .event").filter({ hasText: "List row smoke" });
+  await expect(card).toBeVisible();
+  const styles = await card.evaluate(el => ({ border: getComputedStyle(el).borderTopWidth, radius: getComputedStyle(el).borderRadius }));
+  expect(styles.border).toBe("0px");
+  expect(styles.radius).toBe("0px");
+  await expect(card.locator(".event-card-tools")).toBeVisible();
+});
