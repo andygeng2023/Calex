@@ -19,7 +19,7 @@ test("calendar loads and core navigation works", async ({ page }) => {
   await page.locator("#eventTitle").fill("Playwright smoke test");
   await page.locator("#eventDate").fill("2026-10-12");
   await page.locator('#eventForm button[type="submit"]').click();
-  await expect(page.locator("#toast")).toContainText("Event added");
+  await expect(page.locator("#toast")).toContainText("Task added");
   await expect(page.locator("#panelEvents")).toContainText(
     "Playwright smoke test",
   );
