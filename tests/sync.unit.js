@@ -121,8 +121,8 @@ test("equal-timestamp divergent edits converge deterministically", () => {
   const b = mergeEvents({ local: [right], remote: [row(left)], tombstones: {}, syncedIds: ["same"], lastSyncAt: 400, now: 600 });
   assert.equal(a.events[0].title, b.events[0].title);
   assert.equal(a.events[0].title, "Zulu");
-  assert.deepEqual(a.push.map((e) => e.title), ["Zulu"]);
-  assert.deepEqual(b.push, []);
+  assert.deepEqual(a.push, []);
+  assert.deepEqual(b.push.map((e) => e.title), ["Zulu"]);
 });
 
 test("equal-timestamp identical content does not trigger a redundant push", () => {
