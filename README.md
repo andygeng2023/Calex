@@ -18,6 +18,7 @@ A responsive, offline-capable calendar PWA built with plain HTML, CSS and JavaSc
 - **Import** `.ics` files (Google, Outlook, Apple, TickTick) and **export** your calendar, including repeat rules.
 - Optional account sync: edits and deletions merge across devices using timestamps and delete markers (`sync.js`), with a sync status line and a **Sync now** button.
 - Daily event, committed-time, and completion summaries.
+- A separate productivity workspace for tasks, lists and folders, subtasks, checklists, priority, recurrence, reminders, habits, focus sessions, notes, templates, insights, and multiple task/calendar views. See `PRODUCTIVITY_PARITY.md` for implementation boundaries and remaining work.
 - Works offline; follows your system dark mode on first run; persistent offline and storage-unavailable warnings.
 - Installable PWA with PNG/maskable icons, app shortcuts, and a versioned service-worker cache.
 - Bundled interface language selection for English, Spanish, French, German, Chinese, Japanese, and Korean, plus Auto to follow the device language. Translations work offline, and user-created event titles and notes remain as entered.
@@ -42,7 +43,7 @@ Calendar sharing is off by default. When opted in, only the next 14 days of titl
 
 ## Hosting and updates
 
-GitHub Pages serves `main` from the repository root. Keep relative asset URLs and bump both HTML asset query versions and `sw.js`'s shell-cache name whenever releasing an update. The current app-shell version is `v47`, including persistent Gmail connection support. The offline shell includes the app, calendar stylesheet, local icons, and PNG install icons; cloud sync and AI need connectivity.
+GitHub Pages serves `main` from the repository root. Keep relative asset URLs and bump both HTML asset query versions and `sw.js`'s shell-cache name whenever releasing an update. The current app-shell version is `v59`. Keep the asset query versions in `index.html` and the cache name and asset versions in `sw.js` aligned for each release. The productivity workspace and its advanced views are documented in `PRODUCTIVITY_PARITY.md`; that matrix explicitly separates implemented local features from integrations and collaboration features that still need work. The offline shell includes the app, calendar stylesheet, local icons, and PNG install icons; cloud sync and AI need connectivity.
 
 Existing guest/user event storage keys and Supabase configuration are retained. New calendars start empty rather than receiving unlabelled demo appointments. Browser storage is used by the original app for backwards compatibility and offline persistence; opaque sandbox previews can block it and may also block service workers and popup authentication. Test installation and live AI from the top-level Pages origin. Always export a calendar backup before major upgrades.
 
