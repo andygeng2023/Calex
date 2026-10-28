@@ -879,9 +879,9 @@ window.CalexReady = (async function () {
         : "") +
       "</div>" +
       (e.tag ? '<span class="tag">' + esc(e.tag) + "</span>" : "") +
-      ((e.isTask || (e.subtasks || []).length) ? '<div class="event-subtask-actions"><button type="button" class="event-add-subtask" data-add-subtask="' + esc(e.id) + '" data-subtask-path="" aria-label="Add subtask to ' + esc(e.title) + '">+ Add subtask</button>' +
+      '<div class="event-subtask-actions"><button type="button" class="event-add-subtask" data-add-subtask="' + esc(e.id) + '" data-subtask-path="" aria-label="Add subtask to ' + esc(e.title) + '">+ Add subtask</button>' +
       ((e.subtasks || []).length ? '<span class="event-subtask-count">' + countNestedSubtasks(e.subtasks) + ' subtask' + (countNestedSubtasks(e.subtasks) === 1 ? "" : "s") + '</span>' : "") +
-      '</div>' + renderEventSubtasks(e) : "") + '</div><button class="icon-btn edit-btn" data-edit="' +
+      '</div>' + renderEventSubtasks(e) + '</div><button class="icon-btn edit-btn" data-edit="' +
       esc(e.id) +
       '" aria-label="Edit ' +
       esc(e.title) +
@@ -969,19 +969,7 @@ window.CalexReady = (async function () {
       button.addEventListener("click", () => {
         const event = events.find((item) => item.id === button.dataset.addSubtask);
         if (!event) return;
-        const title = window.prompt("Subtask title");
-        if (!title || !title.trim()) return;
-        const path = (button.dataset.subtaskPath || "").split(".").filter(Boolean).map(Number);
-        let siblings = event.subtasks || (event.subtasks = []);
-        for (const index of path) {
-          if (!siblings[index]) return;
-          siblings[index].subtasks = siblings[index].subtasks || [];
-          siblings = siblings[index].subtasks;
-        }
-        siblings.push({ id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random(), title: title.trim(), done: false, subtasks: [] });
-        touch(event);
-        persist();
-        renderAll();
+        openQuickSubtask(event.id, button.dataset.subtaskPath || "");
       });
     });
     root.querySelectorAll("[data-subtask-toggle]").forEach((checkbox) => {
@@ -1668,16 +1656,24 @@ window.CalexReady = (async function () {
   function openModal(mode) {
     modalMode = mode;
     $("modalBackdrop").dataset.mode = mode;
+    if (mode !== "quick-subtask") {
+      delete $("modalBackdrop").dataset.subtaskEvent;
+      delete $("modalBackdrop").dataset.subtaskPath;
+    }
     $("modalTitle").textContent = translateUiText(
-      mode === "quick" ? "Quick add" : "New event",
+      mode === "quick" ? "Quick task" : mode === "quick-subtask" ? "Quick task · Add subtask" : "New task",
     );
-    $("quickForm").hidden = mode !== "quick";
-    $("eventForm").hidden = mode === "quick";
+    $("quickForm").hidden = mode !== "quick" && mode !== "quick-subtask";
+    $("eventForm").hidden = mode === "quick" || mode === "quick-subtask";
     $("modalBackdrop").classList.add("open");
     $("modalBackdrop").setAttribute("aria-hidden", "false");
     if ($("eventFeedback")) $("eventFeedback").textContent = "";
-    if (mode === "quick") {
+    if (mode === "quick" || mode === "quick-subtask") {
       $("quickText").value = "";
+      $("quickText").placeholder = mode === "quick-subtask" ? "Describe the subtask…" : "e.g. Dentist tomorrow at 10:00";
+      $("quickText").setAttribute("aria-label", mode === "quick-subtask" ? "Describe the subtask" : "Describe the task");
+      $("quickSave").setAttribute("aria-label", mode === "quick-subtask" ? "Add subtask" : "Create task");
+      $("quickSave").title = mode === "quick-subtask" ? "Add subtask" : "Create task";
       setQuickPreviewEmpty();
       setTimeout(() => $("quickText").focus(), 100);
     } else if (!$("eventTitle").value) setNormalDefaults();
@@ -1769,6 +1765,16 @@ window.CalexReady = (async function () {
     }
     window.CalexI18n?.refresh();
   }
+  function openQuickSubtask(eventId, path) {
+    openModal("quick-subtask");
+    $("modalBackdrop").dataset.subtaskEvent = eventId;
+    $("modalBackdrop").dataset.subtaskPath = path;
+    $("modalTitle").textContent = "Quick task · Add subtask";
+    $("quickText").placeholder = "e.g. Draft outline tomorrow";
+    $("quickText").setAttribute("aria-label", "Describe the subtask");
+    $("quickSave").setAttribute("aria-label", "Add subtask");
+    $("quickSave").title = "Add subtask";
+  }
   function openTask() {
     openNormal();
     $("modalBackdrop").dataset.mode = "task";
@@ -1780,8 +1786,7 @@ window.CalexReady = (async function () {
     $("eventTitle").focus();
   }
   $("panelQuick").addEventListener("click", () => openModal("quick"));
-  $("panelAdd").addEventListener("click", () => openNormal());
-  $("panelTask").addEventListener("click", openTask);
+  $("panelAdd").addEventListener("click", openTask);
   $("homeAddTask").addEventListener("click", openTask);
   $("closeModal").addEventListener("click", closeModal);
   $("modalBackdrop").addEventListener("click", (e) => {
@@ -2069,6 +2074,39 @@ window.CalexReady = (async function () {
       return;
     }
     const p = parseNatural(raw);
+    if (modalMode === "quick-subtask") {
+      const parent = events.find((item) => item.id === $("modalBackdrop").dataset.subtaskEvent);
+      if (!parent) {
+        showToast("The parent task could not be found.");
+        closeModal();
+        return;
+      }
+      const path = ($("modalBackdrop").dataset.subtaskPath || "").split(".").filter(Boolean).map(Number);
+      let siblings = parent.subtasks || (parent.subtasks = []);
+      for (const index of path) {
+        if (!siblings[index]) {
+          showToast("The parent subtask could not be found.");
+          return;
+        }
+        siblings[index].subtasks = siblings[index].subtasks || [];
+        siblings = siblings[index].subtasks;
+      }
+      siblings.push({
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random(),
+        title: p.title,
+        date: p.date,
+        start: p.start || "",
+        end: p.end || "",
+        done: false,
+        subtasks: [],
+      });
+      touch(parent);
+      persist();
+      closeModal();
+      renderAll();
+      showToast("Subtask added");
+      return;
+    }
     if (!p.title || !validEventDate(p.date)) {
       showToast("Add a valid event name and date.");
       return;
@@ -2082,6 +2120,7 @@ window.CalexReady = (async function () {
         id: crypto.randomUUID(),
         ...p,
         done: false,
+        isTask: true,
         description: "",
         location: "",
         people: "",
@@ -2095,7 +2134,7 @@ window.CalexReady = (async function () {
     closeModal();
     renderAll();
     switchScreen("calendar");
-    showToast("Event added");
+    showToast("Task added");
   });
   $("eventForm").addEventListener("submit", (e) => {
     e.preventDefault();
