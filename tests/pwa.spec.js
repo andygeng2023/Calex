@@ -245,3 +245,26 @@ test("completing a parent task completes all nested subtasks", async ({ page }) 
   await expect(parent.locator("[data-subtask-toggle]").nth(0)).toBeChecked();
   await expect(parent.locator("[data-subtask-toggle]").nth(1)).toBeChecked();
 });
+
+
+test("completing one recurring occurrence leaves other dates and their subtasks open", async ({ page }) => {
+  await page.goto("/");
+  const now = new Date();
+  const today = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("-");
+  const tomorrowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const tomorrow = [tomorrowDate.getFullYear(), String(tomorrowDate.getMonth() + 1).padStart(2, "0"), String(tomorrowDate.getDate()).padStart(2, "0")].join("-");
+  await page.locator("#homeAddTask").click();
+  await page.locator("#eventTitle").fill("Daily recurring smoke");
+  await page.locator("#eventDate").fill(today);
+  await page.locator("#eventRepeat").selectOption("daily");
+  await page.locator('#eventForm button[type="submit"]').click();
+  await page.locator('[data-date="' + today + '"]').click();
+  let parent = page.locator("#panelEvents .event").filter({ hasText: "Daily recurring smoke" });
+  await expect(parent).toBeVisible();
+  await parent.locator("[data-check]").check();
+  await expect(parent.locator("[data-check]")).toBeChecked();
+  await page.locator('[data-date="' + tomorrow + '"]').click();
+  parent = page.locator("#panelEvents .event").filter({ hasText: "Daily recurring smoke" });
+  await expect(parent).toBeVisible();
+  await expect(parent.locator("[data-check]")).not.toBeChecked();
+});
