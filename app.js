@@ -840,6 +840,19 @@ window.CalexReady = (async function () {
     return repeatDescription(e);
   }
 
+  function renderEventSubtasks(event, items = event.subtasks || [], parentPath = []) {
+    if (!items.length) return "";
+    return '<div class="event-subtasks" role="group" aria-label="Subtasks">' + items.map((task, index) => {
+      const path = parentPath.concat(index);
+      const pathValue = path.join(".");
+      return '<div class="event-subtask ' + (task.done ? "done" : "") + '">' +
+        '<input class="check event-subtask-check" type="checkbox" data-subtask-toggle="' + esc(pathValue) + '" data-subtask-event="' + esc(event.id) + '" aria-label="Complete subtask ' + esc(task.title) + '" ' + (task.done ? "checked" : "") + '>' +
+        '<span class="event-subtask-title">' + esc(task.title) + '</span>' +
+        '<button type="button" class="event-add-subtask" data-add-subtask="' + esc(event.id) + '" data-subtask-path="' + esc(pathValue) + '" aria-label="Add subtask under ' + esc(task.title) + '" title="Add nested subtask">+ Subtask</button>' +
+        renderEventSubtasks(event, task.subtasks || [], path) + '</div>';
+    }).join("") + '</div>';
+  }
+
   function eventMarkup(e) {
     return (
       '<article class="event category-' +
@@ -849,15 +862,15 @@ window.CalexReady = (async function () {
       '"><input class="check" type="checkbox" aria-label="Mark ' +
       esc(e.title) +
       ' completed" data-check="' +
-      e.id +
+      esc(e.id) +
       '" ' +
       (e.done ? "checked" : "") +
-      '><div><div class="event-title">' +
+      '><div class="event-content"><div class="event-title">' +
       esc(e.title) +
       '</div><div class="event-meta">' +
       esc(timeText(e)) +
       (e.location ? " · " + esc(e.location) : "") +
-      (repeatText(e) ? "<br>" + repeatText(e) : "") +
+      (repeatText(e) ? "<br>" + esc(repeatText(e)) : "") +
       (e.description ? "<br>" + esc(e.description) : "") +
       (e.people
         ? '<br><span class="event-people-label">With</span> <span data-user-content="true">' +
@@ -866,12 +879,18 @@ window.CalexReady = (async function () {
         : "") +
       "</div>" +
       (e.tag ? '<span class="tag">' + esc(e.tag) + "</span>" : "") +
-      '</div><button class="icon-btn edit-btn" data-edit="' +
-      e.id +
+      '<div class="event-subtask-actions"><button type="button" class="event-add-subtask" data-add-subtask="' + esc(e.id) + '" data-subtask-path="" aria-label="Add subtask to ' + esc(e.title) + '">+ Add subtask</button>' +
+      ((e.subtasks || []).length ? '<span class="event-subtask-count">' + countNestedSubtasks(e.subtasks) + ' subtask' + (countNestedSubtasks(e.subtasks) === 1 ? "" : "s") + '</span>' : "") +
+      '</div>' + renderEventSubtasks(e) + '</div><button class="icon-btn edit-btn" data-edit="' +
+      esc(e.id) +
       '" aria-label="Edit ' +
       esc(e.title) +
       '" style="width:32px;height:32px;border:0"><svg viewBox="0 0 24 24"><path d="m14 5 5 5M4 20l4-.8L19 8a2.1 2.1 0 0 0-3-3L5 16z"/></svg></button></article>'
     );
+  }
+
+  function countNestedSubtasks(items) {
+    return (items || []).reduce((total, item) => total + 1 + countNestedSubtasks(item.subtasks), 0);
   }
 
   function esc(s) {
