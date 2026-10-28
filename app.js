@@ -1034,7 +1034,8 @@ window.CalexReady = (async function () {
       shown = 0;
     for (let i = 1; i <= 7 && shown < 12; i++) {
       const day = addDays(from, i),
-        list = onDay(day).filter((e) => !e.done);
+        occurrenceDate = dateKey(day),
+        list = onDay(day).filter((e) => !isItemDone(e, occurrenceDate, isRecurring(e)));
       if (!list.length) continue;
       shown += list.length;
       out +=
