@@ -174,7 +174,7 @@ test("Home and Special features remain usable at a narrow mobile viewport", asyn
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/");
   await expect(page.locator("#homeOverdueHeading")).toBeVisible();
-  await expect(page.locator("#homeTaskTimeline")).toBeVisible();
+  await expect(page.locator("#homeTimelineHeading")).toBeVisible();
   await expect(page.locator("#homeInsights")).toBeVisible();
   await page.locator('[data-screen="productivity"]').click();
   await expect(page.locator("#productivityScreen")).toHaveClass(/active/);
