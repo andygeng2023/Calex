@@ -1695,8 +1695,16 @@ window.CalexReady = (async function () {
     $("eventForm").dataset.source = "";
     setTimeout(() => $("eventTitle").focus(), 0);
     $("modalTitle").textContent = translateUiText(
-      e ? "Edit event" : "New event",
+      e ? (e.isTask ? "Edit task" : "Edit event") : "New event",
     );
+    if (e?.isTask) {
+      $("modalBackdrop").dataset.mode = "task";
+      $("eventTitle").placeholder = "What needs doing?";
+      $("eventTitle").setAttribute("aria-label", "Task title");
+      const taskLabel = $("eventForm").querySelector('[type="submit"] span');
+      if (taskLabel) taskLabel.textContent = "Save task";
+      $("eventForm").querySelector('[type="submit"]').setAttribute("aria-label", "Save task");
+    }
     if (e) {
       const old = $("eventForm").querySelector(".delete-event");
       if (old) old.remove();
