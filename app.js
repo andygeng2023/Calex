@@ -1078,33 +1078,25 @@ window.CalexReady = (async function () {
       }
       if (overdueHeading) overdueHeading.textContent = "Overdue · " + overdueEvents.length;
 
-      const productivity = window.CalexProductivity?.data;
-      const tasks = Array.isArray(productivity?.tasks) ? productivity.tasks : [];
-      const activeTasks = tasks.filter((task) => !task.done);
-      const overdueTasks = activeTasks.filter((task) => task.due && task.due < todayKey);
-      if (overdueRoot && overdueTasks.length) {
-        overdueRoot.insertAdjacentHTML("beforeend", '<div class="home-overdue-tasks">' +
-          overdueTasks.slice(0, 6).map((task) => '<div class="home-task-row"><span class="home-task-marker"></span><div><strong>' + esc(task.title) + '</strong><small>Task overdue · ' + esc(task.due) + '</small></div></div>').join("") +
-          (overdueTasks.length > 6 ? '<p class="home-widget-hint">+' + (overdueTasks.length - 6) + ' more overdue tasks</p>' : '') + '</div>');
-      }
-
+      const activeTasks = events.filter((item) => item.isTask && !item.done);
+      const overdueTasks = activeTasks.filter((task) => task.date && task.date < todayKey);
       const timelineRoot = $("homeTaskTimeline");
       if (timelineRoot) {
-        const timelineTasks = activeTasks.filter((task) => task.due && task.due >= todayKey)
-          .sort((a, b) => a.due.localeCompare(b.due) || String(a.title).localeCompare(String(b.title))).slice(0, 8);
+        const timelineTasks = activeTasks.filter((task) => task.date && task.date >= todayKey)
+          .sort((a, b) => a.date.localeCompare(b.date) || String(a.start || "").localeCompare(String(b.start || "")) || String(a.title).localeCompare(String(b.title))).slice(0, 8);
         timelineRoot.innerHTML = timelineTasks.length
-          ? timelineTasks.map((task) => '<div class="home-task-row"><span class="home-task-marker"></span><div><strong>' + esc(task.title) + '</strong><small>' + esc(task.due) + (task.start ? ' · ' + esc(task.start) : '') + '</small></div><span class="home-task-priority">' + esc(task.priority || 'medium') + '</span></div>').join("")
-          : '<div class="home-muted-empty">Tasks with a due date will appear here.</div>';
+          ? timelineTasks.map((task) => '<div class="home-task-row"><span class="home-task-marker"></span><div><strong>' + esc(task.title) + '</strong><small>' + esc(task.date) + (task.start ? ' · ' + esc(task.start) : '') + '</small></div><span class="home-task-priority">' + (task.done ? 'Done' : 'Open') + '</span></div>').join("")
+          : '<div class="home-muted-empty">Tasks you schedule will appear here.</div>';
       }
 
       const insightsRoot = $("homeInsights");
       if (insightsRoot) {
-        const completedTasks = tasks.filter((task) => task.done).length;
-        const dueToday = activeTasks.filter((task) => task.due === todayKey).length;
+        const completedTasks = events.filter((task) => task.isTask && task.done).length;
+        const dueToday = activeTasks.filter((task) => task.date === todayKey).length;
         insightsRoot.innerHTML = '<div class="home-insight-grid">' +
-          '<article><span>Events today</span><strong>' + list.length + '</strong></article>' +
+          '<article><span>Events today</span><strong>' + list.filter((item) => !item.isTask).length + '</strong></article>' +
           '<article><span>Tasks due today</span><strong>' + dueToday + '</strong></article>' +
-          '<article><span>Overdue items</span><strong>' + (overdueEvents.length + overdueTasks.length) + '</strong></article>' +
+          '<article><span>Overdue items</span><strong>' + overdueEvents.length + '</strong></article>' +
           '<article><span>Tasks completed</span><strong>' + completedTasks + '</strong></article>' +
           '</div>';
       }
