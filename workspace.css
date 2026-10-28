@@ -1821,10 +1821,10 @@ body .app.settings-dark .panel-text-btn.primary-action {
 .panel-overdue-empty{font-size:.8rem;color:var(--muted);margin:6px 0}
 .panel-overdue .event{padding-top:7px;padding-bottom:7px}
 .home-hero-actions{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
-#homeScreen .day-hero{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left}
+#homeScreen .day-hero{display:block;text-align:center}
 #homeScreen .day-hero>div:first-child{min-width:0}
-#homeScreen .weekday{font-size:clamp(30px,5vw,46px);letter-spacing:-1.8px}
-#homeScreen .day-hero>button{flex:0 0 auto}
+#homeScreen .weekday{font-size:clamp(34px,8vw,52px);letter-spacing:-2.8px}
+#homeScreen .day-hero>button{display:inline-flex;margin:12px 4px 0;max-width:calc(50% - 8px)}
 #calendarScreen .panel-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 #calendarScreen .panel-text-btn{white-space:nowrap}
 .modal-backdrop[data-mode="task"] #eventForm .description-field,
@@ -1836,9 +1836,6 @@ body .app.settings-dark .panel-text-btn.primary-action {
 .modal-backdrop[data-mode="task"] #eventForm .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:760px){
  .home-insight-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
- #homeScreen .day-hero{align-items:flex-start;flex-wrap:wrap}
- #homeScreen .day-hero>div:first-child{flex:1 1 100%}
- #homeScreen .day-hero>button{flex:1 1 auto}
  .event-subtask{grid-template-columns:18px minmax(0,1fr)}
  .event-subtask>.event-add-subtask{grid-column:2;justify-self:start}
  .event-subtask .event-subtasks{grid-column:1/-1;margin-left:5px}
