@@ -1829,7 +1829,7 @@ body .app.settings-dark .panel-text-btn.primary-action {
 #calendarScreen .panel-text-btn{white-space:nowrap}
 .modal-backdrop[data-mode="task"] #eventForm .description-field,
 .modal-backdrop[data-mode="task"] #eventForm .field:has(#eventLocation),
-.modal-backdrop[data-mode="task"] #eventForm .field:has(#eventRepeat),
+/* Recurring tasks remain available in task mode. */
 .modal-backdrop[data-mode="task"] #eventForm .field:has(#eventPeople),
 .modal-backdrop[data-mode="task"] #eventForm .field:has(#eventCategory),
 .modal-backdrop[data-mode="task"] #eventForm .field:has(#eventNotes){display:none!important}
