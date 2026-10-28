@@ -1694,6 +1694,11 @@ window.CalexReady = (async function () {
   function openNormal(e) {
     switchScreen("calendar");
     openModal("normal");
+    $("eventTitle").placeholder = "Event name";
+    $("eventTitle").setAttribute("aria-label", "Event title");
+    const submitLabel = $("eventForm").querySelector('[type="submit"] span');
+    if (submitLabel) submitLabel.textContent = "Save event";
+    $("eventForm").querySelector('[type="submit"]').setAttribute("aria-label", "Save event");
     setNormalDefaults(e);
     $("eventForm").dataset.source = "";
     setTimeout(() => $("eventTitle").focus(), 0);
@@ -2075,6 +2080,7 @@ window.CalexReady = (async function () {
   $("eventForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const id = $("eventForm").dataset.editId;
+    const isTask = $("modalBackdrop").dataset.mode === "task";
     const fromPuterEmail = $("eventForm").dataset.source === "puter-email";
     const old = events.find((x) => x.id === id);
     const item = {
@@ -2123,7 +2129,7 @@ window.CalexReady = (async function () {
     persist();
     closeModal();
     renderAll();
-    showToast(id ? "Event updated" : "Event added");
+    showToast(id ? (isTask ? "Task updated" : "Event updated") : (isTask ? "Task added" : "Event added"));
     $("eventForm").dataset.editId = "";
     $("eventForm").dataset.source = "";
     if (fromPuterEmail) {
