@@ -840,31 +840,52 @@ window.CalexReady = (async function () {
     return repeatDescription(e);
   }
 
-  function renderEventSubtasks(event, items = event.subtasks || [], parentPath = []) {
+  function isRecurring(item) {
+    return !!(item && item.repeat && item.repeat !== "none");
+  }
+
+  function isItemDone(item, occurrenceDate, recurringContext = false) {
+    if (!item) return false;
+    if (recurringContext && occurrenceDate) return Array.isArray(item.doneOccurrences) && item.doneOccurrences.includes(occurrenceDate);
+    return !!item.done;
+  }
+
+  function setNestedDone(items, checked, occurrenceDate, recurringContext) {
+    (items || []).forEach((item) => {
+      if (recurringContext && occurrenceDate) {
+        const dates = new Set(Array.isArray(item.doneOccurrences) ? item.doneOccurrences : []);
+        if (checked) dates.add(occurrenceDate); else dates.delete(occurrenceDate);
+        item.doneOccurrences = Array.from(dates);
+      } else item.done = checked;
+      setNestedDone(item.subtasks, checked, occurrenceDate, recurringContext);
+    });
+  }
+
+  function renderEventSubtasks(event, items = event.subtasks || [], parentPath = [], occurrenceDate = event.date, recurringContext = isRecurring(event)) {
     if (!items.length) return "";
     return '<div class="event-subtasks" role="group" aria-label="Subtasks">' + items.map((task, index) => {
-      const path = parentPath.concat(index);
-      const pathValue = path.join(".");
-      return '<div class="event-subtask ' + (task.done ? "done" : "") + '">' +
-        '<input class="check event-subtask-check" type="checkbox" data-subtask-toggle="' + esc(pathValue) + '" data-subtask-event="' + esc(event.id) + '" aria-label="Complete subtask ' + esc(task.title) + '" ' + (task.done ? "checked" : "") + '>' +
+      const path = parentPath.concat(index), pathValue = path.join(".");
+      const done = isItemDone(task, occurrenceDate, recurringContext);
+      return '<div class="event-subtask ' + (done ? "done" : "") + '">' +
+        '<input class="check event-subtask-check" type="checkbox" data-subtask-toggle="' + esc(pathValue) + '" data-subtask-event="' + esc(event.id) + '" data-subtask-date="' + esc(occurrenceDate || "") + '" data-subtask-recurring="' + (recurringContext ? "true" : "false") + '" aria-label="Complete subtask ' + esc(task.title) + '" ' + (done ? "checked" : "") + '>' +
         '<span class="event-subtask-title">' + esc(task.title) + '</span>' +
         '<button type="button" class="event-add-subtask" data-add-subtask="' + esc(event.id) + '" data-subtask-path="' + esc(pathValue) + '" aria-label="Add subtask under ' + esc(task.title) + '" title="Add nested subtask">+ Subtask</button>' +
-        renderEventSubtasks(event, task.subtasks || [], path) + '</div>';
+        renderEventSubtasks(event, task.subtasks || [], path, occurrenceDate, recurringContext) + '</div>';
     }).join("") + '</div>';
   }
 
-  function eventMarkup(e) {
+  function eventMarkup(e, occurrenceDate = e.date) {
     return (
       '<article class="event category-' +
       categoryOf(e) +
       " " +
-      (e.done ? "done" : "") +
+      (isItemDone(e, occurrenceDate, isRecurring(e)) ? "done" : "") +
       '"><input class="check" type="checkbox" aria-label="Mark ' +
       esc(e.title) +
       ' completed" data-check="' +
       esc(e.id) +
-      '" ' +
-      (e.done ? "checked" : "") +
+      '" data-occurrence-date="' + esc(occurrenceDate || "") + '" ' +
+      (isItemDone(e, occurrenceDate, isRecurring(e)) ? "checked" : "") +
       '><div class="event-content"><div class="event-title">' +
       esc(e.title) +
       '</div><div class="event-meta">' +
@@ -881,7 +902,7 @@ window.CalexReady = (async function () {
       (e.tag ? '<span class="tag">' + esc(e.tag) + "</span>" : "") +
       '<div class="event-subtask-actions"><button type="button" class="event-add-subtask" data-add-subtask="' + esc(e.id) + '" data-subtask-path="" aria-label="Add subtask to ' + esc(e.title) + '">+ Add subtask</button>' +
       ((e.subtasks || []).length ? '<span class="event-subtask-count">' + countNestedSubtasks(e.subtasks) + ' subtask' + (countNestedSubtasks(e.subtasks) === 1 ? "" : "s") + '</span>' : "") +
-      '</div>' + renderEventSubtasks(e) + '</div><button class="icon-btn edit-btn" data-edit="' +
+      '</div>' + renderEventSubtasks(e, e.subtasks || [], [], occurrenceDate, isRecurring(e)) + '</div><button class="icon-btn edit-btn" data-edit="' +
       esc(e.id) +
       '" aria-label="Edit ' +
       esc(e.title) +
@@ -940,9 +961,9 @@ window.CalexReady = (async function () {
     );
   }
 
-  function listMarkup(list, empty) {
+  function listMarkup(list, empty, occurrenceDate) {
     return list.length
-      ? list.map(eventMarkup).join("")
+      ? list.map((item) => eventMarkup(item, occurrenceDate || item.date)).join("")
       : '<div class="empty">' + empty + "</div>";
   }
 
@@ -951,7 +972,16 @@ window.CalexReady = (async function () {
       el.addEventListener("change", () => {
         const e = events.find((x) => x.id === el.dataset.check);
         if (e) {
-          e.done = el.checked;
+          const occurrenceDate = el.dataset.occurrenceDate || e.date;
+          if (isRecurring(e) && occurrenceDate) {
+            const dates = new Set(Array.isArray(e.doneOccurrences) ? e.doneOccurrences : []);
+            if (el.checked) dates.add(occurrenceDate); else dates.delete(occurrenceDate);
+            e.doneOccurrences = Array.from(dates);
+            setNestedDone(e.subtasks, el.checked, occurrenceDate, true);
+          } else {
+            e.done = el.checked;
+            setNestedDone(e.subtasks, el.checked, occurrenceDate, false);
+          }
           touch(e);
           persist();
           renderAll();
@@ -984,7 +1014,14 @@ window.CalexReady = (async function () {
           if (!task) return;
           siblings = task.subtasks || [];
         }
-        task.done = checkbox.checked;
+        const occurrenceDate = checkbox.dataset.subtaskDate || event.date;
+        const recurringContext = checkbox.dataset.subtaskRecurring === "true";
+        if (recurringContext && occurrenceDate) {
+          const dates = new Set(Array.isArray(task.doneOccurrences) ? task.doneOccurrences : []);
+          if (checkbox.checked) dates.add(occurrenceDate); else dates.delete(occurrenceDate);
+          task.doneOccurrences = Array.from(dates);
+        } else task.done = checkbox.checked;
+        setNestedDone(task.subtasks, checkbox.checked, occurrenceDate, recurringContext);
         touch(event);
         persist();
         renderAll();
@@ -1008,7 +1045,7 @@ window.CalexReady = (async function () {
             : fmtDate(day, { weekday: "long", day: "numeric", month: "short" }),
         ) +
         '</div><div class="event-list">' +
-        list.map(eventMarkup).join("") +
+        list.map((item) => eventMarkup(item, dateKey(day))).join("") +
         "</div></div>";
     }
     return out;
@@ -1033,18 +1070,19 @@ window.CalexReady = (async function () {
           day: "numeric",
           month: "long",
         }) + " · To do";
+    const homeDateKey = dateKey(homeDay);
     const list = onDay(homeDay),
-      todo = list.filter((e) => !e.done),
-      done = list.filter((e) => e.done);
+      todo = list.filter((e) => !isItemDone(e, homeDateKey, isRecurring(e))),
+      done = list.filter((e) => isItemDone(e, homeDateKey, isRecurring(e)));
       $("todayEvents").innerHTML =
         '<div class="eyebrow">To do · ' +
         todo.length +
         '</div><div class="event-list">' +
-        listMarkup(todo, "Nothing planned for this day.") +
+        listMarkup(todo, "Nothing planned for this day.", homeDateKey) +
         '</div><div class="eyebrow">Completed · ' +
         done.length +
         '</div><div class="event-list">' +
-        listMarkup(done, "Completed events will appear here.") +
+        listMarkup(done, "Completed events will appear here.", homeDateKey) +
         "</div>";
 
       const comingUpMarkup = upcomingMarkup(homeDay);
@@ -1572,7 +1610,7 @@ window.CalexReady = (async function () {
     if (overdueSection) overdueSection.hidden = false;
     $("panelEvents").innerHTML =
       '<div class="event-list">' +
-      listMarkup(list, "No events planned for this day.") +
+      listMarkup(list, "No events planned for this day.", dateKey(selected)) +
       "</div>";
     bindEventActions($("panelEvents"));
   }
