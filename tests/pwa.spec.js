@@ -143,3 +143,46 @@ test("Today button returns the calendar to the current month", async ({
     String(new Date().getFullYear()),
   );
 });
+
+
+test("tasks use the compact calendar form and support recursively nested subtasks", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#homeAddTask").click();
+  await expect(page.locator("#modalBackdrop")).toHaveAttribute("data-mode", "task");
+  await expect(page.locator("#modalTitle")).toHaveText("New task");
+  await expect(page.locator("#eventLocation").locator("xpath=..")).toBeHidden();
+  const now = new Date();
+  const date = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("-");
+  await page.locator("#eventTitle").fill("Nested task smoke test");
+  await page.locator("#eventDate").fill(date);
+  await page.locator('#eventForm button[type="submit"]').click();
+  await expect(page.locator("#toast")).toContainText("Task added");
+  const task = page.locator('#panelEvents .event').filter({ hasText: "Nested task smoke test" });
+  await expect(task).toBeVisible();
+
+  page.once("dialog", (dialog) => dialog.accept("First-level subtask"));
+  await task.locator("[data-add-subtask]").click();
+  await expect(task).toContainText("First-level subtask");
+
+  page.once("dialog", (dialog) => dialog.accept("Nested child"));
+  await task.locator("[data-add-subtask]").last().click();
+  await expect(task).toContainText("Nested child");
+  await expect(task.locator(".event-subtasks .event-subtasks")).toBeVisible();
+});
+
+test("Home and Special features remain usable at a narrow mobile viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/");
+  await expect(page.locator("#homeOverdueHeading")).toBeVisible();
+  await expect(page.locator("#homeTaskTimeline")).toBeVisible();
+  await expect(page.locator("#homeInsights")).toBeVisible();
+  await page.locator('[data-screen="productivity"]').click();
+  await expect(page.locator("#productivityScreen")).toHaveClass(/active/);
+  await expect(page.locator('[data-product-tab="focus"]')).toBeVisible();
+  await expect(page.locator('[data-product-tab="matrix"]')).toBeVisible();
+  const widths = await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    document: document.documentElement.scrollWidth,
+  }));
+  expect(widths.document).toBeLessThanOrEqual(widths.viewport + 1);
+});
