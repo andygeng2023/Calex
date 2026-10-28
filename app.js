@@ -1744,8 +1744,20 @@ window.CalexReady = (async function () {
     }
     window.CalexI18n?.refresh();
   }
+  function openTask() {
+    openNormal();
+    $("modalBackdrop").dataset.mode = "task";
+    $("modalTitle").textContent = "New task";
+    $("eventTitle").placeholder = "What needs doing?";
+    $("eventTitle").setAttribute("aria-label", "Task title");
+    $("eventForm").querySelector('[type="submit"] span').textContent = "Save task";
+    $("eventForm").querySelector('[type="submit"]').setAttribute("aria-label", "Save task");
+    $("eventTitle").focus();
+  }
   $("panelQuick").addEventListener("click", () => openModal("quick"));
   $("panelAdd").addEventListener("click", () => openNormal());
+  $("panelTask").addEventListener("click", openTask);
+  $("homeAddTask").addEventListener("click", openTask);
   $("closeModal").addEventListener("click", closeModal);
   $("modalBackdrop").addEventListener("click", (e) => {
     if (e.target === $("modalBackdrop")) closeModal();
