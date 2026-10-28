@@ -145,6 +145,19 @@ test("Today button returns the calendar to the current month", async ({
 });
 
 
+test("calendar task actions are not duplicated and use task labels", async ({ page }) => {
+  await page.goto("/");
+  await page.locator('[data-screen="calendar"]').click();
+  await expect(page.locator("#panelQuick")).toHaveText("Quick task");
+  await expect(page.locator("#panelAdd")).toHaveText("Add task");
+  await expect(page.locator("#panelTask")).toHaveCount(0);
+  await page.locator("#panelQuick").click();
+  await expect(page.locator("#modalTitle")).toHaveText("Quick task");
+  await page.locator("#quickText").fill("Quickly captured task");
+  await page.locator("#quickSave").click();
+  await expect(page.locator("#toast")).toContainText("Task added");
+});
+
 test("tasks use the compact calendar form and support recursively nested subtasks", async ({ page }) => {
   await page.goto("/");
   await page.locator("#homeAddTask").click();
@@ -161,12 +174,19 @@ test("tasks use the compact calendar form and support recursively nested subtask
   const task = page.locator('#panelEvents .event').filter({ hasText: "Nested task smoke test" });
   await expect(task).toBeVisible();
 
-  page.once("dialog", (dialog) => dialog.accept("First-level subtask"));
-  await task.locator("[data-add-subtask]").click();
+  await expect(task.locator("[data-add-subtask]")).toBeVisible();
+  await task.locator("[data-add-subtask]").first().click();
+  await expect(page.locator("#modalTitle")).toHaveText("Quick task · Add subtask");
+  await page.locator("#quickText").fill("First-level subtask");
+  await page.locator("#quickSave").click();
+  await expect(page.locator("#toast")).toContainText("Subtask added");
   await expect(task).toContainText("First-level subtask");
 
-  page.once("dialog", (dialog) => dialog.accept("Nested child"));
   await task.locator("[data-add-subtask]").last().click();
+  await expect(page.locator("#modalTitle")).toHaveText("Quick task · Add subtask");
+  await page.locator("#quickText").fill("Nested child");
+  await page.locator("#quickSave").click();
+  await expect(page.locator("#toast")).toContainText("Subtask added");
   await expect(task).toContainText("Nested child");
   await expect(task.locator(".event-subtasks .event-subtasks")).toBeVisible();
   await task.locator("[data-subtask-toggle]").last().check();
