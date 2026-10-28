@@ -1864,3 +1864,44 @@ body .app.settings-dark .panel-text-btn.primary-action {
 .home-timeline-progress{display:grid;gap:4px;font-size:.75rem;color:var(--muted)}
 .home-timeline-progress input{width:100%;min-width:0;accent-color:var(--green)}
 @media(max-width:760px){.home-timeline-row{grid-template-columns:64px minmax(0,1fr);gap:8px}.home-timeline-progress{grid-column:2;grid-template-columns:auto minmax(90px,1fr);align-items:center}.home-timeline-progress span{white-space:nowrap}}
+
+
+/* Layout refinement: remove the unused header row and give navigation room to breathe. */
+body .app,
+body .app.settings-dark {
+  grid-template-columns: 320px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+}
+body .app .topbar { display: none !important; }
+body .app main { grid-column: 2; grid-row: 1; border-top: 0; min-height: 0; }
+body .app .bottom-nav { grid-column: 1; grid-row: 1; min-width: 0; }
+body .app .event { padding: 10px 11px; margin-bottom: 8px; gap: 8px; }
+body .app .event-content {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 10px; row-gap: 3px; align-items: start;
+}
+body .app .event-title,
+body .app .event-meta,
+body .app .event-subtasks { grid-column: 1 / -1; }
+body .app .event .tag { grid-column: 1; align-self: center; justify-self: start; margin-top: 4px; }
+body .app .event-subtask-actions {
+  grid-column: 2; justify-self: end; align-self: center;
+  gap: 7px; margin-top: 4px; white-space: nowrap;
+}
+body .app .event-add-subtask { font-size: .75rem; }
+body .app .event-subtask-count { font-size: .7rem; }
+body .app .panel-overdue { position: static !important; inset: auto !important; flex: 0 0 auto; order: 0; }
+@media (max-width: 1250px) and (min-width: 1024px) {
+  body .app, body .app.settings-dark { grid-template-columns: 300px minmax(0, 1fr); }
+}
+@media (max-width: 1023px) and (min-width: 701px) {
+  body .app, body .app.settings-dark { grid-template-columns: 250px minmax(0, 1fr); }
+}
+@media (max-width: 700px) {
+  body .app, body .app.settings-dark { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+  body .app .topbar { display: none !important; }
+  body .app main { grid-column: 1; grid-row: 1; }
+  body .app .bottom-nav { grid-column: 1; grid-row: 1; }
+  body .app .event-content { grid-template-columns: minmax(0, 1fr) auto; }
+  body .app .event-subtask-actions { gap: 5px; }
+}
