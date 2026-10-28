@@ -157,6 +157,7 @@ test("tasks use the compact calendar form and support recursively nested subtask
   await page.locator("#eventDate").fill(date);
   await page.locator('#eventForm button[type="submit"]').click();
   await expect(page.locator("#toast")).toContainText("Task added");
+  await page.locator('[data-date="' + date + '"]').click();
   const task = page.locator('#panelEvents .event').filter({ hasText: "Nested task smoke test" });
   await expect(task).toBeVisible();
 
