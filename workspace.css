@@ -1853,3 +1853,14 @@ body .app.settings-dark .panel-text-btn.primary-action {
 #calendarScreen.panel-open .panel-overdue{display:block}
 
 @media(max-width:760px){#calendarScreen #panelTask{width:34px;min-width:34px;padding:0;font-size:0}#calendarScreen #panelTask::before{content:"+";font-size:1rem;line-height:1}}
+
+
+.home-timeline-row{display:grid;grid-template-columns:82px minmax(0,1fr) minmax(125px,170px);gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);min-width:0}
+.home-timeline-row time{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.home-timeline-main{min-width:0}
+.home-timeline-main strong{display:block;font-size:.9rem;overflow-wrap:anywhere}
+.home-timeline-track{height:6px;margin-top:8px;border-radius:8px;background:var(--line);overflow:hidden}
+.home-timeline-track span{display:block;height:100%;border-radius:8px;background:var(--green);transition:width .12s ease}
+.home-timeline-progress{display:grid;gap:4px;font-size:.75rem;color:var(--muted)}
+.home-timeline-progress input{width:100%;min-width:0;accent-color:var(--green)}
+@media(max-width:760px){.home-timeline-row{grid-template-columns:64px minmax(0,1fr);gap:8px}.home-timeline-progress{grid-column:2;grid-template-columns:auto minmax(90px,1fr);align-items:center}.home-timeline-progress span{white-space:nowrap}}
