@@ -7,3 +7,31 @@
 .product-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:100%;align-items:stretch}
 .product-tabs button{min-width:0;width:100%;padding:10px 8px;white-space:normal;overflow-wrap:anywhere;text-align:center;line-height:1.25;font-size:clamp(.78rem,1.2vw,.92rem)}
 @media(max-width:520px){.product-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.product-tabs button{min-height:42px;font-size:.9rem;padding:10px 8px}}
+
+
+/* Keep the four primary Special features tabs fully visible without horizontal scrolling. */
+.productivity-screen { min-width: 0; }
+.product-tabs {
+  display: grid !important; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px; width: 100%; overflow: visible !important;
+  flex-wrap: initial !important; position: static; padding: 8px 0 10px;
+}
+.product-tabs button {
+  min-width: 0; width: 100%; padding: 10px 6px; white-space: nowrap;
+  text-align: center; overflow: hidden; text-overflow: ellipsis;
+}
+@media (max-width: 620px) {
+  .product-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .product-tabs button { white-space: normal; }
+}
+.product-note-grid { align-items: start; }
+.product-note { min-width: 0; }
+.product-note input[data-title] {
+  display: block; width: 100%; border: 0; border-bottom: 1px solid var(--line);
+  border-radius: 0; background: transparent; font-weight: 700; font-size: 1rem;
+  padding: 5px 0 9px;
+}
+.product-note textarea[data-body] { margin-top: 10px; width: 100%; }
+.product-note-preview { margin: 10px 0; line-height: 1.55; }
+.product-note-preview:empty { display: none; }
+.product-note-empty-preview { color: var(--muted); font-size: .88rem; }
