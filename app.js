@@ -846,7 +846,10 @@ window.CalexReady = (async function () {
 
   function isItemDone(item, occurrenceDate, recurringContext = false) {
     if (!item) return false;
-    if (recurringContext && occurrenceDate) return Array.isArray(item.doneOccurrences) && item.doneOccurrences.includes(occurrenceDate);
+    if (recurringContext && occurrenceDate) {
+      if (Array.isArray(item.doneOccurrences)) return item.doneOccurrences.includes(occurrenceDate);
+      return !!item.done && occurrenceDate === item.date;
+    }
     return !!item.done;
   }
 
@@ -975,8 +978,9 @@ window.CalexReady = (async function () {
         if (e) {
           const occurrenceDate = el.dataset.occurrenceDate || e.date;
           if (isRecurring(e) && occurrenceDate) {
-            const dates = new Set(Array.isArray(e.doneOccurrences) ? e.doneOccurrences : []);
+            const dates = new Set(Array.isArray(e.doneOccurrences) ? e.doneOccurrences : (e.done && e.date ? [e.date] : []));
             if (el.checked) dates.add(occurrenceDate); else dates.delete(occurrenceDate);
+            e.done = false;
             e.doneOccurrences = Array.from(dates);
             setNestedDone(e.subtasks, el.checked, occurrenceDate, true);
           } else {
