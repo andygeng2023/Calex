@@ -209,3 +209,39 @@ test("Home and Special features remain usable at a narrow mobile viewport", asyn
   }));
   expect(widths.document).toBeLessThanOrEqual(widths.viewport + 1);
 });
+
+
+test("top bar is removed from layout and sidebar is wider", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const layout = await page.evaluate(() => ({
+    topbar: getComputedStyle(document.querySelector(".topbar")).display,
+    sidebar: document.querySelector(".bottom-nav").getBoundingClientRect().width,
+    mainTop: document.querySelector("#mainContent").getBoundingClientRect().top,
+  }));
+  expect(layout.topbar).toBe("none");
+  expect(layout.sidebar).toBeGreaterThanOrEqual(300);
+  expect(layout.mainTop).toBe(0);
+});
+
+test("completing a parent task completes all nested subtasks", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#homeAddTask").click();
+  const now = new Date();
+  const date = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("-");
+  await page.locator("#eventTitle").fill("Cascade parent smoke");
+  await page.locator("#eventDate").fill(date);
+  await page.locator('#eventForm button[type="submit"]').click();
+  await page.locator('[data-date="' + date + '"]').click();
+  const parent = page.locator("#panelEvents .event").filter({ hasText: "Cascade parent smoke" });
+  await parent.locator("[data-add-subtask]").first().click();
+  await page.locator("#quickText").fill("Cascade child");
+  await page.locator("#quickSave").click();
+  await parent.locator("[data-add-subtask]").last().click();
+  await page.locator("#quickText").fill("Cascade nested child");
+  await page.locator("#quickSave").click();
+  await parent.locator("[data-check]").check();
+  await expect(parent.locator("[data-subtask-toggle]")).toHaveCount(2);
+  await expect(parent.locator("[data-subtask-toggle]").nth(0)).toBeChecked();
+  await expect(parent.locator("[data-subtask-toggle]").nth(1)).toBeChecked();
+});
