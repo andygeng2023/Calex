@@ -1065,6 +1065,49 @@ window.CalexReady = (async function () {
       $("comingUpEvents").hidden = !comingUpMarkup;
       bindEventActions($("todayEvents"));
       bindEventActions($("comingUpEvents"));
+
+      const todayKey = dateKey(today);
+      const overdueEvents = events.filter((item) => !item.done && item.date && item.date < todayKey).sort((a, b) => a.date.localeCompare(b.date));
+      const overdueRoot = $("homeOverdueEvents");
+      const overdueHeading = $("homeOverdueHeading");
+      if (overdueRoot) {
+        overdueRoot.innerHTML = overdueEvents.length
+          ? '<div class="event-list">' + overdueEvents.slice(0, 8).map((item) => eventMarkup(item)).join("") + '</div>'
+          : '<div class="home-muted-empty">You are all caught up.</div>';
+        bindEventActions(overdueRoot);
+      }
+      if (overdueHeading) overdueHeading.textContent = "Overdue · " + overdueEvents.length;
+
+      const productivity = window.CalexProductivity?.data;
+      const tasks = Array.isArray(productivity?.tasks) ? productivity.tasks : [];
+      const activeTasks = tasks.filter((task) => !task.done);
+      const overdueTasks = activeTasks.filter((task) => task.due && task.due < todayKey);
+      if (overdueRoot && overdueTasks.length) {
+        overdueRoot.insertAdjacentHTML("beforeend", '<div class="home-overdue-tasks">' +
+          overdueTasks.slice(0, 6).map((task) => '<div class="home-task-row"><span class="home-task-marker"></span><div><strong>' + esc(task.title) + '</strong><small>Task overdue · ' + esc(task.due) + '</small></div></div>').join("") +
+          (overdueTasks.length > 6 ? '<p class="home-widget-hint">+' + (overdueTasks.length - 6) + ' more overdue tasks</p>' : '') + '</div>');
+      }
+
+      const timelineRoot = $("homeTaskTimeline");
+      if (timelineRoot) {
+        const timelineTasks = activeTasks.filter((task) => task.due && task.due >= todayKey)
+          .sort((a, b) => a.due.localeCompare(b.due) || String(a.title).localeCompare(String(b.title))).slice(0, 8);
+        timelineRoot.innerHTML = timelineTasks.length
+          ? timelineTasks.map((task) => '<div class="home-task-row"><span class="home-task-marker"></span><div><strong>' + esc(task.title) + '</strong><small>' + esc(task.due) + (task.start ? ' · ' + esc(task.start) : '') + '</small></div><span class="home-task-priority">' + esc(task.priority || 'medium') + '</span></div>').join("")
+          : '<div class="home-muted-empty">Tasks with a due date will appear here.</div>';
+      }
+
+      const insightsRoot = $("homeInsights");
+      if (insightsRoot) {
+        const completedTasks = tasks.filter((task) => task.done).length;
+        const dueToday = activeTasks.filter((task) => task.due === todayKey).length;
+        insightsRoot.innerHTML = '<div class="home-insight-grid">' +
+          '<article><span>Events today</span><strong>' + list.length + '</strong></article>' +
+          '<article><span>Tasks due today</span><strong>' + dueToday + '</strong></article>' +
+          '<article><span>Overdue items</span><strong>' + (overdueEvents.length + overdueTasks.length) + '</strong></article>' +
+          '<article><span>Tasks completed</span><strong>' + completedTasks + '</strong></article>' +
+          '</div>';
+      }
   }
 
   function monthStart(d) {
@@ -1516,6 +1559,17 @@ window.CalexReady = (async function () {
       month: "long",
     });
     const list = onDay(selected);
+    const todayKey = dateKey(today);
+    const overdue = events.filter((item) => !item.done && item.date && item.date < todayKey).sort((a, b) => a.date.localeCompare(b.date));
+    const overdueRoot = $("panelOverdueEvents");
+    const overdueSection = overdueRoot?.closest(".panel-overdue");
+    if (overdueRoot) {
+      overdueRoot.innerHTML = overdue.length
+        ? '<div class="event-list">' + overdue.slice(0, 4).map((item) => eventMarkup(item)).join("") + '</div>'
+        : '<p class="panel-overdue-empty">Nothing overdue.</p>';
+      bindEventActions(overdueRoot);
+    }
+    if (overdueSection) overdueSection.hidden = false;
     $("panelEvents").innerHTML =
       '<div class="event-list">' +
       listMarkup(list, "No events planned for this day.") +
