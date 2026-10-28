@@ -169,6 +169,8 @@ test("tasks use the compact calendar form and support recursively nested subtask
   await task.locator("[data-add-subtask]").last().click();
   await expect(task).toContainText("Nested child");
   await expect(task.locator(".event-subtasks .event-subtasks")).toBeVisible();
+  await task.locator("[data-subtask-toggle]").last().check();
+  await expect(task.locator("[data-subtask-toggle]").last()).toBeChecked();
 });
 
 test("Home and Special features remain usable at a narrow mobile viewport", async ({ page }) => {
