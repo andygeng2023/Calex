@@ -25,6 +25,7 @@ body .app main > .screen:not(#calendarScreen) {
   padding: var(--ui-page-top) var(--ui-page-side) var(--ui-page-bottom);
 }
 
+body .app main > #calendarScreen.calendar-restored,
 body .app main > #calendarScreen.calendar-restored.active {
   padding: var(--ui-page-top) var(--ui-page-side) 0;
 }
