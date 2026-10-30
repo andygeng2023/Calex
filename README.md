@@ -6,6 +6,7 @@ A responsive, offline-capable calendar PWA built with plain HTML, CSS and JavaSc
 
 - Home screen with today's to-do and completed events, plus a **Coming up** list for the next 7 days.
 - A desktop workspace sidebar, responsive tablet layout, and mobile bottom navigation.
+- Shared interface alignment across workspace tabs, with consistent page gutters, headings, buttons, icon sizing, and responsive spacing.
 - The original drag-to-change Full dates, month, and compact week views, with separate year/month navigation arrows and a fixed-height calendar shell. Month/week controls and the event panel remain on screen; Full dates scrolls internally through the continuous timeline.
 - Unboxed ordinary date numbers on the calendar background; the selected date has a green fill with white text, and today has a green outline. View changes use the drag handle or M/W/Y shortcuts, without a redundant mode-switch toolbar.
 - A 30-day agenda, mini-calendar, and Today shortcut.
@@ -43,7 +44,7 @@ Calendar sharing is off by default. When opted in, only the next 14 days of titl
 
 ## Hosting and updates
 
-GitHub Pages serves `main` from the repository root. Keep relative asset URLs and bump both HTML asset query versions and `sw.js`'s shell-cache name whenever releasing an update. The current app-shell version is `v75`. Keep the asset query versions in `index.html` and the cache name and asset versions in `sw.js` aligned for each release. The productivity workspace and its advanced views are documented in `PRODUCTIVITY_PARITY.md`; that matrix explicitly separates implemented local features from integrations and collaboration features that still need work. The offline shell includes the app, calendar stylesheet, local icons, and PNG install icons; cloud sync and AI need connectivity.
+GitHub Pages serves `main` from the repository root. Keep relative asset URLs and bump both HTML asset query versions and `sw.js`'s shell-cache name whenever releasing an update. The current app-shell version is `v76`. Keep the asset query versions in `index.html` and the cache name and asset versions in `sw.js` aligned for each release. The productivity workspace and its advanced views are documented in `PRODUCTIVITY_PARITY.md`; that matrix explicitly separates implemented local features from integrations and collaboration features that still need work. The offline shell includes the app, calendar stylesheet, local icons, and PNG install icons; cloud sync and AI need connectivity.
 
 Existing guest/user event storage keys and Supabase configuration are retained. New calendars start empty rather than receiving unlabelled demo appointments. Browser storage is used by the original app for backwards compatibility and offline persistence; opaque sandbox previews can block it and may also block service workers and popup authentication. Test installation and live AI from the top-level Pages origin. Always export a calendar backup before major upgrades.
 
