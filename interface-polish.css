@@ -457,15 +457,6 @@ body .app main .screen :is(.settings-row, .profile-card, .product-task) svg.luci
 }
 
 @media (max-width: 420px) {
-  body .app #homeScreen .day-summary {
-    grid-template-columns: 1fr;
-  }
-
-  body .app #homeScreen .day-summary > div + div {
-    border-left: 0;
-    border-top: 1px solid var(--line);
-  }
-
   body .app #agendaScreen .agenda-day {
     grid-template-columns: 1fr;
     gap: 8px;
@@ -474,4 +465,23 @@ body .app main .screen :is(.settings-row, .profile-card, .product-task) svg.luci
   body .app #emailScreen .gmail-toolbar {
     align-items: stretch;
   }
+}
+
+/* Settings has a slightly different legacy heading wrapper; bring its inner
+   copy back to the same left rail as the profile and settings sections. */
+body .app #settingsScreen .settings-header {
+  padding: 0;
+}
+
+body .app #settingsScreen .settings-title {
+  margin: 0;
+  font-size: clamp(1.65rem, 2.2vw, 2rem);
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+}
+
+body .app #settingsScreen .settings-section-heading,
+body .app #settingsScreen .settings-section-description {
+  margin-left: 0;
+  margin-right: 0;
 }
