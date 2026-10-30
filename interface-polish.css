@@ -1,0 +1,488 @@
+/* Shared interface alignment layer.
+   Loaded after the individual screen styles so page-specific overrides cannot
+   drift apart from the common spacing, type, control, and icon system. */
+
+:root {
+  --ui-page-top: 28px;
+  --ui-page-side: 30px;
+  --ui-page-bottom: 32px;
+  --ui-section-gap: 20px;
+  --ui-control-height: 42px;
+  --ui-control-radius: 10px;
+  --ui-icon-size: 18px;
+}
+
+/* Every workspace tab starts and ends on the same content rails. */
+body .app main > .screen {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+body .app main > .screen:not(#calendarScreen) {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  padding: var(--ui-page-top) var(--ui-page-side) var(--ui-page-bottom);
+}
+
+body .app main > #calendarScreen.calendar-restored,
+body .app main > #calendarScreen.calendar-restored.active {
+  padding: var(--ui-page-top) var(--ui-page-side) 0;
+}
+
+/* Keep the page headings on one typographic scale and one alignment line. */
+body .app main .screen :is(h1, h2, h3) {
+  line-height: 1.25;
+}
+
+body .app main .screen p {
+  line-height: 1.55;
+}
+
+body .app main .screen :is(.day-hero, .productivity-intro, .agenda-heading, .settings-header, .email-page-head) {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 var(--ui-section-gap);
+  text-align: left;
+}
+
+body .app main .screen :is(.header-eyebrow, .settings-eyebrow) {
+  display: block;
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+body .app main .screen :is(.weekday, .agenda-heading h2, .productivity-intro h2, .settings-title, .email-page-head h2, .auth-screen-title) {
+  margin: 0;
+  font-size: clamp(1.65rem, 2.2vw, 2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+}
+
+body .app main .screen :is(.long-date, .agenda-heading p, .productivity-intro p, .settings-intro, .email-page-description) {
+  max-width: 70ch;
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+body .app main .screen .section-heading,
+body .app main .screen .settings-section-heading,
+body .app main .screen .home-widget .section-heading,
+body .app main .screen .gmail-panel-heading h3,
+body .app main .screen .gmail-results-heading h3 {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+/* Home: align the date, summary, task lists, timeline, and insights to one rail. */
+body .app #homeScreen .day-hero {
+  align-items: center;
+  margin-bottom: 18px;
+  padding: 0;
+}
+
+body .app #homeScreen .day-hero > div:first-child {
+  flex: 1 1 280px;
+  min-width: 0;
+  text-align: left;
+}
+
+body .app #homeScreen .day-hero > button {
+  flex: 0 0 auto;
+  max-width: none;
+  margin: 0;
+}
+
+body .app #homeScreen .weekday {
+  font-size: clamp(1.8rem, 3vw, 2.35rem);
+}
+
+body .app #homeScreen .day-summary {
+  width: 100%;
+  margin: 0 0 22px;
+}
+
+body .app #homeScreen .day-summary > div {
+  min-width: 0;
+}
+
+body .app #homeScreen #todayEvents,
+body .app #homeScreen #homeOverdueEvents,
+body .app #homeScreen #comingUpEvents,
+body .app #homeScreen #homeTaskTimeline,
+body .app #homeScreen #homeInsights,
+body .app #homeScreen .home-widget {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+}
+
+body .app #homeScreen > .section-heading {
+  margin: 18px 0 10px;
+}
+
+body .app #homeScreen .home-widget {
+  margin-top: 24px;
+  padding-top: 18px;
+}
+
+body .app #homeScreen .home-widget .section-heading {
+  margin: 0 0 12px;
+}
+
+/* Agenda, Special features, Settings, and Email use the same full-width canvas. */
+body .app #agendaScreen #agendaList,
+body .app #productivityScreen #productivityContent,
+body .app #settingsScreen > *,
+body .app #emailScreen > * {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+}
+
+body .app #agendaScreen .agenda-heading {
+  align-items: center;
+}
+
+body .app #agendaScreen .agenda-heading > div {
+  min-width: 0;
+  flex: 1 1 280px;
+}
+
+body .app #agendaScreen .agenda-day {
+  grid-template-columns: minmax(100px, 140px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+body .app #productivityScreen.productivity-screen {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding-top: var(--ui-page-top);
+}
+
+body .app #productivityScreen .productivity-intro {
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+body .app #productivityScreen .productivity-intro > div:first-child {
+  min-width: 0;
+  flex: 1 1 280px;
+}
+
+body .app #productivityScreen .productivity-intro > div:last-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+body .app #productivityScreen .product-tabs {
+  position: static;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin: 0 0 12px;
+  padding: 0 0 12px;
+  overflow: visible;
+  flex-wrap: initial;
+}
+
+body .app #productivityScreen .product-tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--ui-control-height);
+  padding: 8px 10px;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.25;
+}
+
+body .app #productivityScreen #productivityStatus {
+  margin: 0;
+}
+
+body .app #settingsScreen.settings-page {
+  gap: var(--ui-section-gap);
+}
+
+body .app #settingsScreen .settings-header {
+  margin-bottom: 0;
+}
+
+body .app #settingsScreen .settings-section {
+  width: 100%;
+  min-width: 0;
+}
+
+body .app #settingsScreen .settings-section-heading {
+  margin: 0 0 2px;
+}
+
+body .app #emailScreen.email-screen.active {
+  gap: var(--ui-section-gap);
+  padding: var(--ui-page-top) var(--ui-page-side) var(--ui-page-bottom);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body .app #emailScreen .email-page-head {
+  align-items: center;
+  margin-bottom: 0;
+}
+
+body .app #emailScreen .email-page-head > div {
+  flex: 1 1 360px;
+  min-width: 0;
+}
+
+body .app #emailScreen .email-readonly-pill {
+  align-self: center;
+  flex: 0 0 auto;
+}
+
+body .app #emailScreen .gmail-workspace-panel {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+}
+
+body .app #emailScreen .gmail-emails {
+  align-items: stretch;
+}
+
+body .app #emailScreen .gmail-email {
+  height: 100%;
+  min-width: 0;
+}
+
+/* Calendar controls share the same visual centre and icon geometry. */
+body .app #calendarScreen.calendar-restored .search-wrap {
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+
+body .app #calendarScreen.calendar-restored .search-wrap > svg,
+body .app #calendarScreen.calendar-restored .month-controls button > svg {
+  width: var(--ui-icon-size);
+  height: var(--ui-icon-size);
+}
+
+body .app #calendarScreen.calendar-restored .calendar-toolbar {
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 8px;
+  margin: 0;
+}
+
+body .app #calendarScreen.calendar-restored .month-title {
+  line-height: 1.2;
+}
+
+body .app #calendarScreen.calendar-restored .month-controls {
+  align-items: center;
+}
+
+body .app #calendarScreen.calendar-restored .view-segment {
+  align-items: center;
+  min-height: 36px;
+}
+
+/* Buttons, labels, and icons share consistent dimensions and alignment. */
+body .app main .screen :is(button.primary, button.secondary, button.save-settings, label.secondary) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--ui-control-height);
+  padding: 0 14px;
+  border-radius: var(--ui-control-radius);
+  line-height: 1.2;
+  text-align: center;
+  vertical-align: middle;
+}
+
+body .app main .screen :is(button.icon-btn, .icon-btn) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+}
+
+body .app main .screen :is(.panel-text-btn) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  height: 36px;
+  padding: 0 12px;
+  line-height: 1.2;
+}
+
+body .app main .screen :is(button.primary, button.secondary, button.save-settings, label.secondary, .panel-text-btn, .product-tabs button, .gmail-filter, .settings-inline button) {
+  white-space: normal;
+}
+
+body .app main .screen button > svg.lucide,
+body .app main .screen button > i,
+body .app main .screen label.secondary > svg.lucide,
+body .app main .screen label.secondary > i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 var(--ui-icon-size);
+  width: var(--ui-icon-size);
+  height: var(--ui-icon-size);
+}
+
+body .app main .screen svg.lucide {
+  width: var(--ui-icon-size);
+  height: var(--ui-icon-size);
+  flex: 0 0 var(--ui-icon-size);
+  stroke-width: 1.9;
+}
+
+body .app main .screen img {
+  display: block;
+  max-width: 100%;
+}
+
+body .app main .screen .profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Form fields and row contents align to the same control baseline. */
+body .app main .screen :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  font-family: inherit;
+}
+
+body .app main .screen :is(button, a, label, input, select, textarea) {
+  scroll-margin-top: 24px;
+}
+
+body .app main .screen :is(.settings-row, .profile-card, .product-task, .product-list-chip, .product-agenda-row, .agenda-day) {
+  min-width: 0;
+}
+
+body .app main .screen :is(.settings-row, .profile-card, .product-task) > :is(span, div) {
+  min-width: 0;
+}
+
+body .app main .screen :is(.settings-row, .profile-card, .product-task) svg.lucide {
+  flex: 0 0 var(--ui-icon-size);
+}
+
+/* Ensure the shared horizontal rhythm remains compact on smaller screens. */
+@media (max-width: 900px) {
+  :root {
+    --ui-page-side: 22px;
+    --ui-page-top: 24px;
+    --ui-page-bottom: 28px;
+  }
+
+  body .app #emailScreen .email-page-head {
+    align-items: flex-start;
+  }
+
+  body .app #emailScreen .email-readonly-pill {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 700px) {
+  :root {
+    --ui-page-top: 20px;
+    --ui-page-side: 16px;
+    --ui-page-bottom: 24px;
+  }
+
+  body .app main > #calendarScreen.calendar-restored.active {
+    padding: var(--ui-page-top) var(--ui-page-side) 0;
+  }
+
+  body .app #productivityScreen .product-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body .app #homeScreen .day-hero {
+    align-items: flex-start;
+  }
+
+  body .app #homeScreen .day-hero > div:first-child {
+    flex-basis: 100%;
+  }
+
+  body .app #homeScreen .day-hero > button {
+    flex: 1 1 calc(50% - 6px);
+  }
+
+  body .app #agendaScreen .agenda-day {
+    grid-template-columns: minmax(72px, 92px) minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  body .app #emailScreen.email-screen.active {
+    padding: var(--ui-page-top) var(--ui-page-side) var(--ui-page-bottom);
+  }
+}
+
+@media (max-width: 420px) {
+  body .app #agendaScreen .agenda-day {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  body .app #emailScreen .gmail-toolbar {
+    align-items: stretch;
+  }
+}
+
+/* Settings has a slightly different legacy heading wrapper; bring its inner
+   copy back to the same left rail as the profile and settings sections. */
+body .app #settingsScreen .settings-header {
+  padding: 0;
+}
+
+body .app #settingsScreen .settings-title {
+  margin: 0;
+  font-size: clamp(1.65rem, 2.2vw, 2rem);
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+}
+
+body .app #settingsScreen .settings-section-heading,
+body .app #settingsScreen .settings-section-description {
+  margin-left: 0;
+  margin-right: 0;
+}

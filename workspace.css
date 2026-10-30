@@ -1785,3 +1785,231 @@ body .app.settings-dark .panel-text-btn.primary-action {
     scroll-behavior: auto !important;
   }
 }
+
+
+/* Focused task hierarchy and Home widgets; retain the existing CALEX design tokens. */
+.home-widget{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);min-width:0}
+.home-widget .section-heading{margin:0;font-size:1.05rem}
+.home-widget-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.home-widget-hint,.home-muted-empty{font-size:.85rem;color:var(--muted)}
+.home-muted-empty{padding:12px 0}
+.home-overdue-tasks{margin-top:8px;border-top:1px solid var(--line)}
+.home-task-row{display:flex;align-items:center;gap:10px;min-width:0;padding:10px 2px;border-bottom:1px solid var(--line)}
+.home-task-marker{width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:var(--green)}
+.home-task-row>div{min-width:0;flex:1}
+.home-task-row strong,.home-task-row small{display:block;overflow-wrap:anywhere}
+.home-task-row strong{font-size:.9rem;font-weight:650}
+.home-task-row small{margin-top:2px;font-size:.78rem;color:var(--muted)}
+.home-task-priority{font-size:.75rem;color:var(--muted);text-transform:capitalize}
+.home-insight-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.home-insight-grid article{min-width:0;display:grid;gap:5px;padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.home-insight-grid span{font-size:.78rem;color:var(--muted);overflow-wrap:anywhere}
+.home-insight-grid strong{font-size:1.45rem;line-height:1.2;font-variant-numeric:tabular-nums}
+.event-content{min-width:0}
+.event-subtask-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+.event-add-subtask{border:0;background:transparent;color:var(--green);padding:3px 0;font:inherit;font-size:.78rem;font-weight:650;cursor:pointer;text-align:left}
+.event-add-subtask:hover{text-decoration:underline}
+.event-subtask-count{font-size:.75rem;color:var(--muted)}
+.event-subtasks{display:grid;gap:4px;margin-top:5px;padding-left:12px;border-left:1px solid var(--line)}
+.event-subtask{display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:start;gap:7px;padding:5px 0;min-width:0}
+.event-subtask .event-subtasks{grid-column:2/-1;width:calc(100% - 2px)}
+.event-subtask .event-subtask-check{width:16px;height:16px;border-radius:5px;margin:2px 0 0}
+.event-subtask-title{font-size:.84rem;overflow-wrap:anywhere}
+.event-subtask.done>.event-subtask-title{text-decoration:line-through;color:var(--muted)}
+.panel-overdue{padding:8px 0 12px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.panel-overdue h3{font-size:.85rem;color:var(--muted);margin:0 0 4px}
+.panel-overdue-empty{font-size:.8rem;color:var(--muted);margin:6px 0}
+.panel-overdue .event{padding-top:7px;padding-bottom:7px}
+.home-hero-actions{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+#homeScreen .day-hero{display:block;text-align:center}
+#homeScreen .day-hero>div:first-child{min-width:0}
+#homeScreen .weekday{font-size:clamp(34px,8vw,52px);letter-spacing:-2.8px}
+#homeScreen .day-hero>button{display:inline-flex;margin:12px 4px 0;max-width:calc(50% - 8px)}
+#calendarScreen .panel-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#calendarScreen .panel-text-btn{white-space:nowrap}
+.modal-backdrop[data-mode="task"] #eventForm .description-field,
+.modal-backdrop[data-mode="task"] #eventForm .field:has(#eventLocation),
+/* Recurring tasks remain available in task mode. */
+.modal-backdrop[data-mode="task"] #eventForm .field:has(#eventPeople),
+.modal-backdrop[data-mode="task"] #eventForm .field:has(#eventCategory),
+.modal-backdrop[data-mode="task"] #eventForm .field:has(#eventNotes){display:none!important}
+.modal-backdrop[data-mode="task"] #eventForm .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:760px){
+ .home-insight-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .event-subtask{grid-template-columns:18px minmax(0,1fr)}
+ .event-subtask>.event-add-subtask{grid-column:2;justify-self:start}
+ .event-subtask .event-subtasks{grid-column:1/-1;margin-left:5px}
+ #calendarScreen .panel-actions{gap:5px}
+ #calendarScreen .panel-text-btn{padding:7px 8px;font-size:.8rem}
+ .modal-backdrop[data-mode="task"] #eventForm .form-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:380px){
+ .home-insight-grid article{padding:10px}
+ .home-insight-grid strong{font-size:1.25rem}
+ .event-subtasks{padding-left:7px}
+}
+
+#calendarScreen:not(.panel-open) .panel-overdue{display:none}
+#calendarScreen.panel-open .panel-overdue{display:block}
+
+@media(max-width:760px){#calendarScreen #panelTask{width:34px;min-width:34px;padding:0;font-size:0}#calendarScreen #panelTask::before{content:"+";font-size:1rem;line-height:1}}
+
+
+.home-timeline-row{display:grid;grid-template-columns:82px minmax(0,1fr) minmax(125px,170px);gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);min-width:0}
+.home-timeline-row time{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.home-timeline-main{min-width:0}
+.home-timeline-main strong{display:block;font-size:.9rem;overflow-wrap:anywhere}
+.home-timeline-track{height:6px;margin-top:8px;border-radius:8px;background:var(--line);overflow:hidden}
+.home-timeline-track span{display:block;height:100%;border-radius:8px;background:var(--green);transition:width .12s ease}
+.home-timeline-progress{display:grid;gap:4px;font-size:.75rem;color:var(--muted)}
+.home-timeline-progress input{width:100%;min-width:0;accent-color:var(--green)}
+@media(max-width:760px){.home-timeline-row{grid-template-columns:64px minmax(0,1fr);gap:8px}.home-timeline-progress{grid-column:2;grid-template-columns:auto minmax(90px,1fr);align-items:center}.home-timeline-progress span{white-space:nowrap}}
+
+
+/* Layout refinement: remove the unused header row and give navigation room to breathe. */
+body .app,
+body .app.settings-dark {
+  grid-template-columns: 320px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+}
+body .app .topbar { display: none !important; }
+body .app main { grid-column: 2; grid-row: 1; border-top: 0; min-height: 0; }
+body .app .bottom-nav { grid-column: 1; grid-row: 1; min-width: 0; }
+body .app .event { padding: 10px 11px; margin-bottom: 8px; gap: 8px; }
+body .app .event-content {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 10px; row-gap: 3px; align-items: start;
+}
+body .app .event-title,
+body .app .event-meta,
+body .app .event-subtasks { grid-column: 1 / -1; }
+body .app .event-card-tools {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
+  margin-top: 4px;
+}
+body .app .event .tag { margin: 0; }
+body .app .event-subtask-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  margin: 0;
+  white-space: nowrap;
+}
+body .app .event-add-subtask { font-size: .75rem; }
+body .app .event-subtask-count { font-size: .7rem; }
+body .app .panel-overdue { position: static !important; inset: auto !important; flex: 0 0 auto; order: 0; }
+@media (max-width: 1250px) and (min-width: 1024px) {
+  body .app, body .app.settings-dark { grid-template-columns: 300px minmax(0, 1fr); }
+}
+@media (max-width: 1023px) and (min-width: 701px) {
+  body .app, body .app.settings-dark { grid-template-columns: 250px minmax(0, 1fr); }
+}
+@media (max-width: 700px) {
+  body .app, body .app.settings-dark { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+  body .app .topbar { display: none !important; }
+  body .app main { grid-column: 1; grid-row: 1; }
+  body .app .bottom-nav { grid-column: 1; grid-row: 1; }
+  body .app .event-content { grid-template-columns: minmax(0, 1fr) auto; }
+  body .app .event-subtask-actions { gap: 5px; }
+}
+
+
+/* Task cards read as a clean list rather than individual boxed tiles. */
+body .app .event {
+  position: relative; border: 0 !important;
+  border-bottom: 1px solid var(--line) !important;
+  border-radius: 0 !important; background: transparent !important;
+  box-shadow: none !important; margin: 0 !important;
+  padding: 11px 0 !important; column-gap: 10px;
+}
+body .app .event-content {
+  position: relative; display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 12px; row-gap: 3px; align-items: start; min-width: 0;
+}
+body .app .event-title { grid-column: 1; grid-row: 1; min-width: 0; }
+body .app .event-meta { grid-column: 1 / -1; grid-row: 2; }
+body .app .event-card-tools {
+  grid-column: 2; grid-row: 1; display: flex;
+  align-items: flex-start; justify-content: flex-end; gap: 8px;
+  min-width: 0; margin: 0; white-space: nowrap;
+}
+body .app .event-card-tools .tag { margin: 0; }
+body .app .event-subtask-actions {
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: 6px; margin: 0; white-space: nowrap;
+}
+body .app .event-add-subtask { font-size: .75rem; padding: 0; }
+body .app .event-subtask-count { font-size: .7rem; }
+body .app .event-subtasks { grid-column: 1 / -1; margin-top: 5px; }
+body .app .event-content > .event-subtasks { grid-row: 3; }
+body .app .panel-overdue {
+  position: static !important; inset: auto !important;
+  flex: 0 0 auto !important; order: 0 !important; align-self: stretch;
+}
+body .app #calendarScreen .selected-panel,
+body .app #calendarScreen.panel-open .selected-panel {
+  overflow-x: hidden !important; overflow-y: auto !important; min-height: 0;
+}
+body .app #calendarScreen .selected-panel #panelEvents {
+  overflow: visible !important; flex: 0 0 auto;
+}
+body .app #calendarScreen .panel-overdue { flex: 0 0 auto; }
+body .app #calendarScreen .calendar-toolbar { margin-top: 18px; }
+@media (max-width: 700px) {
+  body .app #calendarScreen .selected-panel,
+  body .app #calendarScreen.panel-open .selected-panel {
+    overflow-x: hidden !important; overflow-y: auto !important;
+    min-height: 0; max-height: 100%;
+  }
+  body .app .event-content { grid-template-columns: minmax(0, 1fr) auto; column-gap: 7px; }
+  body .app .event-card-tools { gap: 5px; }
+  body .app .event-add-subtask { font-size: .7rem; }
+}
+
+
+/* Shared page canvas: keep the main workspace width consistent between tabs and give each view top breathing room. */
+body .app main > .screen:not(#calendarScreen) {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  padding: 28px 30px 32px;
+}
+body .app #agendaList {
+  width: 100%;
+  max-width: none;
+}
+body .app #settingsScreen > * {
+  width: 100%;
+  max-width: none;
+}
+body .app .productivity-screen {
+  width: 100%;
+  max-width: none !important;
+  margin-inline: 0 !important;
+  padding-top: 28px;
+}
+body .app #calendarScreen .search-wrap {
+  margin-top: 28px;
+}
+body .app #calendarScreen .calendar-toolbar {
+  margin-top: 12px;
+}
+@media (max-width: 700px) {
+  body .app main > .screen:not(#calendarScreen) {
+    padding: 20px 16px 24px;
+  }
+  body .app .productivity-screen {
+    padding-top: 20px;
+  }
+  body .app #calendarScreen .search-wrap {
+    margin-top: 16px;
+  }
+}

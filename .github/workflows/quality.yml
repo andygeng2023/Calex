@@ -2,7 +2,7 @@ name: Quality checks
 
 on:
   push:
-    branches: [main, "chore/**", "refactor/**", "feat/**"]
+    branches: [main, "chore/**", "refactor/**", "feat/**", "feature/**"]
   pull_request:
   workflow_dispatch:
 
@@ -29,6 +29,9 @@ jobs:
         run: |
           node --check app.js
           node --check workspace.js
+          node --check productivity.js
+          node --check productivity-advanced.js
+          node --check productivity-sync.js
           node --check sync.js
           node --check ics.js
           node --check sw.js
