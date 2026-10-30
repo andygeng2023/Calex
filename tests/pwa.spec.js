@@ -317,3 +317,35 @@ test("task cards are list rows with top-right tags and subtask actions", async (
   expect(styles.radius).toBe("0px");
   await expect(card.locator(".event-card-tools")).toBeVisible();
 });
+
+test("workspace screens share consistent page gutters and action control sizing", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+
+  const screenIds = [
+    "#homeScreen",
+    "#productivityScreen",
+    "#calendarScreen",
+    "#agendaScreen",
+    "#settingsScreen",
+    "#emailScreen",
+  ];
+  const gutters = await Promise.all(
+    screenIds.map((selector) =>
+      page.locator(selector).evaluate((element) => {
+        const style = getComputedStyle(element);
+        return [style.paddingLeft, style.paddingRight];
+      }),
+    ),
+  );
+
+  for (const gutter of gutters) {
+    expect(gutter).toEqual(["30px", "30px"]);
+  }
+
+  const controlIds = ["#homeAddTask", "#productivityExport", "#agendaToday", "#gmailConnect"];
+  for (const selector of controlIds) {
+    const minHeight = await page.locator(selector).evaluate((element) => getComputedStyle(element).minHeight);
+    expect(minHeight).toBe("42px");
+  }
+});
