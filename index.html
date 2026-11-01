@@ -23,12 +23,12 @@
       href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=80" />
-    <link rel="stylesheet" href="workspace.css?v=80" />
-    <link rel="stylesheet" href="calendar.css?v=80" />
-    <link rel="stylesheet" href="productivity.css?v=80" />
-    <link rel="stylesheet" href="productivity-advanced.css?v=80" />
-    <link rel="stylesheet" href="interface-polish.css?v=80" />
+    <link rel="stylesheet" href="styles.css?v=81" />
+    <link rel="stylesheet" href="workspace.css?v=81" />
+    <link rel="stylesheet" href="calendar.css?v=81" />
+    <link rel="stylesheet" href="productivity.css?v=81" />
+    <link rel="stylesheet" href="productivity-advanced.css?v=81" />
+    <link rel="stylesheet" href="interface-polish.css?v=81" />
   </head>
 
   <body>
@@ -50,9 +50,6 @@
             title="Toggle appearance"
           >
             <i data-lucide="moon"></i>
-          </button>
-          <button id="openAssistant" class="secondary assistant-trigger">
-            <i data-lucide="sparkles"></i><span>Ask assistant</span>
           </button>
           <button
             id="openGmail"
@@ -1049,6 +1046,50 @@
             </div>
           </dialog>
         </section>
+        <section id="assistantScreen" class="screen assistant-screen" aria-label="Calex assistant">
+          <header class="assistant-page-head">
+            <div class="assistant-page-title">
+              <h2 id="assistantTitle"><i data-lucide="sparkles"></i>Calex assistant</h2>
+              <span id="assistantConnectionLabel" class="assistant-connection-label" role="status">Checking connection…</span>
+            </div>
+            <button id="assistantNewChat" class="secondary" type="button">
+              <i data-lucide="plus"></i><span>New chat</span>
+            </button>
+          </header>
+          <div class="assistant-chat-shell">
+            <div id="assistantMessages" class="assistant-messages" role="log" aria-label="Assistant conversation" aria-live="polite">
+              <div id="assistantIntro" class="assistant-intro">
+                <h3>Less juggling.<br />More breathing room.</h3>
+                <p>Plan your day, find a focus window, or turn an idea into an event.</p>
+              </div>
+              <div id="puterConnection" class="puter-connection">
+                <p>Powered by Puter. Your own account handles AI access and any usage costs. Only messages you send are shared unless you enable calendar context.</p>
+                <button id="connectPuter" class="primary" type="button">Enable Puter assistant</button>
+                <p id="puterStatus" role="status"></p>
+              </div>
+              <div id="assistantSuggestions" class="assistant-suggestions">
+                <button type="button" data-prompt="Help me plan a balanced day.">Plan my day<i data-lucide="arrow-up-right"></i></button>
+                <button type="button" data-prompt="Find a 60-minute focus window in my upcoming calendar.">Find focus time<i data-lucide="arrow-up-right"></i></button>
+                <button type="button" data-prompt="Schedule a 30-minute weekly planning session tomorrow at 9am.">Create an event<i data-lucide="arrow-up-right"></i></button>
+              </div>
+            </div>
+            <form id="assistantForm" class="assistant-compose">
+              <label class="context-choice">
+                <input type="checkbox" id="shareCalendar" />
+                Share next 14 days (titles, times, locations)
+              </label>
+              <div class="assistant-compose-input">
+                <label for="assistantInput" class="sr-only">Message the assistant</label>
+                <textarea id="assistantInput" placeholder="Message Calex…" rows="1" maxlength="4000" required></textarea>
+                <button id="sendAssistant" class="primary" type="submit" aria-label="Send message" disabled>
+                  <i data-lucide="arrow-up"></i>
+                </button>
+              </div>
+              <p id="assistantError" class="form-feedback" role="status"></p>
+              <span>AI can make mistakes. Review dates and times before saving.</span>
+            </form>
+          </div>
+        </section>
       </main>
 
       <nav class="bottom-nav" aria-label="Main navigation">
@@ -1091,6 +1132,9 @@
           </svg>
           <span data-i18n="Calendar">Calendar</span>
         </button>
+        <button class="nav-btn" data-screen="assistant" aria-label="Assistant">
+          <i data-lucide="message-circle"></i><span>Assistant</span>
+        </button>
         <button class="nav-btn" data-screen="settings" aria-label="Settings">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="3.2" />
@@ -1119,17 +1163,6 @@
             ><span>F</span><span>S</span><span>S</span>
           </div>
           <div id="miniGrid" class="mini-grid"></div>
-          <button
-            id="sidebarAssistant"
-            class="assistant-trigger sidebar-assistant"
-          >
-            <i data-lucide="sparkles"></i
-            ><span data-i18n="A little help planning"
-              >A little help planning<span data-i18n="Meet your Calex assistant"
-                >Meet your Calex assistant</span
-              ></span
-            ><i data-lucide="arrow-up-right"></i>
-          </button>
           <button id="installApp" class="secondary" hidden>
             <i data-lucide="download"></i>Install Calex
           </button>
@@ -1277,91 +1310,6 @@
     </div>
 
     <div class="toast" id="toast" role="status"></div>
-    <dialog
-      id="assistantDialog"
-      class="assistant-dialog"
-      aria-labelledby="assistantTitle"
-    >
-      <header class="assistant-head">
-        <div>
-          
-          <h2 id="assistantTitle">
-            <i data-lucide="sparkles"></i>Calex assistant
-          </h2>
-        </div>
-        <button
-          id="closeAssistant"
-          class="icon-btn"
-          aria-label="Close assistant"
-        >
-          <i data-lucide="x"></i>
-        </button>
-      </header>
-      <div class="assistant-intro">
-        <h3>Less juggling.<br />More breathing room.</h3>
-        <p>
-          Plan your day, find a focus window, or turn an idea into an event.
-        </p>
-      </div>
-      <div id="puterConnection" class="puter-connection">
-        <p>
-          Powered by Puter. Your own account handles AI access and any usage
-          costs. Only messages you send are shared unless you enable calendar
-          context.
-        </p>
-        <button id="connectPuter" class="primary">
-          Enable Puter assistant
-        </button>
-        <p id="puterStatus" role="status"></p>
-      </div>
-      <div
-        id="assistantMessages"
-        class="assistant-messages"
-        role="log"
-        aria-label="Assistant conversation"
-        aria-live="polite"
-      ></div>
-      <div id="assistantSuggestions" class="assistant-suggestions">
-        <button data-prompt="Help me plan a balanced day.">
-          Plan my day<i data-lucide="arrow-up-right"></i></button
-        ><button
-          data-prompt="Find a 60-minute focus window in my upcoming calendar."
-        >
-          Find focus time<i data-lucide="arrow-up-right"></i></button
-        ><button
-          data-prompt="Schedule a 30-minute weekly planning session tomorrow at 9am."
-        >
-          Create an event<i data-lucide="arrow-up-right"></i>
-        </button>
-      </div>
-      <form id="assistantForm" class="assistant-compose">
-        <label class="context-choice"
-          ><input type="checkbox" id="shareCalendar" />Share next 14 days
-          (titles, times, locations)</label
-        >
-        <div>
-          <label for="assistantInput" class="sr-only"
-            >Message the assistant</label
-          ><textarea
-            id="assistantInput"
-            placeholder="What would you like to make time for?"
-            rows="2"
-            maxlength="4000"
-            required
-          ></textarea
-          ><button
-            id="sendAssistant"
-            class="primary"
-            aria-label="Send message"
-            disabled
-          >
-            <i data-lucide="arrow-up"></i>
-          </button>
-        </div>
-        <p id="assistantError" class="form-feedback" role="status"></p>
-        <span>AI can make mistakes. Review dates and times before saving.</span>
-      </form>
-    </dialog>
     <dialog id="shortcutsDialog" class="shortcuts-dialog">
       <header>
         <h2>Make time for shortcuts</h2>
@@ -1419,17 +1367,17 @@
       src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3"
       defer
     ></script>
-    <script src="icons.js?v=77" defer></script>
-    <script src="sync.js?v=77" defer></script>
-    <script src="ics.js?v=77" defer></script>
-    <script src="i18n.js?v=77" defer></script>
-    <script src="sqlite-store.js?v=77" defer></script>
-    <script src="app.js?v=77" defer></script>
-    <script src="workspace.js?v=77" defer></script>
-    <script src="productivity.js?v=77" defer></script>
-    <script src="productivity-advanced.js?v=77" defer></script>
-    <script src="productivity-sync.js?v=77" defer></script>
-    <script src="gmail-config.js?v=77" defer></script>
-    <script src="gmail.js?v=77" defer></script>
+    <script src="icons.js?v=81" defer></script>
+    <script src="sync.js?v=81" defer></script>
+    <script src="ics.js?v=81" defer></script>
+    <script src="i18n.js?v=81" defer></script>
+    <script src="sqlite-store.js?v=81" defer></script>
+    <script src="app.js?v=81" defer></script>
+    <script src="workspace.js?v=81" defer></script>
+    <script src="productivity.js?v=81" defer></script>
+    <script src="productivity-advanced.js?v=81" defer></script>
+    <script src="productivity-sync.js?v=81" defer></script>
+    <script src="gmail-config.js?v=81" defer></script>
+    <script src="gmail.js?v=81" defer></script>
   </body>
 </html>
