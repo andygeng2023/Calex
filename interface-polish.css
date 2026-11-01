@@ -629,7 +629,7 @@ body .app #homeScreen .day-hero > #homeQuickAdd {
 @media (max-width: 700px) {
   body .app #homeScreen .day-hero {
     min-height: 190px;
-    padding: 26px 0 18px;
+    padding: 72px 0 18px;
     margin-bottom: 24px;
   }
 
@@ -643,18 +643,18 @@ body .app #homeScreen .day-hero > #homeQuickAdd {
   }
 
   body .app #homeScreen .day-hero > button {
-    top: auto;
+    top: 0;
     right: 0;
-    bottom: 0;
+    bottom: auto;
     min-height: 36px;
     padding: 0 10px;
     font-size: 0.85rem;
   }
 
   body .app #homeScreen .day-hero > #homeQuickAdd {
-    top: auto;
-    right: auto;
-    left: 0;
-    bottom: 0;
+    top: 44px;
+    right: 0;
+    left: auto;
+    bottom: auto;
   }
 }
