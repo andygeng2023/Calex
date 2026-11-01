@@ -486,3 +486,26 @@ body .app #settingsScreen .settings-section-description {
   margin-left: 0;
   margin-right: 0;
 }
+
+
+/* Mobile bottom navigation is icon-only; accessible names remain on each button. */
+@media (max-width: 700px) {
+  body .app .bottom-nav .nav-btn {
+    gap: 0;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 4px;
+  }
+
+  body .app .bottom-nav .nav-btn > span {
+    display: none !important;
+  }
+
+  body .app .bottom-nav .nav-btn > :is(svg, i) {
+    display: block;
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    margin: 0;
+  }
+}
