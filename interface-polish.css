@@ -574,3 +574,87 @@ body .app #homeScreen .day-hero > button {
     width: auto;
   }
 }
+
+
+/* Home: keep task actions in the top-right while the date remains the focal point. */
+body .app #homeScreen .day-hero {
+  position: relative;
+  display: block;
+  min-height: 210px;
+  padding: 34px 0 22px;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+body .app #homeScreen .day-hero > div:first-child {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 0 180px;
+  text-align: center;
+}
+
+body .app #homeScreen .day-hero .header-eyebrow {
+  display: none;
+}
+
+body .app #homeScreen .day-hero .weekday {
+  margin: 0 0 14px;
+  font-size: clamp(2.6rem, 5vw, 4rem);
+  line-height: 1.08;
+  letter-spacing: -0.055em;
+  text-align: center;
+}
+
+body .app #homeScreen .day-hero .long-date {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+body .app #homeScreen .day-hero > button {
+  position: absolute;
+  top: 34px;
+  right: 0;
+  z-index: 1;
+  margin: 0;
+}
+
+body .app #homeScreen .day-hero > #homeQuickAdd {
+  top: 84px;
+}
+
+@media (max-width: 700px) {
+  body .app #homeScreen .day-hero {
+    min-height: 190px;
+    padding: 26px 0 18px;
+    margin-bottom: 24px;
+  }
+
+  body .app #homeScreen .day-hero > div:first-child {
+    padding: 0;
+  }
+
+  body .app #homeScreen .day-hero .weekday {
+    font-size: clamp(2.25rem, 9vw, 3rem);
+    margin-bottom: 10px;
+  }
+
+  body .app #homeScreen .day-hero > button {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    min-height: 36px;
+    padding: 0 10px;
+    font-size: 0.85rem;
+  }
+
+  body .app #homeScreen .day-hero > #homeQuickAdd {
+    top: auto;
+    right: auto;
+    left: 0;
+    bottom: 0;
+  }
+}
