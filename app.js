@@ -1637,6 +1637,7 @@ window.CalexReady = (async function () {
     const titles = {
       home: "Your day, at a glance",
       calendar: "A little space for everything",
+      assistant: "Calex assistant",
       agenda: "What's on the horizon",
       email: "Email workspace",
       settings: "Make yourself at home",
