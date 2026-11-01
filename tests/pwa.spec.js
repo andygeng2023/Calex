@@ -349,3 +349,17 @@ test("workspace screens share consistent page gutters and action control sizing"
     expect(minHeight).toBe("42px");
   }
 });
+
+test("mobile bottom navigation displays icons without text labels", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const nav = page.locator(".bottom-nav");
+  await expect(nav).toBeVisible();
+  const buttons = nav.locator(".nav-btn");
+  await expect(buttons).toHaveCount(5);
+  for (const button of await buttons.all()) {
+    await expect(button.locator("> span")).toBeHidden();
+    await expect(button.locator("svg, i").first()).toBeVisible();
+    await expect(button).toHaveAttribute("aria-label", /.+/);
+  }
+});
