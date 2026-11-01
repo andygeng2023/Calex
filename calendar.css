@@ -492,3 +492,21 @@ body .modal #eventForm input::-webkit-calendar-picker-indicator {
   margin: 0;
   padding: 0;
 }
+
+
+/* Keep the calendar drag handle anchored above the task list at all times. */
+body .app #calendarScreen.calendar-restored .selected-panel .panel-handle {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  flex: 0 0 44px;
+  min-height: 44px;
+  height: 44px;
+  background: var(--surface);
+  border-radius: 16px 16px 0 0;
+}
+
+/* The grip itself communicates the gesture; remove redundant helper copy. */
+body .app #calendarScreen.calendar-restored .handle-grip:after {
+  content: none;
+}
