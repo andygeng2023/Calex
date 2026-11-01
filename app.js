@@ -1018,6 +1018,7 @@ window.CalexReady = (async function () {
           isTask: true,
           category: parent.category || "personal",
         });
+        $("eventForm").querySelector(".delete-event")?.remove();
         $("eventForm").dataset.subtaskParentId = parent.id;
         $("eventForm").dataset.subtaskPath = path.join(".");
         $("eventForm").dataset.editId = "";
