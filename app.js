@@ -872,6 +872,7 @@ window.CalexReady = (async function () {
       return '<div class="event-subtask ' + (done ? "done" : "") + '">' +
         '<input class="check event-subtask-check" type="checkbox" data-subtask-toggle="' + esc(pathValue) + '" data-subtask-event="' + esc(event.id) + '" data-subtask-date="' + esc(occurrenceDate || "") + '" data-subtask-recurring="' + (recurringContext ? "true" : "false") + '" aria-label="Complete subtask ' + esc(task.title) + '" ' + (done ? "checked" : "") + '>' +
         '<span class="event-subtask-title">' + esc(task.title) + '</span>' +
+        '<button type="button" class="icon-btn event-subtask-edit" data-edit-subtask="' + esc(event.id) + '" data-subtask-path="' + esc(pathValue) + '" aria-label="Edit subtask ' + esc(task.title) + '" title="Edit subtask"><svg viewBox="0 0 24 24"><path d="m14 5 5 5M4 20l4-.8L19 8a2.1 2.1 0 0 0-3-3L5 16z"/></svg></button>' +
         '<button type="button" class="event-add-subtask" data-add-subtask="' + esc(event.id) + '" data-subtask-path="' + esc(pathValue) + '" aria-label="Add subtask under ' + esc(task.title) + '" title="Add nested subtask">+ Subtask</button>' +
         renderEventSubtasks(event, task.subtasks || [], path, occurrenceDate, recurringContext) + '</div>';
     }).join("") + '</div>';
@@ -1000,6 +1001,38 @@ window.CalexReady = (async function () {
           openNormal(events.find((x) => x.id === el.dataset.edit)),
         ),
       );
+    root.querySelectorAll("[data-edit-subtask]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const parent = events.find((item) => item.id === button.dataset.editSubtask);
+        const path = (button.dataset.subtaskPath || "").split(".").filter(Boolean).map(Number);
+        if (!parent || !path.length) return;
+        let siblings = parent.subtasks || [];
+        for (const index of path.slice(0, -1)) {
+          if (!siblings[index]) return;
+          siblings = siblings[index].subtasks || [];
+        }
+        const subtask = siblings[path[path.length - 1]];
+        if (!subtask) return;
+        openNormal({
+          ...subtask,
+          isTask: true,
+          category: parent.category || "personal",
+        });
+        $("eventForm").dataset.subtaskParentId = parent.id;
+        $("eventForm").dataset.subtaskPath = path.join(".");
+        $("eventForm").dataset.editId = "";
+        $("modalBackdrop").dataset.mode = "task";
+        $("modalTitle").textContent = "Edit subtask";
+        $("eventTitle").placeholder = "What needs doing?";
+        $("eventTitle").setAttribute("aria-label", "Subtask title");
+        const submit = $("eventForm").querySelector('[type="submit"]');
+        if (submit) {
+          const label = submit.querySelector("span");
+          if (label) label.textContent = "Save subtask";
+          submit.setAttribute("aria-label", "Save subtask");
+        }
+      });
+    });
     root.querySelectorAll("[data-add-subtask]").forEach((button) => {
       button.addEventListener("click", () => {
         const event = events.find((item) => item.id === button.dataset.addSubtask);
@@ -1745,6 +1778,8 @@ window.CalexReady = (async function () {
   }
 
   function openNormal(e) {
+    $("eventForm").dataset.subtaskParentId = "";
+    $("eventForm").dataset.subtaskPath = "";
     switchScreen("calendar");
     openModal("normal");
     $("eventTitle").placeholder = "Event name";
@@ -2184,6 +2219,9 @@ window.CalexReady = (async function () {
   $("eventForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const id = $("eventForm").dataset.editId;
+    const subtaskParentId = $("eventForm").dataset.subtaskParentId;
+    const subtaskPath = $("eventForm").dataset.subtaskPath;
+    const isSubtaskEdit = !!(subtaskParentId && subtaskPath);
     const isTask = $("modalBackdrop").dataset.mode === "task";
     const fromPuterEmail = $("eventForm").dataset.source === "puter-email";
     const old = events.find((x) => x.id === id);
@@ -2229,6 +2267,49 @@ window.CalexReady = (async function () {
       $("eventEnd").focus();
       return;
     }
+    if (isSubtaskEdit) {
+      const parent = events.find((entry) => entry.id === subtaskParentId);
+      const path = subtaskPath.split(".").filter(Boolean).map(Number);
+      if (!parent || !path.length) {
+        showToast("The parent task could not be found.");
+        return;
+      }
+      let siblings = parent.subtasks || [];
+      for (const index of path.slice(0, -1)) {
+        if (!siblings[index]) {
+          showToast("The subtask could not be found.");
+          return;
+        }
+        siblings = siblings[index].subtasks || [];
+      }
+      const index = path[path.length - 1];
+      const previous = siblings[index];
+      if (!previous) {
+        showToast("The subtask could not be found.");
+        return;
+      }
+      siblings[index] = {
+        ...previous,
+        title: item.title,
+        description: item.description,
+        date: item.date,
+        start: item.start,
+        end: item.end,
+        location: item.location,
+        people: item.people,
+        notes: item.notes,
+        category: item.category,
+      };
+      touch(parent);
+      persist();
+      closeModal();
+      renderAll();
+      showToast("Subtask updated");
+      $("eventForm").dataset.subtaskParentId = "";
+      $("eventForm").dataset.subtaskPath = "";
+      $("eventForm").dataset.editId = "";
+      return;
+    }
     touch(item);
     if (id) events = events.map((x) => (x.id === id ? item : x));
     else events.push(item);
@@ -2241,6 +2322,8 @@ window.CalexReady = (async function () {
     showToast(id ? (isTask ? "Task updated" : "Event updated") : (isTask ? "Task added" : "Event added"));
     $("eventForm").dataset.editId = "";
     $("eventForm").dataset.source = "";
+    $("eventForm").dataset.subtaskParentId = "";
+    $("eventForm").dataset.subtaskPath = "";
     if (fromPuterEmail) {
       switchScreen("calendar");
       renderAll();
