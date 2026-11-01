@@ -2217,3 +2217,20 @@ body .app #calendarScreen .calendar-toolbar {
     animation: none;
   }
 }
+
+@media (max-width: 700px) {
+  body .app .event-subtask {
+    grid-template-columns: 18px minmax(0, 1fr) 26px;
+  }
+  body .app .event-subtask > .event-subtask-edit {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  body .app .event-subtask > .event-add-subtask {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  body .app .event-subtask .event-subtasks {
+    grid-column: 1 / -1;
+  }
+}
