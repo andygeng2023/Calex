@@ -113,3 +113,22 @@ test("settings: newer wins, missing remote is pushed", () => {
   assert.deepEqual(mergeSettings({ updatedAt: 9 }, { updatedAt: 5 }), { adopt: null, push: true });
   assert.deepEqual(mergeSettings({ updatedAt: 5 }, { updatedAt: 5 }), { adopt: null, push: false });
 });
+
+test("equal-timestamp divergent edits converge deterministically", () => {
+  const left = ev("same", 500, { title: "Alpha" });
+  const right = ev("same", 500, { title: "Zulu" });
+  const a = mergeEvents({ local: [left], remote: [row(right)], tombstones: {}, syncedIds: ["same"], lastSyncAt: 400, now: 600 });
+  const b = mergeEvents({ local: [right], remote: [row(left)], tombstones: {}, syncedIds: ["same"], lastSyncAt: 400, now: 600 });
+  assert.equal(a.events[0].title, b.events[0].title);
+  assert.equal(a.events[0].title, "Zulu");
+  assert.deepEqual(a.push, []);
+  assert.deepEqual(b.push.map((e) => e.title), ["Zulu"]);
+});
+
+test("equal-timestamp identical content does not trigger a redundant push", () => {
+  const local = ev("same", 500, { notes: "unchanged" });
+  const remote = ev("same", 500, { notes: "unchanged" });
+  const result = mergeEvents({ local: [local], remote: [row(remote)], tombstones: {}, syncedIds: ["same"], lastSyncAt: 400, now: 600 });
+  assert.deepEqual(result.push, []);
+  assert.equal(result.events[0].notes, "unchanged");
+});

@@ -362,14 +362,7 @@ window.CalexReady.then(() => (function () {
     () => ($("installApp").hidden = true),
   );
 
-  function openAssistant() {
-    $("assistantDialog").showModal();
-    icon();
-  }
-  document
-    .querySelectorAll(".assistant-trigger")
-    .forEach((b) => (b.onclick = openAssistant));
-  $("closeAssistant").onclick = () => $("assistantDialog").close();
+  // Assistant is a normal workspace destination rather than a modal.
   let sdkPromise;
   function loadPuter() {
     if (window.puter) return Promise.resolve(window.puter);
@@ -405,16 +398,22 @@ window.CalexReady.then(() => (function () {
     });
     return sdkPromise;
   }
+  function syncAssistantComposer() {
+    $("sendAssistant").disabled = !puterReady || busy || !$("assistantInput").value.trim();
+    $("assistantNewChat").disabled = busy;
+  }
   function activatePuterSession() {
     puterReady = true;
     $("puterConnection").hidden = true;
-    $("sendAssistant").disabled = false;
+    $("assistantConnectionLabel").textContent = "Connected to Puter";
+    syncAssistantComposer();
     window.dispatchEvent(new CustomEvent("calex:puter-ready"));
   }
   async function restorePuterSession() {
     if (!navigator.onLine) {
       $("puterStatus").textContent =
         "The assistant will connect when you are back online.";
+      $("assistantConnectionLabel").textContent = "Offline";
       return;
     }
     try {
@@ -423,12 +422,14 @@ window.CalexReady.then(() => (function () {
         activatePuterSession();
       } else {
         $("connectPuter").textContent = "Sign in to Puter";
+        $("assistantConnectionLabel").textContent = "Sign-in required";
         $("puterStatus").textContent =
           "Puter is ready. Sign in once to enable the assistant.";
       }
     } catch (_) {
       $("puterStatus").textContent =
         "Puter sign-in will be available when you are online.";
+      $("assistantConnectionLabel").textContent = "Not connected";
     }
   }
   restorePuterSession();
@@ -444,6 +445,7 @@ window.CalexReady.then(() => (function () {
         $("puterStatus").textContent = "Loading Puter…";
         await loadPuter();
         $("connectPuter").textContent = "Sign in to Puter";
+        $("assistantConnectionLabel").textContent = "Sign-in required";
         $("puterStatus").textContent =
           "Ready. Click Sign in to open Puter's account window.";
         return; // Authentication must originate from a fresh click, not after SDK loading.
@@ -463,6 +465,7 @@ window.CalexReady.then(() => (function () {
     (b) =>
       (b.onclick = () => {
         $("assistantInput").value = b.dataset.prompt;
+        $("assistantInput").dispatchEvent(new Event("input", { bubbles: true }));
         $("assistantInput").focus();
       }),
   );
@@ -475,9 +478,20 @@ window.CalexReady.then(() => (function () {
     const body = document.createElement("div");
     body.textContent = text;
     el.append(label, body);
-    $("assistantMessages").appendChild(el);
-    el.scrollIntoView({ block: "nearest" });
+    const feed = $("assistantMessages");
+    feed.appendChild(el);
+    feed.scrollTop = feed.scrollHeight;
     return el;
+  }
+  function typingMessage() {
+    const pending = message("assistant", "");
+    pending.classList.add("is-typing");
+    const body = pending.querySelector("div");
+    body.classList.add("typing-dots");
+    body.setAttribute("role", "status");
+    body.setAttribute("aria-label", "Calex is typing");
+    for (let i = 0; i < 3; i++) body.appendChild(document.createElement("span"));
+    return pending;
   }
   function contextEvents() {
     if (!$("shareCalendar").checked)
@@ -633,6 +647,34 @@ window.CalexReady.then(() => (function () {
     },
   };
 
+  $("assistantNewChat").addEventListener("click", () => {
+    if (busy) return;
+    requestGeneration++;
+    history = [];
+    $("assistantMessages").replaceChildren(
+      $("assistantIntro"),
+      $("puterConnection"),
+      $("assistantSuggestions"),
+    );
+    $("assistantSuggestions").hidden = false;
+    $("assistantError").textContent = "";
+    $("assistantInput").value = "";
+    $("assistantInput").style.height = "";
+    syncAssistantComposer();
+    $("assistantInput").focus();
+  });
+  $("assistantInput").addEventListener("input", () => {
+    const input = $("assistantInput");
+    input.style.height = "auto";
+    input.style.height = Math.min(input.scrollHeight, 168) + "px";
+    syncAssistantComposer();
+  });
+  $("assistantInput").addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+      event.preventDefault();
+      if (!$("sendAssistant").disabled) $("assistantForm").requestSubmit();
+    }
+  });
   $("assistantForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     if (busy) return;
@@ -654,7 +696,7 @@ window.CalexReady.then(() => (function () {
     $("assistantInput").value = "";
     $("assistantSuggestions").hidden = true;
     message("user", prompt);
-    const pending = message("assistant", "Making a little room for thought…");
+    const pending = typingMessage();
     const generation = ++requestGeneration,
       context = contextEvents();
     const replyLanguage = window.CalexI18n?.languageLabel(window.CalexI18n.language()) || "English";
@@ -692,6 +734,9 @@ window.CalexReady.then(() => (function () {
       } catch (_) {
         parsed = { reply: text };
       }
+      pending.classList.remove("is-typing");
+      pending.querySelector("div").classList.remove("typing-dots");
+      pending.querySelector("div").removeAttribute("aria-label");
       pending.querySelector("div").textContent =
         typeof parsed.reply === "string"
           ? parsed.reply
@@ -712,7 +757,7 @@ window.CalexReady.then(() => (function () {
         review.className = "primary";
         review.textContent = "Review event";
         review.onclick = () => {
-          $("assistantDialog").close();
+          C.switchScreen("calendar");
           C.draftEvent(d);
         };
         card.append(title, meta, review);
@@ -722,6 +767,9 @@ window.CalexReady.then(() => (function () {
           "The suggested event had invalid details. Ask the assistant to correct them.";
       }
     } catch (error) {
+      pending.classList.remove("is-typing");
+      pending.querySelector("div").classList.remove("typing-dots");
+      pending.querySelector("div").removeAttribute("aria-label");
       pending.querySelector("div").textContent =
         "We couldn't finish that request.";
       $("assistantError").textContent =
@@ -732,7 +780,7 @@ window.CalexReady.then(() => (function () {
     } finally {
       clearTimeout(timeout);
       busy = false;
-      $("sendAssistant").disabled = !puterReady;
+      syncAssistantComposer();
     }
   });
   // Revoke context immediately, including details retained in the AI conversation.
@@ -745,6 +793,7 @@ window.CalexReady.then(() => (function () {
       $("assistantError").textContent =
         "Upcoming titles, dates, times, and locations will be shared with your next message.";
   };
+  syncAssistantComposer();
   const query = new URLSearchParams(location.search);
   if (query.get("view") === "calendar") C.switchScreen("calendar");
   if (query.get("action") === "new") C.newEvent();

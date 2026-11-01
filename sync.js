@@ -72,7 +72,24 @@
       if (ls > r.ts) {
         out.set(r.id, l);
         push.push(l);
-      } else out.set(r.id, ls === r.ts ? l : r.data);
+      } else if (ls < r.ts) {
+        out.set(r.id, r.data);
+      } else if (sameContent(l, r.data)) {
+        // Equal timestamps and equal content are already converged.
+        out.set(r.id, l);
+      } else {
+        // Device clocks can collide at millisecond resolution. Resolve equal-time
+        // divergent edits deterministically so both devices choose the same value.
+        // The winner is then pushed, allowing the other device to converge.
+        const localKey = JSON.stringify(canon(l));
+        const remoteKey = JSON.stringify(canon(r.data));
+        if (localKey > remoteKey) {
+          out.set(r.id, l);
+          push.push(l);
+        } else {
+          out.set(r.id, r.data);
+        }
+      }
     });
 
     local.forEach((l) => {
