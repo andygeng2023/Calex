@@ -2,9 +2,9 @@
 
 Calex is a static GitHub Pages PWA. Its browser client uses the Supabase publishable key; the service-role/secret key must never be added to this repository.
 
-## 1. Auth URL configuration
+## Project connection\n\nThis branch uses the Calex project in the `ageng002` Supabase organisation (`fxhzywzufnvoxapvtidn`). The browser client is configured in `app.js` with its project URL and publishable key. Never add a service-role key to the repository.\n\n## 1. Auth URL configuration
 
-In the Supabase Dashboard, open **Authentication → URL Configuration** for the **SimpleDay Calendar** project and set:
+In the Supabase Dashboard, open **Authentication → URL Configuration** for the **Calex** project and set:
 
 - **Site URL:** `https://andygeng2023.github.io/Calex/`
 - **Additional Redirect URLs:** `https://andygeng2023.github.io/Calex/`
@@ -26,7 +26,7 @@ Google sign-in is wired into the Calex account screen, but Supabase cannot compl
 3. Add this **Authorized JavaScript origin**:
    `https://andygeng2023.github.io`
 4. Add this **Authorized redirect URI**:
-   `https://fwcijtjahtwpyaqedyhq.supabase.co/auth/v1/callback`
+   `https://fxhzywzufnvoxapvtidn.supabase.co/auth/v1/callback`
 5. Copy the Google client ID and client secret into **Supabase Dashboard → Authentication → Sign In / Providers → Google** and enable Google. Do not put the client secret in this repository.
 6. Test the Google button on the deployed PWA.
 
@@ -68,6 +68,6 @@ After changing Auth settings and deploying:
 If confirmation links or OAuth redirects fail, check the Site URL and exact additional redirect URL above first.
 ## 7. Enable productivity cloud sync (feature branch)
 
-The productivity workspace uses a separate per-user JSONB row and does not reuse the calendar event table. The migration has already been applied to the connected Calex Supabase project. For another Supabase deployment, apply `supabase/migrations/20261027000000_calex_productivity.sql` in the SQL editor. It creates `public.calex_productivity` with row-level security and policies restricting every row to `auth.uid() = user_id`. Do not disable RLS or grant anonymous access.
+The productivity workspace uses a separate per-user JSONB row and does not reuse the calendar event table. The migration is applied to the new Calex project in ageng002's organisation. The core schema, Gmail connection table, and productivity table are installed in the new project from the versioned migrations in `supabase/migrations/`. It creates `public.calex_productivity` with row-level security and policies restricting every row to `auth.uid() = user_id`. Do not disable RLS or grant anonymous access.
 
 After the migration is applied, sign in to Calex and open Tasks. Productivity data will merge with the account row and sync when online. If the migration is not installed, Calex keeps local data and displays a cloud-sync setup message. This initial implementation merges local and remote records by per-item timestamps; it is not a transactional collaboration engine, so concurrent edits across devices still need additional conflict-resolution testing before production claims.
