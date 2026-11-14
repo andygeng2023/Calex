@@ -1,4 +1,4 @@
-const CACHE_NAME = "calex-shell-v82";
+const CACHE_NAME = "calex-shell-v83";
 const SQLITE_ENGINE_URL = "https://cdn.jsdelivr.net/npm/sql.js@1.15.1/dist/sql-wasm-inline.js";
 const APP_SHELL = [
   "./",
