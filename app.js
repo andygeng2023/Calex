@@ -90,9 +90,9 @@ window.CalexReady = (async function () {
   function translateUiText(value) {
     return window.CalexI18n?.translate(value) || value;
   }
-  const SUPABASE_URL = "https://fwcijtjahtwpyaqedyhq.supabase.co";
+  const SUPABASE_URL = "https://fxhzywzufnvoxapvtidn.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_oWpplxsSIvn3KfinwmlLjg_3No69nPW";
+    "sb_publishable_EWC1uwQylimwdnqwOEybdg_uCgbJRzz";
   let supabaseClient = null,
     authUser = null,
     recoveringPassword = false,
