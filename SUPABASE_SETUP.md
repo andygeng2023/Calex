@@ -2,7 +2,7 @@
 
 Calex is a static GitHub Pages PWA. Its browser client uses the Supabase publishable key; the service-role/secret key must never be added to this repository.
 
-## Project connection\n\nThis branch uses the Calex project in the `ageng002` Supabase organisation (`fxhzywzufnvoxapvtidn`). The browser client is configured in `app.js` with its project URL and publishable key. Never add a service-role key to the repository.\n\n## 1. Auth URL configuration
+## Project connection\n\nThis branch uses the Calex project in the `ageng002` Supabase organisation (`fxhzywzufnvoxapvtidn`). The browser client is configured in `app.js` with its project URL and publishable key. Never add a service-role key to the repository.\n\n## Migration limits\n\nThe new project contains the six Calex application tables, their row-level security policies, the three matching SQL migrations, and the `calex-gmail-auth` Edge Function. The source project had two Auth user accounts but no rows in the six public Calex tables and no Storage buckets. Auth accounts/password credentials, provider settings, SMTP configuration, and Edge Function secret values are not transferred by this migration. Users will need to register again in the new project. Reconfigure any enabled Auth providers and SMTP settings in the new project's dashboard.\n\nThe Gmail Edge Function is deployed, but Gmail linking remains unconfigured until its three secrets below are added to the new project. Do not copy the old token-encryption key if it is unavailable; use a new base64-encoded 32-byte key.\n\n## 1. Auth URL configuration
 
 In the Supabase Dashboard, open **Authentication → URL Configuration** for the **Calex** project and set:
 
